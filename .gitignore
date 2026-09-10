@@ -11,6 +11,7 @@ __pycache__/
 .Python
 
 # local database
+db.sqlite3
 
 # environment secrets
 .env
