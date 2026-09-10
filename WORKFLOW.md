@@ -43,9 +43,8 @@ git push -u origin feature/short-description
 
 ### 5. Open a Pull Request
 On GitHub, click **Compare & pull request**. In the description, cover:
-- **What** changed (1–2 sentences)
+- **What** changed
 - **Why** (what it unblocks or fixes)
-- **How to test** it (steps a reviewer can actually run)
 - **Notes** on anything intentionally left out
 
 ### 6. Get it reviewed
