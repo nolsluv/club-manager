@@ -1,20 +1,23 @@
 from django.db import models
+from members.models import Member
 
-# Create your models here.
-class Member(models.Model):
-    ROLE_CHOICES = [
-        ('member', 'General Member'),
-        ('officer', 'Officer'),
-        ('president', 'President'),
-        ('treasurer', 'Treasurer'),
-    ]
-
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    email = models.EmailField(unique=True)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='member')
-    date_joined = models.DateField(auto_now_add=True)
-    is_active = models.BooleanField(default=True)
+class Event(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    date = models.DateTimeField()
+    location = models.CharField(max_length=150, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return self.title
+
+class RSVP(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='rsvps')
+    member = models.ForeignKey(Member, on_delete=models.CASCADE)
+    responded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('event', 'member')
+
+    def __str__(self):
+        return f"{self.member} -> {self.event}"
