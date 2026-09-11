@@ -50,15 +50,6 @@ club-manager/
 └── requirements.txt
 ```
 
-## Team
-
-| Area | Owner |
-|---|---|
-| Members | _TBD_ |
-| Events | _TBD_ |
-| Finances | _TBD_ |
-| Core / Infra | _TBD_ |
-
 ## Contributing
 
 We follow **GitHub Flow** — branch, PR, review, merge. See [`WORKFLOW.md`](./WORKFLOW.md).
