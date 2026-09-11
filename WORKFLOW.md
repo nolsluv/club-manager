@@ -58,17 +58,6 @@ git pull origin main
 git branch -d feature/short-description
 ```
 
-## Team Ownership
-
-| Area | Owner |
-|---|---|
-| Members app | _TBD_ |
-| Events app | _TBD_ |
-| Finances app | _TBD_ |
-| Core / shared setup / deployment | _TBD_ |
-
-If your change touches another area (e.g. Events referencing the Member model), loop in that area's owner before merging.
-
 ## Why we do it this way
 
 - Keeps `main` always deployable — nobody is blocked by someone else's half-finished work.
