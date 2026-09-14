@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Club Manager
+{% endblock %}
+
+{% block content %}
+
+<div id="intro-screen">
+    <h1>Club Manager</h1>
+</div>
+
+<div id="main-home">
+    <div class="landing-content">
+        <p class="eyebrow">WELCOME TO</p>
+
+        <h1>Club Manager</h1>
+
+        <p class="subtitle">
+            Manage members, events, and club finances in one place.
+        </p>
+
+        <a href="#" class="login-button">Log In</a>
+    </div>
+</div>
+
+<script>
+    setTimeout(function () {
+        document.getElementById("intro-screen").classList.add("hide-intro");
+        document.getElementById("main-home").classList.add("show-home");
+    }, 2200);
+</script>
+
+{% endblock %}
