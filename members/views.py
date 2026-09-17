@@ -3,6 +3,7 @@ from django.contrib.auth import login
 from .forms import RegisterForm
 from .models import Member
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 from .decorators import role_required
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
@@ -28,6 +29,17 @@ def register(request):
         form = RegisterForm()
 
     return render(request, 'register.html', {'form': form})
+
+#have to login to access home page
+@login_required
+def home(request):
+    return render(request, 'home.html')
+
+def intro(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+    return render(request, 'intro.html')
+
 
 #club management dashboard
 @role_required('officer', 'president', 'treasurer', 'admin')

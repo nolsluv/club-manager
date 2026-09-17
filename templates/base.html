@@ -17,23 +17,23 @@
 <body>
 
     {% if user.is_authenticated %}
-    <nav style="padding: 15px 30px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center;">
-        <a href="{% url 'home' %}" style="color: white; text-decoration: none; font-weight: 500;">Club Manager</a>
+    <nav style="padding: 28px 48px; border-bottom: 3px solid #333; display: flex; justify-content: space-between; align-items: center;">
+        <a href="{% url 'home' %}" style="color: white; text-decoration: none; font-weight: 500; font-size: 22px;">Club Manager</a>
         <div>
-            <a href="{% url 'home' %}" style="color: #999; text-decoration: none; margin-right: 20px; font-size: 14px;">Home</a>
+            <a href="{% url 'home' %}" style="color: #999; text-decoration: none; margin-right: 28px; font-size: 18px;">Home</a>
     
             {# hides link for plain members; real enforcement is in role_required() #}
             {% if user.member.role != 'member' %}
-                <a href="{% url 'dashboard' %}" style="color: white; text-decoration: none; margin-right: 20px; font-size: 14px;">Manage Club</a>
+                <a href="{% url 'dashboard' %}" style="color: white; text-decoration: none; margin-right: 28px; font-size: 18px;">Manage Club</a>
             {% endif %}
             
             {# only admins get account management access #}
             {% if user.member.role == 'admin' %}
-                <a href="{% url 'user_management' %}" style="color: white; text-decoration: none; margin-right: 20px; font-size: 14px;">User Management</a>
+                <a href="{% url 'user_management' %}" style="color: white; text-decoration: none; margin-right: 28px; font-size: 18px;">User Management</a>
             {% endif %}    
             <form method="post" action="{% url 'logout' %}" style="display: inline;">
                 {% csrf_token %}
-                <button type="submit" style="background: none; border: none; color: #999; font-size: 14px; cursor: pointer; padding: 0; font-family: inherit;">
+                <button type="submit" style="background: none; border: none; color: #999; font-size: 18px; cursor: pointer; padding: 0; font-family: inherit;">
                     Log Out
                 </button>
             </form>

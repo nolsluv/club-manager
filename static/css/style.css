@@ -31,11 +31,18 @@ body {
 
     opacity: 1;
     transition: opacity 0.8s ease;
+
+
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
+        url("../images/background-intro.jpg") center/cover no-repeat;
+
+
 }
 
 #intro-screen h1 {
     font-family: "Manrope", sans-serif;
-    font-size: 64px;
+    font-size: 92px;
     font-weight: 300;
     letter-spacing: -2px;
 
@@ -44,6 +51,13 @@ body {
 
     animation: introTitle 1.3s ease forwards;
 }
+
+.intro-home {
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
+        url("../images/background-intro.jpg") center/cover no-repeat;
+}
+
 
 @keyframes introTitle {
     0% {
@@ -63,6 +77,7 @@ body {
     opacity: 0 !important;
     pointer-events: none;
 }
+
 
 /* =========================
    Main Landing Page
@@ -91,41 +106,44 @@ body {
 
 .landing-content {
     text-align: center;
-    max-width: 700px;
-    padding: 40px;
+    max-width: 850px;
+    padding: 50px;
 }
+
+
+.intro-home .landing-content {
+    transform: translateY(75px);
+}
+
 
 /* small text above title */
 
 .eyebrow {
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 500;
-    letter-spacing: 4px;
+    letter-spacing: 6px;
     color: #777;
-    margin-bottom: 22px;
+    margin-bottom: 32px;
 }
 
 /* main title */
 
 .landing-content h1 {
     font-family: "Manrope", sans-serif;
-    font-size: 64px;
+    font-size: 92px;
     font-weight: 300;
     letter-spacing: -2px;
-
-    margin-bottom: 24px;
+    margin-bottom: 34px;
 }
 
 /* description */
 
 .subtitle {
-    font-size: 17px;
+    font-size: 22px;
     font-weight: 300;
     line-height: 1.7;
-
     color: #999;
-
-    margin-bottom: 42px;
+    margin-bottom: 48px;
 }
 
 /* =========================
@@ -135,7 +153,7 @@ body {
 .login-button {
     display: inline-block;
 
-    padding: 14px 40px;
+    padding: 16px 46px;
 
     border: 1px solid #555;
     border-radius: 30px;
@@ -144,7 +162,7 @@ body {
 
     color: white;
 
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 400;
     letter-spacing: 1px;
 
@@ -163,6 +181,24 @@ body {
     border-color: white;
 
     transform: translateY(-2px);
+}
+
+/*make "Dont have account?" has a little distance from above*/
+.login-footer {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 14px;
+    color: #999;
+}
+
+.login-footer a {
+    color: white;
+    text-decoration: none;
+    margin-left: 4px;
+}
+
+.login-footer a:hover {
+    text-decoration: underline;
 }
 
 /* =========================
@@ -202,6 +238,13 @@ body {
     align-items: center;
     background: #111;
     padding: 20px;
+
+}
+
+.auth-background {
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+        url("../images/background-intro.jpg") center/cover no-repeat;
 }
 
 .login-container {
@@ -216,9 +259,9 @@ body {
 
 .login-container h1 {
     text-align: center;
-    font-size: 32px;
+    font-size: 38px;
     font-weight: 300;
-    margin-bottom: 30px;
+    margin-bottom: 34px;
 }
 
 .form-group {
@@ -268,9 +311,30 @@ body {
     color: white;
 }
 
-.error-message {
-    color: #999;
-    font-size: 14px;
-    margin-top: 15px;
-    text-align: center;
+/* =========================
+   Form of Error Messages
+========================= */
+
+
+
+.error,
+.errorlist {
+    color: #e57373;
+    font-size: 13px;
+    text-align: left;
+    line-height: 1.5;
+}
+
+
+.error {
+    margin-bottom: 14px;
+}
+
+.errorlist {
+    margin: 10px 0 18px 0;
+    padding-left: 24px;
+}
+
+.errorlist li {
+    margin-bottom: 10px;
 }

@@ -2,54 +2,33 @@
 {% load static %}
 
 {% block title %}
-Club Manager
+Home
 {% endblock %}
 
 {% block content %}
 
-<div id="intro-screen">
-    <h1>Club Manager</h1>
-</div>
-
 <div id="main-home">
     <div class="landing-content">
-        <!-- Start of if else statement that returns dif page depending if user is logged in or not-->
-        {% if user.is_authenticated %} 
-            <p class="eyebrow">WELCOME BACK</p>
-            <h1>Hi, {{ user.username }}</h1>
-            <p class="subtitle">
-                You're logged in to Club Manager.
-            </p>
-        {% else %}
-            <p class="eyebrow">WELCOME TO</p>
 
-            <h1>Club Manager</h1>
+        <p class="eyebrow">WELCOME BACK</p>
 
-            <p class="subtitle">
-                Manage members, events, and club finances in one place.
-            </p>
+        <h1>Hi, {{ user.username }}</h1>
 
-            <a href="{% url 'login' %}" class="login-button">Log In</a>
-        {% endif %}
+        <p class="subtitle">
+            You're logged in to Club Manager.
+        </p>
+
     </div>
 </div>
 
 <script>
-    const introScreen = document.getElementById("intro-screen");
-    const mainHome = document.getElementById("main-home");
-
-    if (sessionStorage.getItem("introShown")) {
-        // Already seen this session — skip straight to the home content, no delay
-        introScreen.classList.add("hide-intro");
-        mainHome.classList.add("show-home");
-    } else {
-        // First time this session — play the full animation, then remember it
+    window.addEventListener("DOMContentLoaded", function () {
+        const mainHome = document.getElementById("main-home");
+        
         setTimeout(function () {
-            introScreen.classList.add("hide-intro");
             mainHome.classList.add("show-home");
-        }, 2200);
-        sessionStorage.setItem("introShown", "true");
-    }
+        }, 100);
+    });
 </script>
 
 {% endblock %}
