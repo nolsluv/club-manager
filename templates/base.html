@@ -16,6 +16,19 @@
 
 <body>
 
+    {% if user.is_authenticated %}
+    <nav style="padding: 15px 30px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center;">
+        <a href="{% url 'home' %}" style="color: white; text-decoration: none; font-weight: 500;">Club Manager</a>
+        <div>
+            <a href="{% url 'home' %}" style="color: #999; text-decoration: none; margin-right: 20px; font-size: 14px;">Home</a>
+            {% if user.is_staff %}
+                <a href="{% url 'dashboard' %}" style="color: white; text-decoration: none; margin-right: 20px; font-size: 14px;">Admin Dashboard</a>
+            {% endif %}
+            <a href="{% url 'logout' %}" style="color: #999; text-decoration: none; font-size: 14px;">Log Out</a>
+        </div>
+    </nav>
+    {% endif %}
+
     {% block content %}
     {% endblock %}
 

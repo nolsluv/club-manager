@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from .forms import RegisterForm
 from .models import Member
+from django.contrib.admin.views.decorators import staff_member_required
+
 
 
 def register(request):
@@ -21,3 +23,8 @@ def register(request):
         form = RegisterForm()
 
     return render(request, 'register.html', {'form': form})
+
+@staff_member_required
+def dashboard(request):
+    members = Member.objects.all().order_by('last_name')
+    return render(request, 'dashboard.html', {'members': members})
