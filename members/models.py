@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Member(models.Model):
@@ -7,7 +8,10 @@ class Member(models.Model):
         ('officer', 'Officer'),
         ('president', 'President'),
         ('treasurer', 'Treasurer'),
+        ('admin', 'Admin'),
     ]
+    # Links this profile to the login account; nullable so old rows still work
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
 
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
