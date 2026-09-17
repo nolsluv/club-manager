@@ -91,40 +91,37 @@ body {
 
 .landing-content {
     text-align: center;
-    max-width: 700px;
-    padding: 40px;
+    max-width: 850px;
+    padding: 50px;
 }
 
 /* small text above title */
 
 .eyebrow {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: 4px;
+    letter-spacing: 5px;
     color: #777;
-    margin-bottom: 22px;
+    margin-bottom: 28px;
 }
 
 /* main title */
 
 .landing-content h1 {
     font-family: "Manrope", sans-serif;
-    font-size: 64px;
+    font-size: 76px;
     font-weight: 300;
     letter-spacing: -2px;
-
-    margin-bottom: 24px;
+    margin-bottom: 30px;
 }
 
 /* description */
 
 .subtitle {
-    font-size: 17px;
+    font-size: 20px;
     font-weight: 300;
     line-height: 1.7;
-
     color: #999;
-
     margin-bottom: 42px;
 }
 
@@ -216,9 +213,9 @@ body {
 
 .login-container h1 {
     text-align: center;
-    font-size: 32px;
+    font-size: 38px;
     font-weight: 300;
-    margin-bottom: 30px;
+    margin-bottom: 34px;
 }
 
 .form-group {
@@ -268,9 +265,30 @@ body {
     color: white;
 }
 
-.error-message {
-    color: #999;
-    font-size: 14px;
-    margin-top: 15px;
-    text-align: center;
+/* =========================
+   Form of Error Messages
+========================= */
+
+
+
+.error,
+.errorlist {
+    color: #e57373;
+    font-size: 13px;
+    text-align: left;
+    line-height: 1.5;
+}
+
+
+.error {
+    margin-bottom: 14px;
+}
+
+.errorlist {
+    margin: 10px 0 18px 0;
+    padding-left: 24px;
+}
+
+.errorlist li {
+    margin-bottom: 10px;
 }

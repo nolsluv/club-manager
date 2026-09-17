@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="login-page">
-    <div class="login-container" style="max-width: 800px;">
+    <div class="login-container" style="max-width: 1000px;">
         <h1>User Management</h1>
 
         {% if messages %}
@@ -14,12 +14,12 @@
 
         <a href="{% url 'register' %}" class="login-button" style="display:inline-block; margin-bottom:20px;">+ Create User</a>
 
-        <table style="width:100%; border-collapse: collapse; font-size: 14px;">
+        <table style="width:100%; border-collapse: collapse; font-size: 16px;">
             <tr style="text-align:left; color:#999;">
-                <th style="padding-bottom:10px;">Username</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Actions</th>
+                <th style="padding-bottom:14px;">Username</th>
+                <th style="padding-bottom:14px;">Email</th>
+                <th style="padding-bottom:14px;">Role</th>
+                <th style="padding-bottom:14px;">Actions</th>
             </tr>
             {% for u in users %}
             <tr style="border-top:1px solid #333;">
@@ -30,7 +30,7 @@
                     {% if u != request.user %}
                     <form method="post" action="{% url 'delete_user' u.id %}" onsubmit="return confirm('Delete {{ u.username }}?');">
                         {% csrf_token %}
-                        <button type="submit" style="width:auto; padding:6px 14px;">Remove</button>
+                        <button type="submit" style="width:auto; padding:8px 18px;">Remove</button>
                     </form>
                     {% endif %}
                 </td>
