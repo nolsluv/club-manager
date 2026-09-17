@@ -21,10 +21,18 @@
         <a href="{% url 'home' %}" style="color: white; text-decoration: none; font-weight: 500;">Club Manager</a>
         <div>
             <a href="{% url 'home' %}" style="color: #999; text-decoration: none; margin-right: 20px; font-size: 14px;">Home</a>
-            {% if user.is_staff %}
+    
+            {# hides link for plain members; real enforcement is in role_required() #}
+            {% if user.member.role != 'member' %}
                 <a href="{% url 'dashboard' %}" style="color: white; text-decoration: none; margin-right: 20px; font-size: 14px;">Admin Dashboard</a>
             {% endif %}
-            <a href="{% url 'logout' %}" style="color: #999; text-decoration: none; font-size: 14px;">Log Out</a>
+    
+            <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" style="background: none; border: none; color: #999; font-size: 14px; cursor: pointer; padding: 0; font-family: inherit;">
+                    Log Out
+                </button>
+            </form>
         </div>
     </nav>
     {% endif %}
