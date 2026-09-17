@@ -35,10 +35,21 @@ Club Manager
 </div>
 
 <script>
-    setTimeout(function () {
-        document.getElementById("intro-screen").classList.add("hide-intro");
-        document.getElementById("main-home").classList.add("show-home");
-    }, 2200);
+    const introScreen = document.getElementById("intro-screen");
+    const mainHome = document.getElementById("main-home");
+
+    if (sessionStorage.getItem("introShown")) {
+        // Already seen this session — skip straight to the home content, no delay
+        introScreen.classList.add("hide-intro");
+        mainHome.classList.add("show-home");
+    } else {
+        // First time this session — play the full animation, then remember it
+        setTimeout(function () {
+            introScreen.classList.add("hide-intro");
+            mainHome.classList.add("show-home");
+        }, 2200);
+        sessionStorage.setItem("introShown", "true");
+    }
 </script>
 
 {% endblock %}

@@ -24,9 +24,13 @@
     
             {# hides link for plain members; real enforcement is in role_required() #}
             {% if user.member.role != 'member' %}
-                <a href="{% url 'dashboard' %}" style="color: white; text-decoration: none; margin-right: 20px; font-size: 14px;">Admin Dashboard</a>
+                <a href="{% url 'dashboard' %}" style="color: white; text-decoration: none; margin-right: 20px; font-size: 14px;">Manage Club</a>
             {% endif %}
-    
+            
+            {# only admins get account management access #}
+            {% if user.member.role == 'admin' %}
+                <a href="{% url 'user_management' %}" style="color: white; text-decoration: none; margin-right: 20px; font-size: 14px;">User Management</a>
+            {% endif %}    
             <form method="post" action="{% url 'logout' %}" style="display: inline;">
                 {% csrf_token %}
                 <button type="submit" style="background: none; border: none; color: #999; font-size: 14px; cursor: pointer; padding: 0; font-family: inherit;">

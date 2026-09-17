@@ -8,6 +8,7 @@ class Member(models.Model):
         ('officer', 'Officer'),
         ('president', 'President'),
         ('treasurer', 'Treasurer'),
+        ('admin', 'Admin'),
     ]
     # Links this profile to the login account; nullable so old rows still work
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
