@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 from django.contrib.auth import views as auth_views
 from members import views as member_views
 from django.views.generic import TemplateView
@@ -30,4 +30,5 @@ urlpatterns = [
     path('dashboard/', member_views.dashboard, name='dashboard'),
     path('users/', member_views.user_management, name='user_management'),
     path('users/delete/<int:user_id>/', member_views.delete_user, name='delete_user'),
+    path('', include('events.urls')),
 ]
