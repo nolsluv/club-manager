@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }}{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <div class="login-container" style="max-width: 480px;">
+        <h1>{{ heading }}</h1>
+
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {{ field.errors }}
+                </div>
+            {% endfor %}
+            <button type="submit">Save</button>
+        </form>
+
+        {# button lives here, but belongs to the form below via form="delete-form" #}
+        {% if event %}
+            <button type="submit" form="delete-form" class="danger"
+                    onclick="return confirm('Delete this event? This cannot be undone.');">
+                Delete event
+            </button>
+        {% endif %}
+
+        <p class="login-footer"><a href="{% url 'calendar' %}">Cancel</a></p>
+    </div>
+</div>
+
+{# separate form, outside, ran into issue where it was nested#}
+{% if event %}
+<form id="delete-form" method="post" action="{% url 'event_delete' event.pk %}">
+    {% csrf_token %}
+</form>
+{% endif %}
+{% endblock %}

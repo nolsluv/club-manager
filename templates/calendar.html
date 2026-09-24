@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Calendar{% endblock %}
+
+{% block content %}
+<div class="cal-wrap">
+
+    <div class="cal-head">
+        <!-- month navigation -->
+        <div class="cal-title">
+            <a class="cal-nav" href="?year={{ prev_m.year }}&month={{ prev_m.month }}">&larr;</a>
+            <h1>{{ month_label }}</h1>
+            <a class="cal-nav" href="?year={{ next_m.year }}&month={{ next_m.month }}">&rarr;</a>
+        </div>
+
+        {% if can_edit %}
+            <a class="login-button cal-add" href="{% url 'event_create' %}">+ Add event</a>
+        {% endif %}
+    </div>
+        <!-- scroll fun -->
+    <div class="cal-scroll">
+        <div class="cal-grid">
+                    <!-- loops to populate calendar -->
+            {% for d in weekdays %}
+                <div class="cal-dow">{{ d|upper }}</div>
+            {% endfor %}
+
+            {% for week in grid %}
+                {% for day in week %}
+                    <div class="cal-cell {% if not day.in_month %}out{% endif %} {% if day.is_today %}today{% endif %}">
+                        <div class="cal-day">{{ day.date.day }}</div>
+
+                        {% for e in day.events %}
+                            <div class="cal-event" title="{{ e.description }}">
+                                {{ e.date|time:"g:i A" }} {{ e.title }}
+                                {% if e.location %}<small>{{ e.location }}</small>{% endif %}
+                                {% if can_edit %}<a href="{% url 'event_edit' e.pk %}">edit</a>{% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
