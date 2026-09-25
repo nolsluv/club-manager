@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
 class Member(models.Model):
     ROLE_CHOICES = [
         ('member', 'General Member'),
@@ -22,3 +21,18 @@ class Member(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+class Club(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    leader = models.ForeignKey(
+        Member,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='clubs_led'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
