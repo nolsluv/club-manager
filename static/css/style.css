@@ -146,6 +146,25 @@ body {
     margin-bottom: 48px;
 }
 
+/* navbar */
+
+.nav-link {
+    color: #999;
+    font-weight: 400;
+    text-decoration: none;
+    margin-right: 28px;
+    font-size: 20px;
+}
+
+.active-nav {
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    margin-right: 28px;
+    font-size: 20px;
+}
+
+
 /* =========================
    Login Button
 ========================= */
@@ -497,32 +516,126 @@ body {
     color-scheme: dark;
 }
 
+
+
 /* =========================
    Flash Messages
 ========================= */
 
-.message {
-    padding: 14px 48px 0;
+.message-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.message-modal {
+    width: 620px;
+    min-height: 260px;
+    padding: 42px 50px;
+    background: #151515;
+    border: 1px solid #333;
+    border-radius: 22px;
+    text-align: center;
+
+    display: flex;
+    flex-direction: column;
+
+    animation: modalPop 0.35s ease;
+}
+
+@keyframes modalPop {
+    0% {
+        opacity: 0;
+        transform: scale(0.92) translateY(15px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.message-modal h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 24px;
+}
+
+.message-modal p {
+    margin-bottom: 0px;
+}
+
+/*GOT IT*/
+.message-modal button {
+    width: auto;
+    align-self: center;
+    margin-top: auto;
+
+    padding: 10px 28px;
+    border: 1px solid white;
+    border-radius: 24px;
+    background: white;
+    color: #111;
     font-size: 14px;
-    color: #999;
+    cursor: pointer;
+    font-family: inherit;
+
+    transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.3s ease;
 }
 
-.message.success {
-    color: #81c784;
+.message-modal button:hover {
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+    transform: translateY(-2px);
 }
 
-/* .message.error picks up existing .error color */
+/*for DELETE*/
+.delete-modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 55px;
+}
 
-@media (max-width: 768px) {
-    .cal-wrap {
-        padding: 24px 20px;
-    }
+/*CANCEL BUTTON*/
+.delete-modal-buttons button {
+    min-width: 120px;
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        transform 0.3s ease;
+}
 
-    .cal-title h1 {
-        font-size: 28px;
-    }
+.delete-modal-buttons button:hover {
+    transform: translateY(-2px);
+}
 
-    .message {
-        padding: 14px 20px 0;
-    }
+.delete-modal-buttons button:not(.delete-confirm-button):hover {
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+}
+
+
+/*DELETE CONFRIM BUTTON*/
+.delete-confirm-button {
+    background: #d85b5b !important;
+    color: white !important;
+    border: 1px solid #d85b5b !important;
+}
+
+.delete-confirm-button:hover {
+    background: transparent !important;
+    color: #ff6b6b !important;
+    border: 1px solid #ff6b6b !important;
+    transform: translateY(-2px);
 }
