@@ -70,3 +70,7 @@ def clubs(request):
     clubs = Club.objects.all()
 
     return render(request, 'clubs.html', {'clubs': clubs})
+
+def club_detail(request, club_id):
+    club = get_object_or_404(Club, id=club_id)
+    return render(request, 'club_detail.html', {'club': club})

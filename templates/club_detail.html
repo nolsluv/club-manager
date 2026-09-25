@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ club.name }}{% endblock %}
+
+{% block content %}
+<div class="club-detail-page">
+    <div class="club-detail-container">
+        <a href="{% url 'clubs' %}" class="back-link">← Back to Clubs</a>
+        <h1>{{ club.name }}</h1>
+        <div class="club-description">
+            <h2>About</h2>
+            <p>{{ club.description }}</p>
+        </div>
+        <div class="club-info">
+            <div class="club-info-item">
+                <h3>President</h3>
+                {% if club.leader %}
+                    <p>{{ club.leader.first_name }} {{ club.leader.last_name }}</p>
+                {% else %}
+                    <p>No leader assigned</p>
+                {% endif %}
+            </div>
+            <div class="club-info-item">
+                <h3>Members</h3>
+                <p>{{ club.members.count }} members</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

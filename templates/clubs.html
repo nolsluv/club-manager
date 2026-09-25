@@ -3,34 +3,40 @@
 
 {% block content %}
 <div class="login-page">
-    <div class="login-container" style="max-width: 900px;">
+    <div class="login-container" style="max-width: 1000px;">
         <h1>Clubs</h1>
 
-        <table style="width:100%; margin-top:28px; border-collapse: collapse; font-size: 16px;">
-            <tr style="text-align:left; color:#999;">
-                <th style="padding-bottom:14px;">Name</th>
-                <th style="padding-bottom:14px;">Description</th>
-                <th style="padding-bottom:14px;">President</th>
-                <th style="padding-bottom:14px;">Members</th>
+        <table class="clubs-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>President</th>
+                <th>Members</th>
             </tr>
+        </thead>
+        <tbody>
             {% for club in clubs %}
-            <tr style="border-top:1px solid #333;">
-                <td style="padding:16px 0;"><strong>{{ club.name }}</strong></td>
-                <td style="padding:16px 15px 16px 0;">{{ club.description }}</td>
-                <td style="padding:16px 15px 16px 0;">
+            <tr>
+                <td class="club-name">
+                    <a href="{% url 'club_detail' club.id %}">{{ club.name }}</a>
+                </td>
+                <td class="club-description">{{ club.short_description }}</td>
+                <td>
                     {% if club.leader %}
                         {{ club.leader.first_name }} {{ club.leader.last_name }}
                     {% else %}
                         No leader assigned
                     {% endif %}
                 </td>
-                <td style="padding:16px 0;">{{ club.members.count }}</td>
+                <td>{{ club.members.count }}</td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="4" style="padding: 30px; text-align:center;">No clubs found.</td>
+                <td colspan="4" class="no-clubs">No clubs found.</td>
             </tr>
             {% endfor %}
+        </tbody>
         </table>
     </div>
 </div>

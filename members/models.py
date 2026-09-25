@@ -24,6 +24,10 @@ class Member(models.Model):
 
 class Club(models.Model):
     name = models.CharField(max_length=100)
+    short_description = models.CharField(
+        max_length=200,
+        blank=True
+    )
     description = models.TextField(blank=True)
     leader = models.ForeignKey(
         Member,
