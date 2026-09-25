@@ -24,6 +24,10 @@ class Member(models.Model):
 
 class Club(models.Model):
     name = models.CharField(max_length=100)
+    short_description = models.CharField(
+        max_length=200,
+        blank=True
+    )
     description = models.TextField(blank=True)
     leader = models.ForeignKey(
         Member,
@@ -32,6 +36,13 @@ class Club(models.Model):
         blank=True,
         related_name='clubs_led'
     )
+
+    members = models.ManyToManyField(
+        Member, 
+        related_name='clubs', 
+        blank=True
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

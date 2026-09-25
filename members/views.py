@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from .forms import RegisterForm
-from .models import Member
+from .models import Member, Club
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from .decorators import role_required
@@ -64,3 +64,13 @@ def delete_user(request, user_id):
             target.delete()  # cascades to delete the linked Member row too
             messages.success(request, f"Deleted user {target.username}.")
     return redirect('user_management')
+
+@login_required
+def clubs(request):
+    clubs = Club.objects.all()
+
+    return render(request, 'clubs.html', {'clubs': clubs})
+
+def club_detail(request, club_id):
+    club = get_object_or_404(Club, id=club_id)
+    return render(request, 'club_detail.html', {'club': club})

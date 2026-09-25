@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Clubs{% endblock %}
+
+{% block content %}
+<div class="login-page">
+    <div class="login-container" style="max-width: 1000px;">
+        <h1>Clubs</h1>
+
+        <table class="clubs-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>President</th>
+                <th>Members</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for club in clubs %}
+            <tr>
+                <td class="club-name">
+                    <a href="{% url 'club_detail' club.id %}">{{ club.name }}</a>
+                </td>
+                <td class="club-description">{{ club.short_description }}</td>
+                <td>
+                    {% if club.leader %}
+                        {{ club.leader.first_name }} {{ club.leader.last_name }}
+                    {% else %}
+                        No leader assigned
+                    {% endif %}
+                </td>
+                <td>{{ club.members.count }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="no-clubs">No clubs found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

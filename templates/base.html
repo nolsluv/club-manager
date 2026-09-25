@@ -21,7 +21,7 @@
         <a href="{% url 'home' %}" style="color: white; text-decoration: none; font-weight: 500; font-size: 31px;">Club Manager</a>
         <div>
             <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active-nav{% else %}nav-link{% endif %}">Home</a>
-
+            <a href="{% url 'clubs' %}" style="color: #999; text-decoration: none; margin-right: 28px; font-size: 18px;">Clubs</a>
             <a href="{% url 'calendar' %}" class="{% if request.resolver_match.url_name == 'calendar' %}active-nav{% else %}nav-link{% endif %}">Calendar</a>
             {# hides link for plain members; real enforcement is in role_required() #}
             {% if user.member.role != 'member' %}
