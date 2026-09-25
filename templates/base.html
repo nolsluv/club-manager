@@ -43,9 +43,17 @@
     {% endif %}
 
     {% if messages %}
-        {% for message in messages %}
-            <p style="text-align:center;", class="message {{ message.tags }}">{{ message }}</p>
-        {% endfor %}
+    {% for message in messages %}
+        <div class="message-modal-overlay">
+            <div class="message-modal">
+                    <h2>SUCCESS</h2> 
+
+                    <p>{{ message }}</p>
+
+                <button type="button" onclick="this.closest('.message-modal-overlay').remove()">Got it</button>
+            </div>
+        </div>
+    {% endfor %}
     {% endif %}
 
     {% block content %}
