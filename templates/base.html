@@ -17,26 +17,24 @@
 <body>
 
     {% if user.is_authenticated %}
-    <nav style="padding: 28px 48px; border-bottom: 3px solid #333; display: flex; justify-content: space-between; align-items: center;">
-        <a href="{% url 'home' %}" style="color: white; text-decoration: none; font-weight: 500; font-size: 22px;">Club Manager</a>
+    <nav style="padding: 30px 52px; border-bottom: 3px solid #333; display: flex; justify-content: space-between; align-items: center;">
+        <a href="{% url 'home' %}" style="color: white; text-decoration: none; font-weight: 500; font-size: 31px;">Club Manager</a>
         <div>
-            <a href="{% url 'home' %}" style="color: #999; text-decoration: none; margin-right: 28px; font-size: 18px;">Home</a>
-
+            <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active-nav{% else %}nav-link{% endif %}">Home</a>
             <a href="{% url 'clubs' %}" style="color: #999; text-decoration: none; margin-right: 28px; font-size: 18px;">Clubs</a>
-
-            <a href="{% url 'calendar' %}" style="color: white; text-decoration: none; margin-right: 28px; font-size: 18px;">Calendar</a>
+            <a href="{% url 'calendar' %}" class="{% if request.resolver_match.url_name == 'calendar' %}active-nav{% else %}nav-link{% endif %}">Calendar</a>
             {# hides link for plain members; real enforcement is in role_required() #}
             {% if user.member.role != 'member' %}
-                <a href="{% url 'dashboard' %}" style="color: white; text-decoration: none; margin-right: 28px; font-size: 18px;">Manage Club</a>
+                <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active-nav{% else %}nav-link{% endif %}">Manage Club</a>
             {% endif %}
             
             {# only admins get account management access #}
             {% if user.member.role == 'admin' %}
-                <a href="{% url 'user_management' %}" style="color: white; text-decoration: none; margin-right: 28px; font-size: 18px;">User Management</a>
+                <a href="{% url 'user_management' %}" class="{% if request.resolver_match.url_name == 'user_management' %}active-nav{% else %}nav-link{% endif %}">User Management</a>
             {% endif %}    
             <form method="post" action="{% url 'logout' %}" style="display: inline;">
                 {% csrf_token %}
-                <button type="submit" style="background: none; border: none; color: #999; font-size: 18px; cursor: pointer; padding: 0; font-family: inherit;">
+                <button type="submit" style="background: none; border: none; color: #999; font-size: 20px; cursor: pointer; padding: 0; font-family: inherit;">
                     Log Out
                 </button>
             </form>
@@ -45,9 +43,17 @@
     {% endif %}
 
     {% if messages %}
-        {% for message in messages %}
-            <p style="text-align:center;", class="message {{ message.tags }}">{{ message }}</p>
-        {% endfor %}
+    {% for message in messages %}
+        <div class="message-modal-overlay">
+            <div class="message-modal">
+                    <h2>SUCCESS</h2> 
+
+                    <p>{{ message }}</p>
+
+                <button type="button" onclick="this.closest('.message-modal-overlay').remove()">Got it</button>
+            </div>
+        </div>
+    {% endfor %}
     {% endif %}
 
     {% block content %}

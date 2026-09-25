@@ -19,11 +19,10 @@
         </form>
 
         {# button lives here, but belongs to the form below via form="delete-form" #}
-        {% if event %}
-            <button type="submit" form="delete-form" class="danger"
-                    onclick="return confirm('Delete this event? This cannot be undone.');">
-                Delete event
-            </button>
+        {% if event %} 
+            <button type="button" class="danger" onclick="openDeleteModal()"> 
+             Delete event 
+            </button> 
         {% endif %}
 
         <p class="login-footer"><a href="{% url 'calendar' %}">Cancel</a></p>
@@ -36,4 +35,34 @@
     {% csrf_token %}
 </form>
 {% endif %}
+
+{% if event %}
+<div id="delete-modal" class="message-modal-overlay" style="display: none;">
+    <div class="message-modal">
+        <h2>DELETE EVENT?</h2>
+        <p>This event will be permanently removed from your calendar.</p>
+
+        <div class="delete-modal-buttons">
+            <button type="button" onclick="closeDeleteModal()">Cancel</button>
+
+            <button type="submit" form="delete-form" class="delete-confirm-button">
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+<script>
+    function openDeleteModal() {
+        document.getElementById("delete-modal").style.display = "flex";
+    }
+
+    function closeDeleteModal() {
+        document.getElementById("delete-modal").style.display = "none";
+    }
+</script>
+
+
 {% endblock %}

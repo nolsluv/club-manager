@@ -64,7 +64,7 @@ def event_create(request):
     form = EventForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
         form.save()
-        messages.success(request, "Event added.")
+        messages.success(request, "Your event has been successfully added to the calendar.")
         return redirect('calendar')
     return render(request, 'event_form.html', {'form': form, 'heading': 'Add event'})
 
@@ -75,7 +75,7 @@ def event_edit(request, pk):
     form = EventForm(request.POST or None, instance=event)
     if request.method == 'POST' and form.is_valid():
         form.save()
-        messages.success(request, "Event updated.")
+        messages.success(request, "Your event has been successfully updated.")
         return redirect('calendar')
     return render(request, 'event_form.html', {
         'form': form, 'heading': 'Edit event', 'event': event,
@@ -87,5 +87,5 @@ def event_edit(request, pk):
 def event_delete(request, pk):
     event = get_object_or_404(Event, pk=pk)
     event.delete()  # also deletes that event's RSVPs (CASCADE)
-    messages.success(request, "Event deleted.")
+    messages.success(request, "Your event has been successfully deleted.")
     return redirect('calendar')
