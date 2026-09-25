@@ -32,6 +32,13 @@ class Club(models.Model):
         blank=True,
         related_name='clubs_led'
     )
+
+    members = models.ManyToManyField(
+        Member, 
+        related_name='clubs', 
+        blank=True
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

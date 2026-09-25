@@ -22,6 +22,8 @@
         <div>
             <a href="{% url 'home' %}" style="color: #999; text-decoration: none; margin-right: 28px; font-size: 18px;">Home</a>
 
+            <a href="{% url 'clubs' %}" style="color: #999; text-decoration: none; margin-right: 28px; font-size: 18px;">Clubs</a>
+
             <a href="{% url 'calendar' %}" style="color: white; text-decoration: none; margin-right: 28px; font-size: 18px;">Calendar</a>
             {# hides link for plain members; real enforcement is in role_required() #}
             {% if user.member.role != 'member' %}

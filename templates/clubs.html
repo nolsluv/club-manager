@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Clubs{% endblock %}
+
+{% block content %}
+<div class="login-page">
+    <div class="login-container" style="max-width: 900px;">
+        <h1>Clubs</h1>
+
+        <table style="width:100%; margin-top:28px; border-collapse: collapse; font-size: 16px;">
+            <tr style="text-align:left; color:#999;">
+                <th style="padding-bottom:14px;">Name</th>
+                <th style="padding-bottom:14px;">Description</th>
+                <th style="padding-bottom:14px;">President</th>
+                <th style="padding-bottom:14px;">Members</th>
+            </tr>
+            {% for club in clubs %}
+            <tr style="border-top:1px solid #333;">
+                <td style="padding:16px 0;"><strong>{{ club.name }}</strong></td>
+                <td style="padding:16px 15px 16px 0;">{{ club.description }}</td>
+                <td style="padding:16px 15px 16px 0;">
+                    {% if club.leader %}
+                        {{ club.leader.first_name }} {{ club.leader.last_name }}
+                    {% else %}
+                        No leader assigned
+                    {% endif %}
+                </td>
+                <td style="padding:16px 0;">{{ club.members.count }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="padding: 30px; text-align:center;">No clubs found.</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+{% endblock %}
