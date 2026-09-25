@@ -146,6 +146,25 @@ body {
     margin-bottom: 48px;
 }
 
+/* navbar */
+
+.nav-link {
+    color: #999;
+    font-weight: 400;
+    text-decoration: none;
+    margin-right: 28px;
+    font-size: 20px;
+}
+
+.active-nav {
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    margin-right: 28px;
+    font-size: 20px;
+}
+
+
 /* =========================
    Login Button
 ========================= */
