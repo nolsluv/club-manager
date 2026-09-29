@@ -30,7 +30,7 @@
                     {% if u != request.user %}
                     <form method="post" action="{% url 'delete_user' u.id %}" onsubmit="return confirm('Delete {{ u.username }}?');">
                         {% csrf_token %}
-                        <button type="submit" style="width:auto; padding:8px 18px;">Remove</button>
+                        <button type="submit" class="remove-button">Remove</button>
                     </form>
                     {% endif %}
                 </td>
