@@ -654,7 +654,95 @@ body {
 .cal-event a:hover {
     color: var(--text);
 }
+.cal-event {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: #1c1c1c;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 6px 8px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    color: white;
+    font-family: "Manrope", sans-serif;
+    cursor: pointer;
+    overflow-wrap: anywhere;
+}
 
+.cal-event:hover {
+    border-color: #555;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+}
+
+.modal.open {
+    display: block;
+}
+
+.modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.modal-card {
+    position: relative;
+    max-width: 440px;
+    margin: 10vh auto 0;
+    background: #151515;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 32px;
+}
+
+.modal-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 22px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.modal-category {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: #777;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.modal-when { color: #999; margin-bottom: 12px; }
+.modal-desc { margin: 16px 0; line-height: 1.6; color: #ccc; }
+.modal-meta { font-size: 12px; color: #666; margin-top: 16px; }
+
+.modal-actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 20px;
+    border-top: 1px solid #333;
+    padding-top: 20px;
+}
+
+.modal-actions a { color: #999; text-decoration: none; }
+.modal-actions button.danger {
+    background: none;
+    border: none;
+    color: #e57373;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+}
 /* =========================
    Event Form Page
 ========================= */

@@ -8,18 +8,33 @@
         <!-- month navigation -->
         <div class="cal-title">
             <a class="cal-nav" href="?year={{ prev_m.year }}&month={{ prev_m.month }}">&larr;</a>
-            <h1>{{ month_label }}</h1>
+
+            <form method="get" class="cal-picker">
+                <select name="month" class="cal-select" onchange="this.form.submit()">
+                    {% for num, name in months %}
+                        <option value="{{ num }}" {% if num == month %}selected{% endif %}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+                <select name="year" class="cal-select" onchange="this.form.submit()">
+                    {% for y in years %}
+                        <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+
             <a class="cal-nav" href="?year={{ next_m.year }}&month={{ next_m.month }}">&rarr;</a>
+            <a class="cal-nav" href="{% url 'calendar' %}" style="font-size: 14px;">Today</a>
         </div>
 
         {% if can_edit %}
             <a class="login-button cal-add" href="{% url 'event_create' %}">+ Add event</a>
         {% endif %}
     </div>
-        <!-- scroll fun -->
+
+    <!-- scroll fun -->
     <div class="cal-scroll">
         <div class="cal-grid">
-                    <!-- loops to populate calendar -->
+            <!-- loops to populate calendar -->
             {% for d in weekdays %}
                 <div class="cal-dow">{{ d|upper }}</div>
             {% endfor %}
@@ -30,11 +45,23 @@
                         <div class="cal-day">{{ day.date.day }}</div>
 
                         {% for e in day.events %}
-                            <div class="cal-event" title="{{ e.description }}">
+                            <button
+                                type="button"
+                                class="cal-event"
+                                data-title="{{ e.title }}"
+                                data-category="{{ e.get_category_display }}"
+                                data-when="{{ e.date|date:'l, F j' }} · {{ e.date|time:'g:i A' }}{% if e.end_date %} – {{ e.end_date|time:'g:i A' }}{% endif %}"
+                                data-location="{{ e.location }}"
+                                data-description="{{ e.description }}"
+                                data-capacity="{{ e.capacity|default:'' }}"
+                                data-contact="{{ e.contact_email }}"
+                                data-creator="{{ e.created_by|default:'' }}"
+                                data-edit-url="{% url 'event_edit' e.pk %}"
+                                data-delete-url="{% url 'event_delete' e.pk %}"
+                                data-can-modify="{% if is_admin or e.created_by_id == current_member_id %}1{% else %}0{% endif %}"
+                            >
                                 {{ e.date|time:"g:i A" }} {{ e.title }}
-                                {% if e.location %}<small>{{ e.location }}</small>{% endif %}
-                                {% if can_edit %}<a href="{% url 'event_edit' e.pk %}">edit</a>{% endif %}
-                            </div>
+                            </button>
                         {% endfor %}
                     </div>
                 {% endfor %}
@@ -43,4 +70,79 @@
     </div>
 
 </div>
+
+<!-- one shared modal, filled in by JS -->
+<div id="event-modal" class="modal">
+    <div class="modal-backdrop" onclick="closeModal()"></div>
+    <div class="modal-card">
+        <button type="button" class="modal-close" onclick="closeModal()">&times;</button>
+
+        <p class="modal-category" id="m-category"></p>
+        <h2 id="m-title"></h2>
+        <p class="modal-when" id="m-when"></p>
+        <p id="m-location"></p>
+        <p class="modal-desc" id="m-description"></p>
+        <p id="m-capacity"></p>
+        <p id="m-contact"></p>
+        <p class="modal-meta" id="m-creator"></p>
+
+        <div class="modal-actions" id="m-actions">
+            <a id="m-edit-link" href="#">Edit</a>
+            <form id="m-delete-form" method="post" action=""
+                  onsubmit="return confirm('Delete this event?');">
+                {% csrf_token %}
+                <button type="submit" class="danger">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById('event-modal');
+
+    // one click handler on the grid, works for every event button
+    document.querySelector('.cal-grid').addEventListener('click', function (e) {
+        const btn = e.target.closest('.cal-event');
+        if (!btn) return;
+
+        document.getElementById('m-category').textContent = btn.dataset.category;
+        document.getElementById('m-title').textContent = btn.dataset.title;
+        document.getElementById('m-when').textContent = btn.dataset.when;
+
+        setField('m-location', btn.dataset.location, '📍 ');
+        setField('m-description', btn.dataset.description);
+        setField('m-capacity', btn.dataset.capacity, 'Capacity: ');
+        setField('m-contact', btn.dataset.contact, 'Contact: ');
+        setField('m-creator', btn.dataset.creator, 'Added by ');
+
+        const actions = document.getElementById('m-actions');
+        if (btn.dataset.canModify === '1') {
+            actions.style.display = 'flex';
+            document.getElementById('m-edit-link').href = btn.dataset.editUrl;
+            document.getElementById('m-delete-form').action = btn.dataset.deleteUrl;
+        } else {
+            actions.style.display = 'none';
+        }
+
+        modal.classList.add('open');
+    });
+
+    function setField(id, value, prefix = '') {
+        const el = document.getElementById(id);
+        if (value) {
+            el.textContent = prefix + value;
+            el.style.display = 'block';
+        } else {
+            el.style.display = 'none';
+        }
+    }
+
+    function closeModal() {
+        modal.classList.remove('open');
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeModal();
+    });
+</script>
 {% endblock %}
