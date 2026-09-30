@@ -24,12 +24,13 @@
             <a href="{% url 'clubs' %}" class="{% if request.resolver_match.url_name == 'clubs' %}active-nav{% else %}nav-link{% endif %}">Clubs</a>
             <a href="{% url 'calendar' %}" class="{% if request.resolver_match.url_name == 'calendar' %}active-nav{% else %}nav-link{% endif %}">Calendar</a>
             {# hides link for plain members; real enforcement is in role_required() #}
-            {% if user.member.role != 'member' %}
-                <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active-nav{% else %}nav-link{% endif %}">Manage Club</a>
+            {% if user.member.role != 'member' and user.member.role != 'admin' %}
+                <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active-nav{% else %}nav-link{% endif %}">My Clubs</a>
             {% endif %}
             
             {# only admins get account management access #}
             {% if user.member.role == 'admin' %}
+                <a href="{% url 'club_requests' %}" class="{% if request.resolver_match.url_name == 'club_requests' %}active-nav{% else %}nav-link{% endif %}">Club Requests</a>
                 <a href="{% url 'user_management' %}" class="{% if request.resolver_match.url_name == 'user_management' %}active-nav{% else %}nav-link{% endif %}">User Management</a>
             {% endif %}    
             <form method="post" action="{% url 'logout' %}" style="display: inline;">
@@ -59,7 +60,7 @@
     {% for message in messages %}
         <div class="message-modal-overlay">
             <div class="message-modal">
-                    <h2>SUCCESS</h2> 
+                <h2>{{ message.tags|upper }}</h2>
 
                     <p>{{ message }}</p>
 

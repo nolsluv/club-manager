@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Club Requests{% endblock %}
+
+{% block content %}
+<div class="login-page">
+    <div class="login-container" style="max-width: 800px;">
+        <h1>Club requests</h1>
+        <p class="cm-muted">{{ pending|length }} pending</p>
+
+        <div class="cm-section" style="margin-top: 24px;">
+            {% for club in pending %}
+            <div class="cm-card">
+                <h3>{{ club.name }}</h3>
+                <div class="cm-muted">
+                    Requested by {{ club.leader.first_name }} {{ club.leader.last_name }}
+                    · {{ club.created_at|date:"M j, Y" }}
+                </div>
+
+                {% if club.short_description %}
+                    <p style="margin: 14px 0 0;">{{ club.short_description }}</p>
+                {% endif %}
+
+                <form method="post" action="{% url 'review_club' club.id %}" class="cm-actions">
+                    {% csrf_token %}
+                    <input type="text" name="reason" class="cm-inline-input" placeholder="Reason if rejecting (optional)">
+                    <button type="submit" name="action" value="reject" class="cm-btn cm-btn-danger">Reject</button>
+                    <button type="submit" name="action" value="approve" class="cm-btn cm-btn-primary">Approve</button>
+                </form>
+            </div>
+            {% empty %}
+            <div class="cm-card">
+                <p class="cm-muted" style="margin:0;">No pending requests. 🎉</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

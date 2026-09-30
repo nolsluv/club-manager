@@ -9,6 +9,9 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.db.models import Q, Count
+from django.http import Http404
+from django.utils import timezone
+from .forms import RegisterForm, ClubRequestForm
 
 
 def register(request):
@@ -71,9 +74,10 @@ def clubs(request):
     search = request.GET.get("search", "")
     members_filter = request.GET.get("members", "")
     sort = request.GET.get("sort", "az")
-    clubs = Club.objects.annotate(
-        member_count=Count("members")
-    )
+    clubs = (Club.objects
+             .filter(status=Club.Status.APPROVED)
+             .select_related("leader")
+             .annotate(member_count=Count("members")))
 
     # Search by club name or description
     if search:
@@ -109,6 +113,71 @@ def clubs(request):
         "sort": sort,
     })
 
+@login_required
 def club_detail(request, club_id):
     club = get_object_or_404(Club, id=club_id)
+    if club.status != Club.Status.APPROVED:
+        #pending or rejected clubs only visible to creater and admin
+        member = request.user.member
+        if not (member.role == 'admin' or club.leader_id == member.id):
+            return Http404
     return render(request, 'club_detail.html', {'club': club})
+
+@role_required('officer', 'president', 'treasurer', 'admin')
+def dashboard(request): #dictates who is allowed to submit a request, and view a request
+    member = request.user.member
+    can_request = member.role in ('president', 'admin')
+    form = ClubRequestForm()
+
+    if request.method == 'POST' and can_request:
+        form = ClubRequestForm(request.POST)
+        if form.is_valid():
+            club = form.save(commit=False)
+            club.leader = member          # requester becomes the club's leader
+            club.save()                   # status defaults to pending
+            messages.success(request, f"'{club.name}' submitted for admin approval.")
+            return redirect('dashboard')
+    #organize my clubs
+    my_clubs = Club.objects.filter(leader=member).order_by('-created_at')
+    members = Member.objects.all().order_by('last_name')
+    return render(request, 'dashboard.html', {
+        'members': members,
+        'form': form,
+        'my_clubs': my_clubs,
+        'can_request': can_request,
+    })
+
+# only admin accountsa re allowed to view club creation requests
+@role_required('admin')
+def club_requests(request):
+    pending = (Club.objects
+               .filter(status=Club.Status.PENDING)
+               .select_related('leader')
+               .order_by('created_at'))
+    return render(request, 'club_requests.html', {'pending': pending})
+
+#only admin accounts can approve or deny reqquests
+@role_required('admin')
+def review_club(request, club_id):
+    if request.method == 'POST':
+        # only pending clubs match, so a double-click can't re-review
+        club = get_object_or_404(Club, id=club_id, status=Club.Status.PENDING)
+        action = request.POST.get('action')
+
+        if action == 'approve':
+            club.status = Club.Status.APPROVED
+            messages.success(request, f"Approved '{club.name}'.")
+        elif action == 'reject':
+            club.status = Club.Status.REJECTED
+            club.rejection_reason = request.POST.get('reason', '').strip()
+            messages.success(request, f"Rejected '{club.name}'.")
+        else:
+            return redirect('club_requests')
+
+        club.reviewed_by = request.user.member
+        club.reviewed_at = timezone.now()
+        club.save()
+
+        if club.status == Club.Status.APPROVED and club.leader:
+            club.members.add(club.leader)   # leader is the first member
+    return redirect('club_requests')
