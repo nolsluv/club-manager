@@ -18,10 +18,10 @@
 
     {% if user.is_authenticated %}
     <nav style="padding: 30px 52px; border-bottom: 3px solid #333; display: flex; justify-content: space-between; align-items: center;">
-        <a href="{% url 'home' %}" style="color: white; text-decoration: none; font-weight: 500; font-size: 31px;">Club Manager</a>
+        <button type="button" class="brand-button" onclick="openSideMenu()">Club Manager</button>
         <div>
             <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active-nav{% else %}nav-link{% endif %}">Home</a>
-            <a href="{% url 'clubs' %}" style="color: #999; text-decoration: none; margin-right: 28px; font-size: 18px;">Clubs</a>
+            <a href="{% url 'clubs' %}" class="{% if request.resolver_match.url_name == 'clubs' %}active-nav{% else %}nav-link{% endif %}">Clubs</a>
             <a href="{% url 'calendar' %}" class="{% if request.resolver_match.url_name == 'calendar' %}active-nav{% else %}nav-link{% endif %}">Calendar</a>
             {# hides link for plain members; real enforcement is in role_required() #}
             {% if user.member.role != 'member' %}
@@ -40,6 +40,19 @@
             </form>
         </div>
     </nav>
+
+    <div id="side-overlay" class="side-overlay" onclick="closeSideMenu()"></div>
+
+    <div id="side-menu" class="side-menu">
+        <button type="button" class="side-close" onclick="closeSideMenu()">×</button>
+
+        <h2>Club Manager</h2>
+
+        <button type="button" id="theme-toggle" class="theme-toggle" onclick="toggleTheme()">
+            Switch to Light Mode
+        </button>
+    </div>
+
     {% endif %}
 
     {% if messages %}
@@ -58,6 +71,46 @@
 
     {% block content %}
     {% endblock %}
+
+
+    <script>
+    function openSideMenu() {
+        document.getElementById("side-menu").classList.add("open");
+        document.getElementById("side-overlay").classList.add("show");
+    }
+
+    function closeSideMenu() {
+        document.getElementById("side-menu").classList.remove("open");
+        document.getElementById("side-overlay").classList.remove("show");
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle("light-mode");
+
+        const button = document.getElementById("theme-toggle");
+
+        if (document.body.classList.contains("light-mode")) {
+            button.textContent = "Switch to Dark Mode";
+            localStorage.setItem("theme", "light");
+        } else {
+            button.textContent = "Switch to Light Mode";
+            localStorage.setItem("theme", "dark");
+        }
+    }
+
+    window.addEventListener("DOMContentLoaded", function () {
+        const savedTheme = localStorage.getItem("theme");
+        const button = document.getElementById("theme-toggle");
+
+        if (savedTheme === "light") {
+            document.body.classList.add("light-mode");
+
+            if (button) {
+                button.textContent = "Switch to Dark Mode";
+            }
+        }
+    });
+    </script>
 
 </body>
 </html>
