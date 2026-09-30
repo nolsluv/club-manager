@@ -964,13 +964,15 @@ body.light-mode .intro-home .login-button:hover {
 
 .club-search-form {
     display: flex;
+    align-items: center;
     gap: 10px;
     margin-top: 10px;
-    margin-bottom: 24px
+    margin-bottom: 28px
 }
 
 .club-search-input {
     flex: 1;
+    min-width: 180px;
     padding: 12px 14px;
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -990,6 +992,28 @@ body.light-mode .intro-home .login-button:hover {
     border-color: var(--text);
 }
 
+.club-filter {
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    font-family: "Manrope", sans-serif;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.club-filter:focus {
+    border-color: var(--text);
+}
+
+.club-filter option {
+    background: var(--surface);
+    color: var(--text);
+}
+
 .club-search-button {
     width: auto !important;
     padding: 12px 22px !important;
@@ -1001,11 +1025,31 @@ body.light-mode .intro-home .login-button:hover {
     font-size: 14px;
     font-family: "Manrope", sans-serif;
     cursor: pointer;
+    white-space: nowrap;
     transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .club-search-button:hover {
     background: transparent;
     color: var(--text);
+    border-color: var(--text);
+}
+
+.club-reset-button {
+    padding: 12px 22px;
+    border: 1px solid var(--border);
+    border-radius: 25px;
+    background: transparent;
+    color: var(--text);
+    font-size: 14px;
+    font-family: "Manrope", sans-serif;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.club-rest-button:hover {
+    background: var(--text);
+    color: var(--bg);
     border-color: var(--text);
 }

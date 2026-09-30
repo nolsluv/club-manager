@@ -16,7 +16,44 @@
                 value="{{ search }}"
                 class="club-search-input"
             >
+            
+            <!-- Member Filter -->
+            <select name="members" class="club-filter">
+                <option value="" {% if members_filter == "" %}selected{% endif %}>
+                    Any number of members
+                </option>
+                <option value="1-10" {% if members_filter == "1-10" %}selected{% endif %}>
+                    1-10 members
+                </option>
+                <option value="11-25" {% if members_filter == "11-25" %}selected{% endif %}>
+                    11-25 members
+                </option>
+                <option value="26-50" {% if members_filter == "26-50" %}selected{% endif %}>
+                    26-50 members
+                </option>
+                <option value="50+" {% if members_filter == "50+" %}selected{% endif %}>
+                    50+ members
+                </option>
+            </select>
+
+            <!-- A to Z Filter -->
+            <select name="sort" class="club-filter">
+                <option value="az" {% if sort == "az" %}selected{% endif %}>
+                    A-Z
+                </option>
+                <option value="za" {% if sort == "za" %}selected{% endif %}>
+                    Z-A
+                </option>
+                <option value="most" {% if sort == "most" %}selected{% endif %}>
+                    Most members
+                </option>
+                <option value="least" {% if sort == "least" %}selected{% endif %}>
+                    Fewest members
+                </option>
+            </select>
+
             <button type="submit" class="club-search-button">Search</button>
+            <a href="{% url 'clubs' %}" class="club-reset-button">Reset</a>
         </form>
 
         <table class="clubs-table">
@@ -42,7 +79,7 @@
                         No leader assigned
                     {% endif %}
                 </td>
-                <td>{{ club.members.count }}</td>
+                <td>{{ club.member_count }}</td>
             </tr>
             {% empty %}
             <tr>
