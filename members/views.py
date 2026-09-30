@@ -8,6 +8,7 @@ from .decorators import role_required
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
+from django.db.models import Q
 
 
 def register(request):
@@ -67,9 +68,16 @@ def delete_user(request, user_id):
 
 @login_required
 def clubs(request):
+    search = request.GET.get("search", "")
     clubs = Club.objects.all()
 
-    return render(request, 'clubs.html', {'clubs': clubs})
+    if search:
+        clubs = clubs.filter(
+            Q(name__icontains=search) |
+            Q(short_description__icontains=search)
+        )
+
+    return render(request, "clubs.html", {"clubs": clubs, "search": search})
 
 def club_detail(request, club_id):
     club = get_object_or_404(Club, id=club_id)

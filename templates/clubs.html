@@ -6,6 +6,19 @@
     <div class="login-container" style="max-width: 1000px;">
         <h1>Clubs</h1>
 
+        <!-- Search Bar -->
+
+        <form method="GET" action="{% url 'clubs' %}" class="club-search-form">
+            <input
+                type="text"
+                name="search"
+                placeholder="Search clubs..."
+                value="{{ search }}"
+                class="club-search-input"
+            >
+            <button type="submit" class="club-search-button">Search</button>
+        </form>
+
         <table class="clubs-table">
         <thead>
             <tr>
@@ -33,7 +46,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="4" class="no-clubs">No clubs found.</td>
+                <td colspan="4" class="no-clubs">No clubs found{% if search %} matching "{{ search }}"{% endif %}.</td>
             </tr>
             {% endfor %}
         </tbody>
