@@ -3,25 +3,63 @@
 
 {% block content %}
 <div class="login-page">
-    <div class="login-container" style="max-width: 900px;">
+    <div class="login-container" style="max-width: 800px;">
         <h1>Club Dashboard</h1>
 
-        <table style="width:100%; margin-top:28px; border-collapse: collapse; font-size: 16px;">
-            <tr style="text-align:left; color:#999;">
-                <th style="padding-bottom:14px;">Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-            </tr>
-            {% for member in members %}
-            <tr style="border-top:1px solid #333;">
-                <td style="padding:16px 0;">{{ member.first_name }} {{ xmember.last_name }}</td>
-                <td style="padding:16px 0;">{{ member.email }}</td>
-                <td style="padding:16px 0;">{{ member.get_role_display }}</td>
-                <td style="padding:16px 0;">{{ member.is_active|yesno:"Active,Inactive" }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+        {% if can_request %}
+        {#club presidents can submit a request to create a club, which is saved as status="Pending"}
+        <div class="cm-section">
+            <h2>Request a new club</h2>
+            <form method="post" class="cm-card">
+                {% csrf_token %}
+
+                <div class="cm-field">
+                    <label for="{{ form.name.id_for_label }}">Club name</label>
+                    {{ form.name }}
+                    {% for error in form.name.errors %}<div class="cm-error">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div class="cm-field">
+                    <label for="{{ form.short_description.id_for_label }}">Short description</label>
+                    {{ form.short_description }}
+                    {% for error in form.short_description.errors %}<div class="cm-error">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div class="cm-field">
+                    <label for="{{ form.description.id_for_label }}">Full description (optional)</label>
+                    {{ form.description }}
+                </div>
+
+                <button type="submit" class="cm-btn cm-btn-primary">Submit for approval</button>
+            </form>
+        </div>
+        {% endif %}
+
+        <div class="cm-section">
+            <h2>My club requests</h2>
+            <div class="cm-card">
+                {% for club in my_clubs %}
+                <div class="cm-row">
+                    <div>
+                        {% if club.status == 'approved' %}
+                            <a href="{% url 'club_detail' club.id %}">{{ club.name }}</a>
+                        {% else %}
+                            <strong>{{ club.name }}</strong>
+                        {% endif %}
+                        <div class="cm-muted">
+                            Submitted {{ club.created_at|date:"M j, Y" }}
+                            {% if club.status == 'rejected' and club.rejection_reason %}
+                                · {{ club.rejection_reason }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <span class="cm-pill cm-pill-{{ club.status }}">{{ club.get_status_display }}</span>
+                </div>
+                {% empty %}
+                <p class="cm-muted" style="margin:0;">You haven't requested any clubs yet.</p>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

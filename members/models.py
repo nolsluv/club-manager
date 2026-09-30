@@ -22,13 +22,20 @@ class Member(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
-class Club(models.Model):
-    name = models.CharField(max_length=100)
+class Club(models.Model):    
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        APPROVED = "approved", "Approved"
+        REJECTED = "rejected", "Rejected"
+
+    name = models.CharField(max_length=100, unique=True)
+
     short_description = models.CharField(
         max_length=200,
         blank=True
     )
     description = models.TextField(blank=True)
+
     leader = models.ForeignKey(
         Member,
         on_delete=models.SET_NULL,
@@ -44,6 +51,17 @@ class Club(models.Model):
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    status = models.CharField(
+        max_length=10, choices=Status.choices,
+        default=Status.PENDING, db_index=True,
+    )
+    reviewed_by = models.ForeignKey(
+        Member, null=True, blank=True,
+        on_delete=models.SET_NULL, related_name="+",
+    )
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    rejection_reason = models.TextField(blank=True)
 
     def __str__(self):
         return self.name

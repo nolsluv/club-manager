@@ -1141,3 +1141,81 @@ body.light-mode .intro-home .login-button:hover {
     color: var(--bg);
     border-color: var(--text);
 }
+
+/*===========================================
+------------- Club request pages ------------
+=============================================*/
+
+.cm-section { margin-top: 40px; }
+.cm-section h2 { font-size: 20px; font-weight: 600; margin: 0 0 14px; }
+
+.cm-card {
+    border: 1px solid rgba(128, 128, 128, 0.3);
+    border-radius: 12px;
+    padding: 22px 26px;
+}
+.cm-card + .cm-card { margin-top: 14px; }
+.cm-card h3 { margin: 0 0 4px; font-size: 18px; }
+
+.cm-muted { opacity: 0.6; font-size: 14px; }
+
+/* form */
+.cm-field { margin-bottom: 16px; }
+.cm-field label { display: block; font-size: 14px; opacity: 0.7; margin-bottom: 6px; }
+.cm-field input[type="text"],
+.cm-field textarea,
+.cm-inline-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(128, 128, 128, 0.4);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+}
+.cm-field textarea { min-height: 90px; resize: vertical; }
+.cm-error { color: #e5484d; font-size: 14px; margin-top: 6px; }
+
+/* buttons */
+.cm-btn {
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: 1px solid rgba(128, 128, 128, 0.4);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+.cm-btn:hover { background: rgba(128, 128, 128, 0.12); }
+.cm-btn-primary { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+.cm-btn-primary:hover { background: #2f6fd8; }
+.cm-btn-danger { color: #e5484d; border-color: rgba(229, 72, 77, 0.5); }
+
+/* request list rows */
+.cm-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    border-top: 1px solid rgba(128, 128, 128, 0.25);
+}
+.cm-row:first-child { border-top: none; padding-top: 0; }
+.cm-row a { color: inherit; font-weight: 600; }
+
+/* status pills */
+.cm-pill {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.cm-pill-pending  { background: rgba(217, 154, 0, 0.18); color: #d99a00; }
+.cm-pill-approved { background: rgba(47, 168, 102, 0.18); color: #2fa866; }
+.cm-pill-rejected { background: rgba(229, 72, 77, 0.18); color: #e5484d; }
+
+/* admin approve/reject row */
+.cm-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 18px; }
+.cm-actions .cm-inline-input { flex: 1; min-width: 180px; width: auto; }
