@@ -15,7 +15,7 @@
             </tr>
             {% for member in members %}
             <tr style="border-top:1px solid #333;">
-                <td style="padding:16px 0;">{{ member.first_name }} {{ member.last_name }}</td>
+                <td style="padding:16px 0;">{{ member.first_name }} {{ xmember.last_name }}</td>
                 <td style="padding:16px 0;">{{ member.email }}</td>
                 <td style="padding:16px 0;">{{ member.get_role_display }}</td>
                 <td style="padding:16px 0;">{{ member.is_active|yesno:"Active,Inactive" }}</td>
