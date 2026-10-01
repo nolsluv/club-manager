@@ -481,8 +481,8 @@ body {
     padding: 8px 18px;
     border-radius: 22px;
     border: 1px solid var(--text);
-    background: var(--surface);
-    color: var(--text);
+    background: var(--text);
+    color: var(--bg);   
     font-family: inherit;
     cursor: pointer;
 
@@ -490,16 +490,32 @@ body {
         background 0.3s ease,
         color 0.3s ease,
         border-color 0.3s ease,
-        transform 0.3s ease;
 }
 
 .login-container .remove-button:hover {
-    background: var(--text);
-    color: var(--bg);
+    background: transparent;
+    color: var(--text);
     border-color: var(--text);
-    transform: translateY(-2px);
 }
 
+/*create user*/
+.login-container > .login-button {
+    background: var(--text);
+    color: var(--bg);
+    border: 1px solid var(--text);
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+    
+}
+
+.login-container > .login-button:hover {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--text);
+}
 
 
 /* =========================
@@ -628,6 +644,23 @@ body {
 .cal-add {
     padding: 10px 26px;
     font-size: 14px;
+
+    background: var(--text);
+    color: var(--bg);
+    border: 1px solid var(--text);
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        transform 0.3s ease;
+}
+
+.cal-add:hover {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--text);
+    transform: translateY(-2px);
 }
 
 /* scrolls sideways on small screens instead of squishing the grid */
@@ -1208,40 +1241,55 @@ body.light-mode .intro-home .login-button:hover {
     width: auto !important;
     padding: 12px 22px !important;
     margin-top: 0 !important;
-    background: var(--button-bg);
-    color: var(--button-text);
-    border: 1px solid var(--button-bg);
+    background: var(--text);
+    color: var(--bg);
+    border: 1px solid var(--text);
     border-radius: 25px;
     font-size: 14px;
     font-family: "Manrope", sans-serif;
     cursor: pointer;
     white-space: nowrap;
-    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        transform 0.3s ease;
 }
 
 .club-search-button:hover {
     background: transparent;
     color: var(--text);
     border-color: var(--text);
+    transform: translateY(-2px);
 }
 
 .club-reset-button {
     padding: 12px 22px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--text);
     border-radius: 25px;
+
     background: transparent;
     color: var(--text);
+
     font-size: 14px;
     font-family: "Manrope", sans-serif;
     text-decoration: none;
     white-space: nowrap;
-    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        transform 0.3s ease;
 }
 
-.club-rest-button:hover {
+.club-reset-button:hover {
     background: var(--text);
     color: var(--bg);
     border-color: var(--text);
+    transform: translateY(-2px);
 }
 
 /*===========================================
