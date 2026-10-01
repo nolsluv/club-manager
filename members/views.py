@@ -117,11 +117,21 @@ def clubs(request):
 def club_detail(request, club_id):
     club = get_object_or_404(Club, id=club_id)
     if club.status != Club.Status.APPROVED:
-        #pending or rejected clubs only visible to creater and admin
         member = request.user.member
         if not (member.role == 'admin' or club.leader_id == member.id):
             return Http404
-    return render(request, 'club_detail.html', {'club': club})
+
+    member = request.user.member
+    is_member = club.members.filter(id=member.id).exists()
+    pending_request = MembershipRequest.objects.filter(
+        club=club, member=member, status=MembershipRequest.Status.PENDING
+    ).first()
+
+    return render(request, 'club_detail.html', {
+        'club': club,
+        'is_member': is_member,
+        'pending_request': pending_request,
+    })
 
 @role_required('officer', 'president', 'treasurer', 'admin')
 def dashboard(request): #dictates who is allowed to submit a request, and view a request
