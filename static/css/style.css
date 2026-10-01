@@ -489,17 +489,33 @@ body {
     transition:
         background 0.3s ease,
         color 0.3s ease,
-        border-color 0.3s ease,
-        transform 0.3s ease;
+        border-color 0.3s ease;
 }
 
 .login-container .remove-button:hover {
     background: var(--text);
     color: var(--bg);
     border-color: var(--text);
-    transform: translateY(-2px);
 }
 
+/*create user*/
+.login-container > .login-button {
+    background: var(--text);
+    color: var(--bg);
+    border: 1px solid var(--text);
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+    
+}
+
+.login-container > .login-button:hover {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--text);
+}
 
 
 /* =========================
@@ -547,13 +563,69 @@ body {
 .cal-title {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 12px;
 }
 
 .cal-title h1 {
     font-size: 38px;
     font-weight: 300;
     letter-spacing: -1px;
+}
+
+
+.cal-picker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cal-select {
+    appearance: none;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 500;
+    text-align: center;
+    text-align-last: center;
+    cursor: pointer;
+
+    transition:
+        border-color 0.3s ease,
+        background 0.3s ease,
+        color 0.3s ease,
+        transform 0.3s ease;
+}
+
+.cal-picker select[name="month"] {
+    min-width: 175px;
+}
+
+.cal-picker select[name="year"] {
+    min-width: 110px;
+}
+
+.cal-select:hover,
+.cal-select:focus {
+    outline: none;
+    border-color: var(--text);
+    transform: translateY(-2px);
+}
+
+.cal-today {
+    font-size: 14px;
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+}
+
+.cal-today:hover {
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
 }
 
 .cal-nav {
@@ -565,12 +637,30 @@ body {
 
 .cal-nav:hover {
     color: var(--text);
+    transform: translateY(-1px);
 }
 
 /* smaller version of .login-button for the "Add event" link */
 .cal-add {
     padding: 10px 26px;
     font-size: 14px;
+
+    background: var(--text);
+    color: var(--bg);
+    border: 1px solid var(--text);
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        transform 0.3s ease;
+}
+
+.cal-add:hover {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--text);
+    transform: translateY(-2px);
 }
 
 /* scrolls sideways on small screens instead of squishing the grid */
@@ -630,15 +720,31 @@ body {
 }
 
 .cal-event {
+    display: block;
+    width: 100%;
+    text-align: left;
+
     background: var(--surface-2);
     border: 1px solid var(--border);
     border-radius: 6px;
+
     padding: 6px 8px;
     margin-bottom: 6px;
+
     font-size: 12px;
     line-height: 1.4;
+    color: var(--text);
+
+    font-family: "Manrope", sans-serif;
+    cursor: pointer;
     overflow-wrap: anywhere;
 }
+
+
+.cal-event:hover {
+    border-color: var(--text);
+}
+
 
 .cal-event small {
     display: block;
@@ -654,35 +760,21 @@ body {
 .cal-event a:hover {
     color: var(--text);
 }
-.cal-event {
-    display: block;
-    width: 100%;
-    text-align: left;
-    background: #1c1c1c;
-    border: 1px solid #333;
-    border-radius: 6px;
-    padding: 6px 8px;
-    margin-bottom: 6px;
-    font-size: 12px;
-    color: white;
-    font-family: "Manrope", sans-serif;
-    cursor: pointer;
-    overflow-wrap: anywhere;
-}
 
-.cal-event:hover {
-    border-color: #555;
-}
+
 
 .modal {
     display: none;
     position: fixed;
     inset: 0;
     z-index: 2000;
+
+    align-items: center;
+    justify-content: center;
 }
 
 .modal.open {
-    display: block;
+    display: flex;
 }
 
 .modal-backdrop {
@@ -693,12 +785,13 @@ body {
 
 .modal-card {
     position: relative;
-    max-width: 440px;
-    margin: 10vh auto 0;
-    background: #151515;
-    border: 1px solid #333;
+    width: 90%;
+    max-width: 560px;
+    margin: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 32px;
+    padding: 36px 40px;
 }
 
 .modal-close {
@@ -707,7 +800,7 @@ body {
     right: 20px;
     background: none;
     border: none;
-    color: #999;
+    color: var(--muted);
     font-size: 22px;
     cursor: pointer;
     font-family: inherit;
@@ -721,19 +814,33 @@ body {
     margin-bottom: 8px;
 }
 
-.modal-when { color: #999; margin-bottom: 12px; }
-.modal-desc { margin: 16px 0; line-height: 1.6; color: #ccc; }
-.modal-meta { font-size: 12px; color: #666; margin-top: 16px; }
+.modal-when {
+    color: var(--muted);
+    margin-bottom: 12px;
+}
+
+.modal-desc {
+    margin: 16px 0;
+    line-height: 1.6;
+    color: var(--text);
+}
+
+.modal-meta {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 16px;
+}
+
 
 .modal-actions {
     display: flex;
     gap: 16px;
     margin-top: 20px;
-    border-top: 1px solid #333;
+    border-top: 1px solid var(--border);
     padding-top: 20px;
 }
 
-.modal-actions a { color: #999; text-decoration: none; }
+.modal-actions a {    color: var(--muted);; text-decoration: none; }
 .modal-actions button.danger {
     background: none;
     border: none;
@@ -766,6 +873,40 @@ body {
     font-family: "Manrope", sans-serif;
     resize: vertical;
 }
+
+
+.form-group select {
+    display: block;
+    width: 100%;
+    padding: 12px;
+
+    border: 1px solid var(--border);
+    border-radius: 6px;
+
+    background: var(--bg);
+    color: var(--text);
+
+    font-size: 14px;
+    font-family: "Manrope", sans-serif;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.3s ease,
+        background 0.3s ease,
+        color 0.3s ease;
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: var(--text);
+}
+
+.form-group select option {
+    background: var(--surface);
+    color: var(--text);
+}
+
 
 .form-group textarea:focus {
     outline: none;
@@ -942,6 +1083,38 @@ body.light-mode .form-group input[type="datetime-local"] {
     color: var(--muted);
     padding: 30px 0;
 }
+
+/*join club button*/
+
+.club-join-action .btn {
+    padding: 10px 22px;
+    border: 1px solid var(--text);
+    border-radius: 24px;
+
+    background: transparent;
+    color: var(--text);
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        transform 0.3s ease;
+}
+
+.club-join-action .btn:hover {
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+    transform: translateY(-2px);
+}
+
+
 /*=======================================*/
 
 
@@ -1106,40 +1279,55 @@ body.light-mode .intro-home .login-button:hover {
     width: auto !important;
     padding: 12px 22px !important;
     margin-top: 0 !important;
-    background: var(--button-bg);
-    color: var(--button-text);
-    border: 1px solid var(--button-bg);
+    background: var(--text);
+    color: var(--bg);
+    border: 1px solid var(--text);
     border-radius: 25px;
     font-size: 14px;
     font-family: "Manrope", sans-serif;
     cursor: pointer;
     white-space: nowrap;
-    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        transform 0.3s ease;
 }
 
 .club-search-button:hover {
     background: transparent;
     color: var(--text);
     border-color: var(--text);
+    transform: translateY(-2px);
 }
 
 .club-reset-button {
     padding: 12px 22px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--text);
     border-radius: 25px;
+
     background: transparent;
     color: var(--text);
+
     font-size: 14px;
     font-family: "Manrope", sans-serif;
     text-decoration: none;
     white-space: nowrap;
-    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        transform 0.3s ease;
 }
 
-.club-rest-button:hover {
+.club-reset-button:hover {
     background: var(--text);
     color: var(--bg);
     border-color: var(--text);
+    transform: translateY(-2px);
 }
 
 /*===========================================
