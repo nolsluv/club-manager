@@ -60,6 +60,28 @@
                 {% endfor %}
             </div>
         </div>
+
+        {% if pending_memberships %}
+        <div class="cm-section">
+            <h2>Pending Membership Requests</h2>
+            <div class="cm-card">
+                {% for req in pending_memberships %}
+                <div class="cm-row">
+                    <div>
+                        <strong>{{ req.member.first_name }} {{ req.member.last_name }}</strong>
+                        <div class="cm-muted">wants to join {{ req.club.name }} · {{ req.requested_at|date:"M j, Y" }}</div>
+                    </div>
+                    <form method="post" action="{% url 'review_membership' req.id %}" style="display: flex; gap: 8px;">
+                        {% csrf_token %}
+                        <button type="submit" name="action" value="approve" class="cm-btn cm-btn-primary">Approve</button>
+                        <button type="submit" name="action" value="reject" class="cm-btn">Reject</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
     </div>
 </div>
 {% endblock %}

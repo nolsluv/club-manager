@@ -24,6 +24,18 @@
                 <p>{{ club.members.count }} members</p>
             </div>
         </div>
+        <div class="club-join-action" style="margin-top: 30px;">
+            {% if is_member %}
+                <p style="color: #4caf50;">You're a member of this club.</p>
+            {% elif pending_request %}
+                <p style="color: #999;">Your request to join is pending approval.</p>
+            {% else %}
+                <form method="post" action="{% url 'request_membership' club.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn">Join Club</button>
+                </form>
+             {% endif %}
+        </div>
     </div>
 </div>
 

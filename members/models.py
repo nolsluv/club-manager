@@ -65,3 +65,35 @@ class Club(models.Model):
 
     def __str__(self):
         return self.name
+
+class MembershipRequest(models.Model):
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        APPROVED = "approved", "Approved"
+        REJECTED = "rejected", "Rejected"
+
+    member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='membership_requests')
+    club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name='membership_requests')
+
+    status = models.CharField(
+        max_length=10, choices=Status.choices,
+        default=Status.PENDING, db_index=True,
+    )
+    requested_at = models.DateTimeField(auto_now_add=True)
+    reviewed_by = models.ForeignKey(
+        Member, null=True, blank=True,
+        on_delete=models.SET_NULL, related_name="+",
+    )
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['member', 'club'],
+                condition=models.Q(status='pending'),
+                name='one_pending_request_per_member_per_club'
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.member} -> {self.club} ({self.status})"

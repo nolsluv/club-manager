@@ -24,7 +24,7 @@
             <a href="{% url 'clubs' %}" class="{% if request.resolver_match.url_name == 'clubs' %}active-nav{% else %}nav-link{% endif %}">Clubs</a>
             <a href="{% url 'calendar' %}" class="{% if request.resolver_match.url_name == 'calendar' %}active-nav{% else %}nav-link{% endif %}">Calendar</a>
             {# hides link for plain members; real enforcement is in role_required() #}
-            {% if user.member.role != 'member' and user.member.role != 'admin' %}
+            {% if user.member.role != 'member'%}
                 <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active-nav{% else %}nav-link{% endif %}">My Clubs</a>
             {% endif %}
             

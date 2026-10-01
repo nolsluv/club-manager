@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from .forms import RegisterForm
-from .models import Member, Club
+from .models import Member, Club, MembershipRequest
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from .decorators import role_required
@@ -117,14 +117,24 @@ def clubs(request):
 def club_detail(request, club_id):
     club = get_object_or_404(Club, id=club_id)
     if club.status != Club.Status.APPROVED:
-        #pending or rejected clubs only visible to creater and admin
         member = request.user.member
         if not (member.role == 'admin' or club.leader_id == member.id):
             return Http404
-    return render(request, 'club_detail.html', {'club': club})
+
+    member = request.user.member
+    is_member = club.members.filter(id=member.id).exists()
+    pending_request = MembershipRequest.objects.filter(
+        club=club, member=member, status=MembershipRequest.Status.PENDING
+    ).first()
+
+    return render(request, 'club_detail.html', {
+        'club': club,
+        'is_member': is_member,
+        'pending_request': pending_request,
+    })
 
 @role_required('officer', 'president', 'treasurer', 'admin')
-def dashboard(request): #dictates who is allowed to submit a request, and view a request
+def dashboard(request):
     member = request.user.member
     can_request = member.role in ('president', 'admin')
     form = ClubRequestForm()
@@ -133,18 +143,30 @@ def dashboard(request): #dictates who is allowed to submit a request, and view a
         form = ClubRequestForm(request.POST)
         if form.is_valid():
             club = form.save(commit=False)
-            club.leader = member          # requester becomes the club's leader
-            club.save()                   # status defaults to pending
+            club.leader = member
+            club.save()
             messages.success(request, f"'{club.name}' submitted for admin approval.")
             return redirect('dashboard')
-    #organize my clubs
+
     my_clubs = Club.objects.filter(leader=member).order_by('-created_at')
     members = Member.objects.all().order_by('last_name')
+
+    if member.role == 'admin':
+        pending_memberships = MembershipRequest.objects.filter(
+            status=MembershipRequest.Status.PENDING
+        ).select_related('member', 'club').order_by('requested_at')
+    else:
+        pending_memberships = MembershipRequest.objects.filter(
+            club__leader=member,
+            status=MembershipRequest.Status.PENDING
+        ).select_related('member', 'club').order_by('requested_at')
+
     return render(request, 'dashboard.html', {
         'members': members,
         'form': form,
         'my_clubs': my_clubs,
         'can_request': can_request,
+        'pending_memberships': pending_memberships,
     })
 
 # only admin accountsa re allowed to view club creation requests
@@ -181,3 +203,50 @@ def review_club(request, club_id):
         if club.status == Club.Status.APPROVED and club.leader:
             club.members.add(club.leader)   # leader is the first member
     return redirect('club_requests')
+
+@login_required
+def request_membership(request, club_id):
+    club = get_object_or_404(Club, id=club_id, status=Club.Status.APPROVED)
+    member = request.user.member
+
+    if request.method == 'POST':
+        if club.members.filter(id=member.id).exists():
+            messages.info(request, "You're already a member of this club.")
+        elif MembershipRequest.objects.filter(club=club, member=member, status=MembershipRequest.Status.PENDING).exists():
+            messages.info(request, "You already have a pending request for this club.")
+        else:
+            MembershipRequest.objects.create(club=club, member=member)
+            messages.success(request, f"Requested to join '{club.name}'.")
+
+    return redirect('club_detail', club_id=club.id)
+
+
+@role_required('officer', 'president', 'treasurer', 'admin')
+def review_membership(request, request_id):
+    if request.method == 'POST':
+        membership_request = get_object_or_404(
+            MembershipRequest, id=request_id, status=MembershipRequest.Status.PENDING
+        )
+        # only the club's leader (or an admin) can review its requests
+        reviewer = request.user.member
+        if membership_request.club.leader_id != reviewer.id and reviewer.role != 'admin':
+            messages.error(request, "You can't review requests for this club.")
+            return redirect('club_detail', club_id=membership_request.club.id)
+
+        action = request.POST.get('action')
+        if action == 'approve':
+            membership_request.status = MembershipRequest.Status.APPROVED
+            membership_request.club.members.add(membership_request.member)
+            messages.success(request, f"Approved {membership_request.member}.")
+        elif action == 'reject':
+            membership_request.status = MembershipRequest.Status.REJECTED
+            messages.success(request, f"Rejected {membership_request.member}.")
+
+        membership_request.reviewed_by = reviewer
+        membership_request.reviewed_at = timezone.now()
+        membership_request.save()
+
+        return redirect('club_detail', club_id=membership_request.club.id)
+
+    return redirect('home')
+
