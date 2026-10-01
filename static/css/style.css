@@ -1012,6 +1012,38 @@ body.light-mode .form-group input[type="datetime-local"] {
     color: var(--muted);
     padding: 30px 0;
 }
+
+/*join club button*/
+
+.club-join-action .btn {
+    padding: 10px 22px;
+    border: 1px solid var(--text);
+    border-radius: 24px;
+
+    background: transparent;
+    color: var(--text);
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        transform 0.3s ease;
+}
+
+.club-join-action .btn:hover {
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+    transform: translateY(-2px);
+}
+
+
 /*=======================================*/
 
 
