@@ -870,6 +870,40 @@ body {
     resize: vertical;
 }
 
+
+.form-group select {
+    display: block;
+    width: 100%;
+    padding: 12px;
+
+    border: 1px solid var(--border);
+    border-radius: 6px;
+
+    background: var(--bg);
+    color: var(--text);
+
+    font-size: 14px;
+    font-family: "Manrope", sans-serif;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.3s ease,
+        background 0.3s ease,
+        color 0.3s ease;
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: var(--text);
+}
+
+.form-group select option {
+    background: var(--surface);
+    color: var(--text);
+}
+
+
 .form-group textarea:focus {
     outline: none;
     border-color: var(--text);
