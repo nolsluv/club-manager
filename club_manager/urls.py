@@ -35,4 +35,6 @@ urlpatterns = [
     path('users/', member_views.user_management, name='user_management'),
     path('users/delete/<int:user_id>/', member_views.delete_user, name='delete_user'),
     path('', include('events.urls')),
+    path('clubs/<int:club_id>/join/', member_views.request_membership, name='request_membership'),
+    path('membership-requests/<int:request_id>/review/', member_views.review_membership, name='review_membership'),
 ]
