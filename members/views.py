@@ -237,3 +237,35 @@ def review_membership(request, request_id):
         return redirect('club_detail', club_id=membership_request.club.id)
 
     return redirect('home')
+
+@role_required('officer', 'president', 'treasurer', 'admin')
+def dashboard(request):
+    member = request.user.member
+    can_request = member.role in ('president', 'admin')
+    form = ClubRequestForm()
+
+    if request.method == 'POST' and can_request:
+        form = ClubRequestForm(request.POST)
+        if form.is_valid():
+            club = form.save(commit=False)
+            club.leader = member
+            club.save()
+            messages.success(request, f"'{club.name}' submitted for admin approval.")
+            return redirect('dashboard')
+
+    my_clubs = Club.objects.filter(leader=member).order_by('-created_at')
+    members = Member.objects.all().order_by('last_name')
+
+    # pending membership requests for clubs this person leads
+    pending_memberships = MembershipRequest.objects.filter(
+        club__leader=member,
+        status=MembershipRequest.Status.PENDING
+    ).select_related('member', 'club').order_by('requested_at')
+
+    return render(request, 'dashboard.html', {
+        'members': members,
+        'form': form,
+        'my_clubs': my_clubs,
+        'can_request': can_request,
+        'pending_memberships': pending_memberships,
+    })
