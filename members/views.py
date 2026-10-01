@@ -151,11 +151,15 @@ def dashboard(request):
     my_clubs = Club.objects.filter(leader=member).order_by('-created_at')
     members = Member.objects.all().order_by('last_name')
 
-    # pending membership requests for clubs this person leads
-    pending_memberships = MembershipRequest.objects.filter(
-        club__leader=member,
-        status=MembershipRequest.Status.PENDING
-    ).select_related('member', 'club').order_by('requested_at')
+    if member.role == 'admin':
+        pending_memberships = MembershipRequest.objects.filter(
+            status=MembershipRequest.Status.PENDING
+        ).select_related('member', 'club').order_by('requested_at')
+    else:
+        pending_memberships = MembershipRequest.objects.filter(
+            club__leader=member,
+            status=MembershipRequest.Status.PENDING
+        ).select_related('member', 'club').order_by('requested_at')
 
     return render(request, 'dashboard.html', {
         'members': members,
