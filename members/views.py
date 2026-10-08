@@ -74,6 +74,7 @@ def clubs(request):
     search = request.GET.get("search", "")
     members_filter = request.GET.get("members", "")
     sort = request.GET.get("sort", "az")
+
     clubs = (Club.objects
              .filter(status=Club.Status.APPROVED)
              .select_related("leader")
@@ -96,15 +97,16 @@ def clubs(request):
     elif members_filter == "50+":
         clubs = clubs.filter(member_count__gte=50)
 
-    # Sort Results
-    if sort == "za":
+    # Name sorting
+    if sort == "az":
+        clubs = clubs.order_by("name")
+    elif sort == "za":
         clubs = clubs.order_by("-name")
+    # Member count sorting
     elif sort == "most":
         clubs = clubs.order_by("-member_count", "name")
     elif sort == "least":
-        clubs = clubs.order_by("member_count", "name")
-    else:
-        clubs = clubs.order_by("name")
+        clubs = clubs.order_by("member_count")
 
     return render(request, "clubs.html", {
         "clubs": clubs, 

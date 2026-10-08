@@ -59,10 +59,36 @@
         <table class="clubs-table">
         <thead>
             <tr>
-                <th>Name</th>
+                <th>
+                    <span class="sort-header">
+                        Name
+                        <span class="sort-arrows">
+                            {% if sort == 'az' %}
+                            <a href="?search={{ search|urlencode }}&members={{ members_filter|urlencode }}&sort=za">▼</a>
+                            {% elif sort == 'za' %}
+                            <a href="?search={{ search|urlencode }}&members={{ members_filter|urlencode }}&sort=az">▲</a>
+                            {% else %}
+                            <a href="?search={{ search|urlencode }}&members={{ members_filter|urlencode }}&sort=az">▲</a>
+                            {% endif %}
+                        </span>
+                    </span>
+                </th>
                 <th>Description</th>
                 <th>President</th>
-                <th>Members</th>
+                <th>
+                    <span class="sort-header">
+                        Members
+                        <span class="sort-arrows">
+                            {% if sort == 'most' %}
+                            <a href="?search={{ search|urlencode }}&members={{ members_filter|urlencode }}&sort=least">▼</a>
+                            {% elif sort == 'least' %}
+                            <a href="?search={{ search|urlencode }}&members={{ members_filter|urlencode }}&sort=most">▲</a>
+                            {% else %}
+                            <a href="?search={{ search|urlencode }}&members={{ members_filter|urlencode }}&sort=most">▼</a>
+                            {% endif %}
+                        </span>
+                    </span>
+                </th>
             </tr>
         </thead>
         <tbody>
