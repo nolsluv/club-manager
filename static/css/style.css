@@ -379,10 +379,6 @@ body {
     border-color: var(--text);
 }
 
-
-
-
-
 /* =========================
    Login Page
 ========================= */
@@ -403,8 +399,6 @@ body {
         linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
         url("../images/background-intro.jpg") center/cover no-repeat;
 }
-
-
 
 .login-container {
     width: 100%;
@@ -471,7 +465,6 @@ body {
     border-color: var(--text);
 }
 
-
 /* =========================
    REMOVE button for USER MANAGEMENT
 ========================= */
@@ -517,12 +510,9 @@ body {
     border-color: var(--text);
 }
 
-
 /* =========================
    Form of Error Messages
 ========================= */
-
-
 
 .error,
 .errorlist {
@@ -531,7 +521,6 @@ body {
     text-align: left;
     line-height: 1.5;
 }
-
 
 .error {
     margin-bottom: 14px;
@@ -571,7 +560,6 @@ body {
     font-weight: 300;
     letter-spacing: -1px;
 }
-
 
 .cal-picker {
     display: flex;
@@ -740,11 +728,9 @@ body {
     overflow-wrap: anywhere;
 }
 
-
 .cal-event:hover {
     border-color: var(--text);
 }
-
 
 .cal-event small {
     display: block;
@@ -760,8 +746,6 @@ body {
 .cal-event a:hover {
     color: var(--text);
 }
-
-
 
 .modal {
     display: none;
@@ -850,6 +834,7 @@ body {
     cursor: pointer;
     padding: 0;
 }
+
 /* =========================
    Event Form Page
 ========================= */
@@ -873,7 +858,6 @@ body {
     font-family: "Manrope", sans-serif;
     resize: vertical;
 }
-
 
 .form-group select {
     display: block;
@@ -906,7 +890,6 @@ body {
     background: var(--surface);
     color: var(--text);
 }
-
 
 .form-group textarea:focus {
     outline: none;
@@ -1085,7 +1068,6 @@ body.light-mode .form-group input[type="datetime-local"] {
 }
 
 /*join club button*/
-
 .club-join-action .btn {
     padding: 10px 22px;
     border: 1px solid var(--text);
@@ -1114,11 +1096,7 @@ body.light-mode .form-group input[type="datetime-local"] {
     transform: translateY(-2px);
 }
 
-
 /*=======================================*/
-
-
-
 
 .message-modal h2 {
     font-size: 32px;
@@ -1186,7 +1164,6 @@ body.light-mode .form-group input[type="datetime-local"] {
     border: 1px solid var(--text);
 }
 
-
 /*DELETE CONFRIM BUTTON*/
 .delete-confirm-button {
     background: #d85b5b !important;
@@ -1217,7 +1194,6 @@ body.light-mode .intro-home .login-button:hover {
     color: #111 !important;
     border-color: white !important;
 }
-
 
 /* =========================
    Club Search
@@ -1328,6 +1304,38 @@ body.light-mode .intro-home .login-button:hover {
     color: var(--bg);
     border-color: var(--text);
     transform: translateY(-2px);
+}
+
+/* =========================
+   Club Sort Filters
+========================= */
+.sort-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.sort-arrows {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 8px;
+    margin-left: 2px;
+}
+
+.sort-arrows a,
+.sort-arrows a:visited,
+.sort-arrows a:active,
+.sort-arrows a:hover {
+    color: var(--muted) !important;
+    text-decoration: none !important;
+    display: inline-block;
+    line-height: 1;
+    font-size: 13px;
+    padding: 0;
+    margin: 0;
 }
 
 /*===========================================
