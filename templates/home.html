@@ -6,25 +6,75 @@ Home
 {% endblock %}
 
 {% block content %}
+<div class="login-page" id="main-home">
+    <div class="login-container home-container">
 
-<div id="main-home">
-    <div class="landing-content">
+        <header class="home-header">
+            <div>
+                <div class="home-eyebrow">DASHBOARD</div>
+                <h1>Welcome, {{ member.first_name }} {{ member.last_name }}</h1>
+            </div>
+            <span class="home-role">{{ member.get_role_display }}</span>
+        </header>
 
-        <p class="eyebrow">WELCOME BACK</p>
+        <div class="home-grid">
 
-        <h1>Hi, {{ user.username }}</h1>
+            <!-- My Clubs -->
+            <section class="home-card">
+                <div class="home-card-head">
+                    <h2>My Clubs</h2>
+                    <span class="home-count">{{ my_clubs|length }}</span>
+                </div>
 
-        <p class="subtitle">
-            You're logged in to Club Manager.
-        </p>
+                {% for club in my_clubs %}
+                <a href="{% url 'club_detail' club.id %}" class="home-club">
+                    <span>{{ club.name }}</span>
+                    <span class="home-arrow">→</span>
+                </a>
+                {% empty %}
+                <div class="home-empty">
+                    <p>You aren't in any clubs yet.</p>
+                    <a href="{% url 'clubs' %}" class="login-button home-cta">Join a Club</a>
+                </div>
+                {% endfor %}
+            </section>
 
+            <!-- Inbox (PLACEHOLDER) -->
+            <section class="home-card" id="inbox">
+                <div class="home-card-head">
+                    <h2>Inbox</h2>
+                    <span class="home-count">{{ notifications|length }}</span>
+                </div>
+
+                {% for note in notifications %}
+                <div class="home-note">{{ note.message }}</div>
+                {% empty %}
+                <div class="home-empty">
+                    <p>No new notifications.</p>
+                </div>
+                {% endfor %}
+            </section>
+
+        </div>
+
+        {% if is_manager or is_admin %}
+        <div class="home-footer">
+            {% if is_admin %}
+            <a href="{% url 'user_management' %}" class="login-button">Manage Users</a>
+            {% endif %}
+            {% if is_manager %}
+            <a href="{% url 'dashboard' %}" class="login-button">Club Manager Dashboard</a>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
 </div>
 
 <script>
     window.addEventListener("DOMContentLoaded", function () {
         const mainHome = document.getElementById("main-home");
-        
+        if (!mainHome) return;
+
         setTimeout(function () {
             mainHome.classList.add("show-home");
         }, 100);
