@@ -61,10 +61,9 @@ Home
         <div class="home-footer">
             {% if is_admin %}
             <a href="{% url 'user_management' %}" class="login-button">Manage Users</a>
+            <a href="{% url 'club_requests' %}" class="login-button">Club Requests</a>
             {% endif %}
-            {% if is_manager %}
             <a href="{% url 'dashboard' %}" class="login-button">Club Manager Dashboard</a>
-            {% endif %}
         </div>
         {% endif %}
     </div>

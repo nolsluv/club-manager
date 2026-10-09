@@ -1509,14 +1509,21 @@ body.light-mode .intro-home .login-button:hover {
 
 .home-footer {
     display: flex;
+    flex-wrap: wrap;
     justify-content: flex-end;
+    gap: 12px;
     margin-top: 32px;
     padding-top: 28px;
     border-top: 1px solid var(--border);
+}
+
+.home-footer .login-button {
+    margin-left: 12px;
 }
 
 @media (max-width: 768px) {
     .home-container { padding: 28px 22px; }
     .home-container .home-header h1 { font-size: 30px; }
     .home-footer { justify-content: center; }
+    
 }
