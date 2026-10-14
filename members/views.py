@@ -45,12 +45,6 @@ def intro(request):
     return render(request, 'intro.html')
 
 
-#club management dashboard
-@role_required('officer', 'president', 'treasurer', 'admin')
-def dashboard(request):
-    members = Member.objects.all().order_by('last_name')
-    return render(request, 'dashboard.html', {'members': members})
-
 #ADMIN ONLY DASHBOARD INFO
 @role_required('admin')
 def user_management(request):
@@ -121,7 +115,7 @@ def club_detail(request, club_id):
     if club.status != Club.Status.APPROVED:
         member = request.user.member
         if not (member.role == 'admin' or club.leader_id == member.id):
-            return Http404
+            raise Http404
 
     member = request.user.member
     is_member = club.members.filter(id=member.id).exists()
@@ -252,3 +246,15 @@ def review_membership(request, request_id):
 
     return redirect('home')
 
+@login_required
+def home(request):
+    member = request.user.member #init member
+    my_clubs = member.clubs.filter(status=Club.Status.APPROVED).order_by('name') #init list of my clubs
+
+    return render(request, 'home.html', { #render info
+        'member': member,
+        'my_clubs': my_clubs,
+        'notifications': [],  # placeholder for the future inbox feature
+        'is_manager': member.role in ('officer', 'president', 'treasurer'),
+        'is_admin': member.role in ("admin"),
+    })
