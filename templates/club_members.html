@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}{{ club.name }} Members{% endblock %}
+
+{% block content %}
+
+<div class="login-page">
+    <div class="login-container club-members-container">
+
+        <a href="#" class="back-link" onclick="history.back(); return false;">
+            ← Back to My Clubs
+        </a>
+
+        <h1>{{ club.name }}</h1>
+
+        <div class="club-members-heading">
+            <div>
+                <h2>Club Members</h2>
+                <p class="cm-muted">
+                    {{ club_members|length }} member{{ club_members|length|pluralize }}
+                </p>
+            </div>
+        </div>
+
+        <div class="club-members-table">
+
+            <div class="club-member-row club-member-header">
+                <div>Name</div>
+                <div>Email</div>
+                <div>Role</div>
+
+                {% if can_manage %}
+                <div>Actions</div>
+                {% endif %}
+            </div>
+
+            {% for member in club_members %}
+
+            <div class="club-member-row">
+
+                <div>
+                    <strong>
+                        {{ member.first_name }} {{ member.last_name }}
+                    </strong>
+
+                    {% if member.user %}
+                    <div class="cm-muted">
+                        {{ member.user.username }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    {{ member.email }}
+                </div>
+
+                <div>
+                    {% if club.leader_id == member.id %}
+                        President
+                    {% else %}
+                        {{ member.get_role_display }}
+                    {% endif %}
+                </div>
+
+                {% if can_manage %}
+                <div class="club-member-action">
+
+                    {% if current_member.id == member.id %}
+
+                        <span class="cm-muted">You</span>
+
+                    {% elif club.leader_id == member.id %}
+
+                        <span class="cm-muted">President</span>
+
+                    {% elif current_member.role == 'president' and member.role == 'admin' %}
+
+                        <span class="cm-muted">Protected</span>
+
+                    {% elif current_member.role == 'president' and member.role == 'president' %}
+
+                        <span class="cm-muted">Protected</span>
+
+                    {% else %}
+
+                                <button
+                                    type="button"
+                                    class="club-member-remove"
+                                    data-url="{% url 'remove_club_member' club.id member.id %}"
+                                    data-name="{{ member.first_name }} {{ member.last_name }}"
+                                    onclick="openRemoveModal(this.dataset.url, this.dataset.name)"
+                                >
+                                    Remove
+                                </button>
+
+                    {% endif %}
+
+                    </div>
+                    {% endif %}
+
+            </div>
+
+            {% empty %}
+
+            <p class="cm-muted club-members-empty">
+                This club currently has no members.
+            </p>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+</div>
+
+<div id="remove-member-modal" class="message-modal-overlay" style="display: none;">
+    <div class="message-modal">
+        <h2>REMOVE MEMBER</h2>
+
+        <p id="remove-member-text">
+            Are you sure you want to remove this member?
+        </p>
+
+        <div class="delete-modal-buttons">
+            <button type="button" onclick="closeRemoveModal()">
+                Cancel
+            </button>
+
+            <form id="remove-member-form" method="post" style="margin: 0;">
+                {% csrf_token %}
+
+                <button type="submit" class="delete-confirm-button">
+                    Remove
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+function openRemoveModal(actionUrl, memberName) {
+    const modal = document.getElementById("remove-member-modal");
+    const form = document.getElementById("remove-member-form");
+    const text = document.getElementById("remove-member-text");
+
+    form.action = actionUrl;
+
+    text.textContent =
+        "Are you sure you want to remove " + memberName + " from this club?";
+
+    modal.style.display = "flex";
+}
+
+function closeRemoveModal() {
+    document.getElementById("remove-member-modal").style.display = "none";
+}
+</script>
+
+
+
+{% endblock %}
+
