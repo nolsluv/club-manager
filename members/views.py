@@ -147,6 +147,27 @@ def dashboard(request):
     my_clubs = Club.objects.filter(leader=member).order_by('-created_at')
     members = Member.objects.all().order_by('last_name')
 
+    # clubs the current user is allowed to view members for
+    if member.role == 'admin':
+        managed_clubs = Club.objects.filter(
+            status=Club.Status.APPROVED
+        ).annotate(member_count=Count('members')).order_by('name')
+
+    elif member.role == 'president':
+        managed_clubs = Club.objects.filter(
+            leader=member,
+            status=Club.Status.APPROVED
+        ).annotate(member_count=Count('members')).order_by('name')
+
+    elif member.role in ('officer', 'treasurer'):
+        managed_clubs = member.clubs.filter(
+            status=Club.Status.APPROVED
+        ).annotate(member_count=Count('members')).order_by('name')
+
+    else:
+        managed_clubs = Club.objects.none()
+
+
     if member.role == 'admin':
         pending_memberships = MembershipRequest.objects.filter(
             status=MembershipRequest.Status.PENDING
@@ -163,6 +184,7 @@ def dashboard(request):
         'my_clubs': my_clubs,
         'can_request': can_request,
         'pending_memberships': pending_memberships,
+        'managed_clubs': managed_clubs,
     })
 
 # only admin accountsa re allowed to view club creation requests
@@ -258,3 +280,114 @@ def home(request):
         'is_manager': member.role in ('officer', 'president', 'treasurer'),
         'is_admin': member.role in ("admin"),
     })
+
+##CHECKING CLUB MEMBERS
+@login_required
+def club_members(request, club_id):
+    member = request.user.member
+    club = get_object_or_404(
+        Club,
+        id=club_id,
+        status=Club.Status.APPROVED
+    )
+
+    #check whether the current user is allowed to view this club's members
+    if member.role == 'admin':
+        can_view = True
+
+    elif member.role == 'president':
+        can_view = club.leader_id == member.id
+
+    elif member.role in ('officer', 'treasurer'):
+        can_view = club.members.filter(id=member.id).exists()
+
+    else:
+        can_view = False
+
+    if not can_view:
+        messages.error(request, "You don't have permission to view this club's members.")
+        return redirect('dashboard')
+
+    club_members_list = (
+        club.members
+        .select_related('user')
+        .order_by('last_name', 'first_name')
+    )
+
+    can_manage = (
+        member.role == 'admin'
+        or (member.role == 'president' and club.leader_id == member.id)
+    )
+
+    return render(request, 'club_members.html', {
+        'club': club,
+        'club_members': club_members_list,
+        'can_manage': can_manage,
+        'current_member': member,
+    })
+
+##REMOVING CLUB MEMBERS
+@login_required
+def remove_club_member(request, club_id, member_id):
+    if request.method != 'POST':
+        return redirect('club_members', club_id=club_id)
+
+    current_member = request.user.member
+
+    club = get_object_or_404(
+        Club,
+        id=club_id,
+        status=Club.Status.APPROVED
+    )
+
+    target_member = get_object_or_404(
+        Member,
+        id=member_id
+    )
+
+    #only admin or the president of this club can remove members
+    if current_member.role == 'admin':
+        can_remove = True
+
+    elif (
+        current_member.role == 'president'
+        and club.leader_id == current_member.id
+    ):
+        can_remove = True
+
+    else:
+        can_remove = False
+
+    if not can_remove:
+        messages.error(request, "You don't have permission to remove club members.")
+        return redirect('club_members', club_id=club.id)
+
+    #target must actually belong to this club
+    if not club.members.filter(id=target_member.id).exists():
+        messages.error(request, "This user is not a member of this club.")
+        return redirect('club_members', club_id=club.id)
+
+    #club president cannot be removed through member management
+    # This keeps Club.leader and Club.members consistent.
+    if club.leader_id == target_member.id:
+        messages.error(request, "The club president cannot be removed.")
+        return redirect('club_members', club_id=club.id)
+
+    #president cannot remove themselves, another president, or an admin
+    if current_member.role == 'president':
+        if target_member.id == current_member.id:
+            messages.error(request, "You can't remove yourself.")
+            return redirect('club_members', club_id=club.id)
+
+        if target_member.role in ('president', 'admin'):
+            messages.error(request, "You can't remove this member.")
+            return redirect('club_members', club_id=club.id)
+
+    club.members.remove(target_member)
+
+    messages.success(
+        request,
+        f"Removed {target_member.first_name} {target_member.last_name} from {club.name}."
+    )
+
+    return redirect('club_members', club_id=club.id)

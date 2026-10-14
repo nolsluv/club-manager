@@ -61,6 +61,41 @@
             </div>
         </div>
 
+        <div class="cm-section">
+            <h2>My Clubs</h2>
+
+            <div class="cm-card">
+                {% for club in managed_clubs %}
+                <div class="cm-row">
+                    <div>
+                        <strong>{{ club.name }}</strong>
+
+                        <div class="cm-muted">
+                            {% if club.short_description %}
+                                {{ club.short_description }}
+                            {% else %}
+                                No description available
+                            {% endif %}
+                        </div>
+
+                        <div class="cm-muted" style="margin-top: 4px;">
+                            {{ club.member_count }} member{{ club.member_count|pluralize }}
+                        </div>
+                    </div>
+
+                    <a href="{% url 'club_members' club.id %}" class="cm-member-button">
+                        View Members
+                    </a>
+                </div>
+
+                {% empty %}
+                <p class="cm-muted" style="margin:0;">
+                    No clubs available.
+                </p>
+                {% endfor %}
+            </div>
+        </div>
+        
         {% if pending_memberships %}
         <div class="cm-section">
             <h2>Pending Membership Requests</h2>
