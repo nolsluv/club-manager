@@ -1555,7 +1555,7 @@ body.light-mode .intro-home .login-button:hover {
     text-decoration: underline;
 }
 
-/* plain text button; the .home-container prefix beats .login-container button */
+/* plain text button; */
 .home-container .home-link {
     width: auto;
     margin: 0;
@@ -1798,4 +1798,11 @@ body.light-mode .intro-home .login-button:hover {
     border-width: 0;
     padding-top: 0;
     padding-bottom: 0;
+}
+
+.cm-card.collapsed { display: none; }
+
+.cm-section-title {
+    cursor: pointer;
+    user-select: none;
 }

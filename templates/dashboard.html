@@ -7,49 +7,11 @@
         <h1>Club Dashboard</h1>
 
         {% if can_request %}
-        <!-- club presidents can submit a request to create a club, which is saved as status="Pending" -->
         <div class="cm-section">
-            <h2>Request a new club</h2>
-            <form method="post" class="cm-card">
-                {% csrf_token %}
-
-                <div class="cm-field">
-                    <label for="{{ form.name.id_for_label }}">Club name</label>
-                    {{ form.name }}
-                    {% for error in form.name.errors %}<div class="cm-error">{{ error }}</div>{% endfor %}
-                </div>
-
-                <div class="cm-field">
-                    <label for="{{ form.short_description.id_for_label }}">Short description</label>
-                    {{ form.short_description }}
-                    {% for error in form.short_description.errors %}<div class="cm-error">{{ error }}</div>{% endfor %}
-                </div>
-
-                <div class="cm-field">
-                    <label for="{{ form.description.id_for_label }}">Full description (optional)</label>
-                    {{ form.description }}
-                </div>
-
-                <button type="submit" class="cm-btn cm-btn-primary">Submit for approval</button>
-            </form>
-        </div>
-        {% endif %}
-
-
-        <div class="cm-section">
-            <div class="cm-section-title">
+            <div class="cm-section-title" onclick="toggleSection('my-clubs-list', this)">
                 <h2>My Clubs</h2>
-                <button
-                    type="button"
-                    class="cm-collapse-button"
-                    id="my-clubs-toggle"
-                    onclick="toggleMyClubs()"
-                    aria-expanded="true"
-                >
-                    ▲
-                </button>
+                <button type="button" class="cm-collapse-button" aria-expanded="false">▼</button>
             </div>
-
             <div class="cm-card" id="my-clubs-list">
                 {% for club in managed_clubs %}
                 <div class="cm-row">
@@ -69,23 +31,52 @@
                         </div>
                     </div>
 
-                    <a href="{% url 'club_members' club.id %}" class="cm-member-button">
-                        View Members
-                    </a>
+                    <a href="{% url 'club_members' club.id %}" class="cm-member-button">View Members</a>
                 </div>
-
                 {% empty %}
-                <p class="cm-muted" style="margin:0;">
-                    No clubs available.
-                </p>
+                <p class="cm-muted" style="margin:0;">No clubs available.</p>
                 {% endfor %}
             </div>
+            <div class="cm-card collapsed" id="my-clubs-list"></div>
         </div>
 
-        
+        <!-- club presidents can submit a request to create a club, which is saved as status="Pending" -->
         <div class="cm-section">
-            <h2>My club requests</h2>
-            <div class="cm-card">
+            <div class="cm-section-title" onclick="toggleSection('request-club-form', this)">
+                <h2>Request a new club</h2>
+                <button type="button" class="cm-collapse-button" aria-expanded="{% if form.errors %}true{% else %}false{% endif %}">{% if form.errors %}▲{% else %}▼{% endif %}</button>
+            </div>
+            <form method="post" class="cm-card" id="request-club-form">
+                {% csrf_token %}
+
+                <div class="cm-field">
+                    <label for="{{ form.name.id_for_label }}">Club name</label>
+                    {{ form.name }}
+                    {% for error in form.name.errors %}<div class="cm-error">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div class="cm-field">
+                    <label for="{{ form.short_description.id_for_label }}">Short description</label>
+                    {{ form.short_description }}
+                    {% for error in form.short_description.errors %}<div class="cm-error">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div class="cm-field">
+                    <label for="{{ form.description.id_for_label }}">Full description (optional)</label>
+                    {{ form.description }}
+                </div>
+
+                <form method="post" class="cm-card {% if not form.errors %}collapsed{% endif %}" id="request-club-form">
+            </form>
+        </div>
+        {% endif %}
+
+        <div class="cm-section">
+            <div class="cm-section-title" onclick="toggleSection('club-requests-list', this)">
+                <h2>My club requests</h2>
+                <button type="button" class="cm-collapse-button" aria-expanded="false">▼</button>
+            </div>
+            <div class="cm-card" id="club-requests-list">
                 {% for club in my_clubs %}
                 <div class="cm-row">
                     <div>
@@ -107,14 +98,16 @@
                 <p class="cm-muted" style="margin:0;">You haven't requested any clubs yet.</p>
                 {% endfor %}
             </div>
+            <div class="cm-card collapsed" id="club-requests-list">
         </div>
 
-
-        
         {% if pending_memberships %}
-        <div class="cm-section">
-            <h2>Pending Membership Requests</h2>
-            <div class="cm-card">
+        <div class="cm-section-title" onclick="toggleSection('pending-list', this)">
+            <div class="cm-section-title">
+                <h2>Pending Membership Requests</h2>
+                <button type="button" class="cm-collapse-button" aria-expanded="false">▼</button>
+            </div>
+            <div class="cm-card" id="pending-list">
                 {% for req in pending_memberships %}
                 <div class="cm-row">
                     <div>
@@ -127,31 +120,23 @@
                         <button type="submit" name="action" value="reject" class="cm-btn">Reject</button>
                     </form>
                 </div>
+                <div class="cm-card collapsed" id="pending-list"></div>
                 {% endfor %}
             </div>
         </div>
         {% endif %}
-        
+
     </div>
 </div>
 
-
 <script>
-function toggleMyClubs() {
-    const list = document.getElementById("my-clubs-list");
-    const button = document.getElementById("my-clubs-toggle");
+    function toggleSection(listId, title) {
+        const list = document.getElementById(listId);
+        const button = title.querySelector(".cm-collapse-button");
+        const isCollapsed = list.classList.toggle("collapsed");
 
-    const isCollapsed = list.classList.toggle("collapsed");
-
-    if (isCollapsed) {
-        button.textContent = "▼";
-        button.setAttribute("aria-expanded", "false");
-    } else {
-        button.textContent = "▲";
-        button.setAttribute("aria-expanded", "true");
+        button.textContent = isCollapsed ? "▼" : "▲";
+        button.setAttribute("aria-expanded", String(!isCollapsed));
     }
-}
 </script>
-
-
 {% endblock %}
