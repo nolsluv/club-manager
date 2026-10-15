@@ -6,10 +6,21 @@
     <div class="club-detail-container">
         <a href="{% url 'clubs' %}" class="back-link">← Back to Clubs</a>
         <h1>{{ club.name }}</h1>
+
+        {% if club.status != 'approved' %}
+        <p style="margin: -20px 0 30px;">
+            <span class="cm-pill cm-pill-{{ club.status }}">{{ club.get_status_display }}</span>
+            {% if club.status == 'rejected' and club.rejection_reason %}
+            <span class="cm-muted"> · {{ club.rejection_reason }}</span>
+            {% endif %}
+        </p>
+        {% endif %}
+
         <div class="club-description">
             <h2>About</h2>
-            <p>{{ club.description }}</p>
+            <p>{{ club.description|default:club.short_description|default:"No description yet."|linebreaksbr }}</p>
         </div>
+
         <div class="club-info">
             <div class="club-info-item">
                 <h3>President</h3>
@@ -21,22 +32,115 @@
             </div>
             <div class="club-info-item">
                 <h3>Members</h3>
-                <p>{{ club.members.count }} members</p>
+                <p>{{ club.members.count }} member{{ club.members.count|pluralize }}</p>
             </div>
         </div>
+
+        <!-- join / leave -->
         <div class="club-join-action" style="margin-top: 30px;">
             {% if is_member %}
                 <p style="color: #4caf50;">You're a member of this club.</p>
+                {% if not is_leader and club.status == 'approved' %}
+                <form method="post" action="{% url 'leave_club' club.id %}"
+                      onsubmit="return confirm('Leave {{ club.name|escapejs }}?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn">Leave Club</button>
+                </form>
+                {% endif %}
             {% elif pending_request %}
                 <p style="color: #999;">Your request to join is pending approval.</p>
-            {% else %}
+            {% elif club.status == 'approved' %}
                 <form method="post" action="{% url 'request_membership' club.id %}">
                     {% csrf_token %}
                     <button type="submit" class="btn">Request to Join Club</button>
                 </form>
-             {% endif %}
+            {% endif %}
         </div>
+
+        <!-- pending join requests (leader / admin) -->
+        {% if join_requests %}
+        <div class="cm-section">
+            <h2>Join Requests</h2>
+            <div class="cm-card">
+                {% for req in join_requests %}
+                <div class="cm-row">
+                    <div>
+                        <strong>{{ req.member.first_name }} {{ req.member.last_name }}</strong>
+                        <div class="cm-muted">{{ req.requested_at|date:"M j, Y" }}</div>
+                    </div>
+                    <form method="post" action="{% url 'review_membership' req.id %}" style="display:flex; gap:8px;">
+                        {% csrf_token %}
+                        <button type="submit" name="action" value="approve" class="cm-btn cm-btn-primary">Approve</button>
+                        <button type="submit" name="action" value="reject" class="cm-btn">Reject</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- announcements -->
+        {% if announcements is not None %}
+        <div class="cm-section">
+            <h2>Announcements</h2>
+
+            {% if can_notify %}
+            <div class="club-join-action">
+                <button type="button" class="btn" id="notify-toggle">Send Announcement</button>
+            </div>
+            <form id="notify-form" method="post" action="{% url 'send_notification' club.id %}"
+                  class="cm-card" style="margin: 14px 0;" hidden>
+                {% csrf_token %}
+                <div class="cm-field">{{ notification_form.message }}</div>
+                <div class="club-join-action">
+                    <button type="submit" class="btn">Send to members</button>
+                </div>
+            </form>
+            {% endif %}
+
+            <div class="cm-card" style="margin-top: 14px;">
+                {% for note in announcements %}
+                <div class="cm-row">
+                    <div>
+                        {{ note.message }}
+                        <div class="cm-muted">
+                            {{ note.created_at|date:"M j, Y" }}{% if note.sender %} · {{ note.sender }}{% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="cm-muted" style="margin:0;">No announcements yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- member list -->
+        {% if club_members is not None %}
+        <div class="cm-section">
+            <h2>Members</h2>
+            <div class="cm-card">
+                {% for m in club_members %}
+                <div class="cm-row">
+                    <span>{{ m.first_name }} {{ m.last_name }}</span>
+                    {% if m.id == club.leader_id %}<span class="cm-muted">President</span>{% endif %}
+                </div>
+                {% empty %}
+                <p class="cm-muted" style="margin:0;">No members yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 
+{% if can_notify %}
+<script>
+    document.getElementById("notify-toggle").addEventListener("click", function () {
+        const form = document.getElementById("notify-form");
+        form.hidden = !form.hidden;
+        if (!form.hidden) form.querySelector("textarea").focus();
+    });
+</script>
+{% endif %}
 {% endblock %}

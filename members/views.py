@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from .forms import RegisterForm
-from .models import Member, Club, MembershipRequest
+from .models import Member, Club, MembershipRequest, Notification
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from .decorators import role_required
@@ -11,7 +11,9 @@ from django.contrib import messages
 from django.db.models import Q, Count
 from django.http import Http404
 from django.utils import timezone
-from .forms import RegisterForm, ClubRequestForm
+from .forms import RegisterForm, ClubRequestForm, NotificationForm
+from django.db.models import Exists, OuterRef
+
 
 
 def register(request):
@@ -112,22 +114,50 @@ def clubs(request):
 @login_required
 def club_detail(request, club_id):
     club = get_object_or_404(Club, id=club_id)
-    if club.status != Club.Status.APPROVED:
-        member = request.user.member
-        if not (member.role == 'admin' or club.leader_id == member.id):
-            raise Http404
-
     member = request.user.member
+    is_admin = member.role == 'admin'
+    is_leader = club.leader_id == member.id
+    can_manage = is_admin or is_leader
+
+    if club.status != Club.Status.APPROVED and not can_manage:
+        raise Http404
+
     is_member = club.members.filter(id=member.id).exists()
     pending_request = MembershipRequest.objects.filter(
         club=club, member=member, status=MembershipRequest.Status.PENDING
     ).first()
 
+    can_see_inside = is_member or can_manage
+    approved = club.status == Club.Status.APPROVED
+
     return render(request, 'club_detail.html', {
         'club': club,
         'is_member': is_member,
+        'is_leader': is_leader,
         'pending_request': pending_request,
+        'can_notify': can_notify(member, club),
+        'notification_form': NotificationForm(),
+        'club_members': club.members.order_by('last_name') if can_see_inside else None,
+        'announcements': club.notifications.select_related('sender')[:5] if can_see_inside else None,
+        'join_requests': (MembershipRequest.objects
+                          .filter(club=club, status=MembershipRequest.Status.PENDING)
+                          .select_related('member').order_by('requested_at')
+                          if can_manage and approved else None),
     })
+
+
+@login_required
+def leave_club(request, club_id):
+    club = get_object_or_404(Club, id=club_id, status=Club.Status.APPROVED)
+    member = request.user.member
+
+    if request.method == 'POST':
+        if club.leader_id == member.id:
+            messages.error(request, "A club's president can't leave their own club.")
+        else:
+            club.members.remove(member)
+            messages.success(request, f"You left '{club.name}'.")
+    return redirect('club_detail', club_id=club.id)
 
 @role_required('officer', 'president', 'treasurer', 'admin')
 def dashboard(request):
@@ -271,15 +301,44 @@ def review_membership(request, request_id):
 @login_required
 def home(request):
     member = request.user.member #init member
-    my_clubs = member.clubs.filter(status=Club.Status.APPROVED).order_by('name') #init list of my clubs
+    my_clubs = member.clubs.filter(status=Club.Status.APPROVED).order_by('name')#init list of my clubs
 
+    club_notes = Notification.objects.filter(club__in=my_clubs)
+    read_through = Notification.read_by.through
+
+    notifications = (Notification.objects
+                    .filter(club__in=my_clubs)
+                    .select_related('club')
+                     .annotate(is_read=Exists(
+                         read_through.objects.filter(
+                             notification_id=OuterRef('pk'), member_id=member.id)))
+                     .order_by('-created_at')[:10])
+    
     return render(request, 'home.html', { #render info
         'member': member,
         'my_clubs': my_clubs,
-        'notifications': [],  # placeholder for the future inbox feature
+        'notifications': notifications,  # placeholder for the future inbox feature
+        'unread_count': club_notes.exclude(read_by=member).count(),
         'is_manager': member.role in ('officer', 'president', 'treasurer'),
         'is_admin': member.role in ("admin"),
     })
+#HELPER FUNCTIONS for read/undread notifs
+@login_required
+def mark_notification_read(request, note_id):
+    member = request.user.member
+    if request.method == 'POST':
+        note = get_object_or_404(Notification, id=note_id, club__members=member)
+        note.read_by.add(member)
+    return redirect('home')
+
+
+@login_required
+def mark_all_read(request):
+    member = request.user.member
+    if request.method == 'POST':
+        for note in Notification.objects.filter(club__members=member).exclude(read_by=member):
+            note.read_by.add(member)
+    return redirect('home')
 
 ##CHECKING CLUB MEMBERS
 @login_required
@@ -391,3 +450,29 @@ def remove_club_member(request, club_id, member_id):
     )
 
     return redirect('club_members', club_id=club.id)
+
+
+#returns whether this member can send notifs in this club
+def can_notify(member, club):
+    return member.role == 'admin' or (member.role == 'president' and club.leader_id == member.id)
+
+#fun to send notif to club members
+@login_required
+def send_notification(request, club_id):
+    club = get_object_or_404(Club, id=club_id, status=Club.Status.APPROVED)
+    member = request.user.member
+
+    if request.method == 'POST' and can_notify(member, club):
+        form = NotificationForm(request.POST)
+        if form.is_valid():
+            note = form.save(commit=False)
+            note.club = club
+            note.sender = member
+            note.save()
+            messages.success(request, "Notification sent.")
+        else:
+            messages.error(request, "Message can't be empty.")
+    elif request.method == 'POST':
+        messages.error(request, "You can't send notifications for this club.")
+
+    return redirect('club_detail', club_id=club.id)
