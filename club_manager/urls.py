@@ -39,4 +39,8 @@ urlpatterns = [
     path('clubs/<int:club_id>/members/',member_views.club_members,name='club_members'),
     path('clubs/<int:club_id>/members/<int:member_id>/remove/',member_views.remove_club_member,name='remove_club_member'),
     path('membership-requests/<int:request_id>/review/', member_views.review_membership, name='review_membership'),
+    path('clubs/<int:club_id>/notify/', member_views.send_notification, name='send_notification'),
+    path('notifications/<int:note_id>/read/', member_views.mark_notification_read, name='mark_notification_read'),
+    path('notifications/read-all/', member_views.mark_all_read, name='mark_all_read'),
+    path('clubs/<int:club_id>/leave/', member_views.leave_club, name='leave_club'),
 ]

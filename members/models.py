@@ -65,6 +65,20 @@ class Club(models.Model):
 
     def __str__(self):
         return self.name
+    
+    # notif db system to send notifs to club members inbox
+class Notification(models.Model):
+    club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name='notifications')
+    sender = models.ForeignKey(Member, null=True, on_delete=models.SET_NULL, related_name='+')
+    message = models.CharField(max_length=300)
+    created_at = models.DateTimeField(auto_now_add=True)
+    read_by = models.ManyToManyField(Member, related_name='read_notifications', blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.club}: {self.message[:40]}"
 
 class MembershipRequest(models.Model):
     class Status(models.TextChoices):

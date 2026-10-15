@@ -39,18 +39,36 @@ Home
                 {% endfor %}
             </section>
 
-            <!-- Inbox (PLACEHOLDER) -->
+            <!-- Inbox Card -->
             <section class="home-card" id="inbox">
                 <div class="home-card-head">
                     <h2>Inbox</h2>
-                    <span class="home-count">{{ notifications|length }}</span>
+                    {% if unread_count %}
+                    <form method="post" action="{% url 'mark_all_read' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="home-link">Mark all read</button>
+                    </form>
+                    {% endif %}
                 </div>
-
+            
                 {% for note in notifications %}
-                <div class="home-note">{{ note.message }}</div>
+                <div class="home-note {% if note.is_read %}read{% endif %}">
+                    <div>
+                        <div class="home-note-meta">
+                            <a href="{% url 'club_detail' note.club.id %}">{{ note.club.name }}</a> · {{ note.created_at|date:"M j" }}
+                        </div>
+                        <div>{{ note.message }}</div>
+                    </div>
+                    {% if not note.is_read %}
+                    <form method="post" action="{% url 'mark_notification_read' note.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="home-link">Mark read</button>
+                    </form>
+                    {% endif %}
+                </div>
                 {% empty %}
                 <div class="home-empty">
-                    <p>No new notifications.</p>
+                    <p>No notifications.</p>
                 </div>
                 {% endfor %}
             </section>
