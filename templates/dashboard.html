@@ -35,6 +35,54 @@
         </div>
         {% endif %}
 
+
+        <div class="cm-section">
+            <div class="cm-section-title">
+                <h2>My Clubs</h2>
+                <button
+                    type="button"
+                    class="cm-collapse-button"
+                    id="my-clubs-toggle"
+                    onclick="toggleMyClubs()"
+                    aria-expanded="true"
+                >
+                    ▲
+                </button>
+            </div>
+
+            <div class="cm-card" id="my-clubs-list">
+                {% for club in managed_clubs %}
+                <div class="cm-row">
+                    <div>
+                        <strong>{{ club.name }}</strong>
+
+                        <div class="cm-muted">
+                            {% if club.short_description %}
+                                {{ club.short_description }}
+                            {% else %}
+                                No description available
+                            {% endif %}
+                        </div>
+
+                        <div class="cm-muted" style="margin-top: 4px;">
+                            {{ club.member_count }} member{{ club.member_count|pluralize }}
+                        </div>
+                    </div>
+
+                    <a href="{% url 'club_members' club.id %}" class="cm-member-button">
+                        View Members
+                    </a>
+                </div>
+
+                {% empty %}
+                <p class="cm-muted" style="margin:0;">
+                    No clubs available.
+                </p>
+                {% endfor %}
+            </div>
+        </div>
+
+        
         <div class="cm-section">
             <h2>My club requests</h2>
             <div class="cm-card">
@@ -61,6 +109,8 @@
             </div>
         </div>
 
+
+        
         {% if pending_memberships %}
         <div class="cm-section">
             <h2>Pending Membership Requests</h2>
@@ -84,4 +134,24 @@
         
     </div>
 </div>
+
+
+<script>
+function toggleMyClubs() {
+    const list = document.getElementById("my-clubs-list");
+    const button = document.getElementById("my-clubs-toggle");
+
+    const isCollapsed = list.classList.toggle("collapsed");
+
+    if (isCollapsed) {
+        button.textContent = "▼";
+        button.setAttribute("aria-expanded", "false");
+    } else {
+        button.textContent = "▲";
+        button.setAttribute("aria-expanded", "true");
+    }
+}
+</script>
+
+
 {% endblock %}
