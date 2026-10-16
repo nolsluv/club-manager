@@ -68,9 +68,16 @@ class Club(models.Model):
     
     # notif db system to send notifs to club members inbox
 class Notification(models.Model):
+    TYPE_CHOICES = [
+        ('announcement', 'Announcement'),
+        ('event', 'Event'),
+        ('cancelation', 'Cancelation')
+    ]
     club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name='notifications')
     sender = models.ForeignKey(Member, null=True, on_delete=models.SET_NULL, related_name='+')
     message = models.CharField(max_length=300)
+    notification_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='announcement')
+    target_url = models.CharField(max_length=255, blank = True, default = '')
     created_at = models.DateTimeField(auto_now_add=True)
     read_by = models.ManyToManyField(Member, related_name='read_notifications', blank=True)
 

@@ -1,3 +1,5 @@
+from members.models import Notification
+from django.urls import reverse
 from django.shortcuts import render
 import calendar
 from collections import defaultdict
@@ -80,7 +82,27 @@ def event_create(request):
     form = EventForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
         event = form.save(commit=False)
+        creator_member = request.user.member
         event.created_by = request.user.member
+        event.save()
+
+        # --- CREATE INBOX NOTIFICATION FOR THE CLUB ---
+        club = getattr(event, 'club', None)
+        if not club and hasattr(creator_member, 'clubs'):
+            club = creator_member.clubs.first()  # default to first club if not specified
+        if club:
+            event_name = getattr(event, 'title', None) or getattr(event, 'name', 'New Event')
+            event_date_str = timezone.localtime(event.date).strftime("%b %d") if hasattr(event, 'date') and event.date else ""
+
+            note = Notification.objects.create(
+                club=club,
+                sender=creator_member,
+                message=f"New event: {event_name} on {event_date_str}".strip(),
+                notification_type='event',
+                target_url=reverse('calendar'),
+            )
+            note.read_by.add(creator_member)  # mark as read for the creator
+        
         event.save()
         messages.success(request, "Event added successfully.")
         return redirect('calendar')
@@ -108,6 +130,27 @@ def event_delete(request, pk):
     event = get_object_or_404(Event, pk=pk)
     if not _can_modify(request,event):
         raise PermissionDenied("You can only delete events you created.")
+
+    member = request.user.member
+    club = getattr(event, 'club', None)
+    if not club and hasattr(member, 'clubs'):
+        club = member.clubs.first()  # default to first club if not specified
+
+    event_name = getattr(event, 'title', None) or getattr(event, 'name', 'Event')
+    event_date_str = ""
+    if hasattr(event, 'date') and event.date:
+        event_date_str = f" scheduled for {timezone.localtime(event.date).strftime('%b %d')}"
+    
     event.delete()  # also deletes that event's RSVPs (CASCADE)
+
+    if club:
+        cancel_note = Notification.objects.create(
+            club=club,
+            sender=request.user.member,
+            message=f"Event canceled: {event.title} on {event.date.strftime('%b %d')}",
+            notification_type='cancelation',
+            target_url=reverse('calendar'),
+        )
+
     messages.success(request, "Your event has been successfully deleted.")
     return redirect('calendar')

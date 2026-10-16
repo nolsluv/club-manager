@@ -55,6 +55,14 @@ Home
                 <div class="home-note {% if note.is_read %}read{% endif %}">
                     <div>
                         <div class="home-note-meta">
+                            {% if note.notification_type == 'event' %}
+                            <span class="cm-pill cm-pill-approved" style="font-size: 11px; padding: 2px 8px; margin-right: 6px;">Event</span>
+                            {% elif note.notification_type == 'cancelation' %}
+                            <span class="cm-pill cm-pill-rejected" style="font-size: 11px; padding: 2px 8px; margin-right: 6px;">Cancelation</span>
+                            {% else %}
+                            <span class="cm-pill cm-pill-pending" style="font-size: 11px; padding: 2px 8px; margin-right: 6px;">Announcement</span>
+                            {% endif %}
+
                             <a href="{% url 'club_detail' note.club.id %}">{{ note.club.name }}</a> · {{ note.created_at|date:"M j" }}
                         </div>
                         <div>{{ note.message }}</div>
