@@ -80,6 +80,7 @@ class Notification(models.Model):
     target_url = models.CharField(max_length=255, blank = True, default = '')
     created_at = models.DateTimeField(auto_now_add=True)
     read_by = models.ManyToManyField(Member, related_name='read_notifications', blank=True)
+    hidden_by = models.ManyToManyField(Member, related_name='hidden_notifications', blank=True)
 
     class Meta:
         ordering = ['-created_at']

@@ -303,11 +303,10 @@ def home(request):
     member = request.user.member #init member
     my_clubs = member.clubs.filter(status=Club.Status.APPROVED).order_by('name')#init list of my clubs
 
-    club_notes = Notification.objects.filter(club__in=my_clubs)
+    club_notes = Notification.objects.filter(club__in=my_clubs).exclude(hidden_by=member)
     read_through = Notification.read_by.through
 
-    notifications = (Notification.objects
-                    .filter(club__in=my_clubs)
+    notifications = (club_notes
                     .select_related('club')
                      .annotate(is_read=Exists(
                          read_through.objects.filter(
@@ -338,6 +337,26 @@ def mark_all_read(request):
     if request.method == 'POST':
         for note in Notification.objects.filter(club__members=member).exclude(read_by=member):
             note.read_by.add(member)
+    return redirect('home')
+
+@login_required
+def delete_notification(request, note_id):
+    member = request.user.member
+    if request.method == 'POST':
+        note = get_object_or_404(Notification, id=note_id, club__members=member)
+        note.hidden_by.add(member)
+        note.read_by.add(member)  # mark as read when deleted
+    return redirect('home')
+
+@login_required
+def clear_all_notifications(request):
+    """ Deletes all notifications for the current user. """
+    member = request.user.member
+    if request.method == 'POST':
+        notes = Notification.objects.filter(club__members=member).exclude(hidden_by=member)
+        for note in notes:
+            note.hidden_by.add(member)
+            note.read_by.add(member)  # mark as read when deleted
     return redirect('home')
 
 ##CHECKING CLUB MEMBERS

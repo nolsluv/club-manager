@@ -49,6 +49,12 @@ Home
                         <button type="submit" class="home-link">Mark all read</button>
                     </form>
                     {% endif %}
+                    {% if notifications %}
+                    <form method="post" action="{% url 'clear_all_notifications' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="home-link">Clear all</button>
+                    </form>
+                    {% endif %}
                 </div>
             
                 {% for note in notifications %}
@@ -73,6 +79,10 @@ Home
                         <button type="submit" class="home-link">Mark read</button>
                     </form>
                     {% endif %}
+                    <form method="post" action="{% url 'delete_notification' note.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="home-link" title="Delete">&times;</button>
+                    </form>
                 </div>
                 {% empty %}
                 <div class="home-empty">

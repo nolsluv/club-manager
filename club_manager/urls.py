@@ -42,5 +42,7 @@ urlpatterns = [
     path('clubs/<int:club_id>/notify/', member_views.send_notification, name='send_notification'),
     path('notifications/<int:note_id>/read/', member_views.mark_notification_read, name='mark_notification_read'),
     path('notifications/read-all/', member_views.mark_all_read, name='mark_all_read'),
+    path('notifications/<int:note_id>/delete/', member_views.delete_notification, name='delete_notification'),
+    path('notifications/clear-all/', member_views.clear_all_notifications, name='clear_all_notifications'),
     path('clubs/<int:club_id>/leave/', member_views.leave_club, name='leave_club'),
 ]
