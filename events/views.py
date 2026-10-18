@@ -79,7 +79,20 @@ def _can_modify(request, event):
 
 @role_required(*EVENT_EDITORS) #required role of admin or president
 def event_create(request):
-    form = EventForm(request.POST or None)
+    member = getattr(request.user, 'member', None)
+
+    active_club = (
+        request.GET.get('club')
+        or request.session.get('active_club_id')
+        or request.session.get('current_club_id')
+        or getattr(member, 'current_club_id', None)
+    )
+
+    initial_data = {}
+    if active_club:
+        initial_data['club'] = active_club
+
+    form = EventForm(request.POST or None, user=request.user, initial=initial_data)
     if request.method == 'POST' and form.is_valid():
         event = form.save(commit=False)
         creator_member = request.user.member
@@ -114,7 +127,7 @@ def event_edit(request, pk):
     event = get_object_or_404(Event, pk=pk)
     if not _can_modify(request,event):
         raise PermissionDenied("You can only edit events you created.")
-    form = EventForm(request.POST or None, instance=event)
+    form = EventForm(request.POST or None, instance=event, user=request.user)
     if request.method == 'POST' and form.is_valid():
         form.save()
         messages.success(request, "Your event has been successfully updated.")

@@ -6,7 +6,7 @@
     <div class="login-container" style="max-width: 480px;">
         <h1>{{ heading }}</h1>
 
-        <form method="post">
+        <form method="post" autocomplete="off">
             {% csrf_token %}
             {% for field in form %}
                 <div class="form-group">
