@@ -22,7 +22,7 @@ class EventForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'rows': 3}),
         }
 
-    def __init__(self, *args, user=None, **kwargs):
+    def __init__(self, *args, user=None, active_club=None, **kwargs):
         super().__init__(*args, **kwargs)
         for name in ('date', 'end_date'):
             self.fields[name].input_formats = [DT_FORMAT]
@@ -35,7 +35,8 @@ class EventForm(forms.ModelForm):
                 self.fields['club'].queryset = Club.objects.none()
         else:
             self.fields['club'].queryset = Club.objects.none()
-                
+        if active_club and not self.is_bound:
+            self.fields['club'].initial = getattr(active_club, 'pk', active_club)
     
     def clean(self):
         cleaned = super().clean()

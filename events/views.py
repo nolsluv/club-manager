@@ -1,6 +1,5 @@
 from members.models import Notification
 from django.urls import reverse
-from django.shortcuts import render
 import calendar
 from collections import defaultdict
 from datetime import date, timedelta
@@ -18,6 +17,15 @@ from .models import Event
 
 EVENT_EDITORS = ('president', 'admin')  # roles allowed to add/edit
 
+def _get_active_club(request, member):
+    return (
+        request.GET.get('club')
+        or request.session.get('active_club_id')
+        or request.session.get('current_club_id')
+        or request.session.get('club_id')
+        or getattr(member, 'active_club', None)
+        or getattr(member, 'current_club', None)
+    )
 
 @login_required
 def calendar_view(request):
@@ -80,43 +88,39 @@ def _can_modify(request, event):
 @role_required(*EVENT_EDITORS) #required role of admin or president
 def event_create(request):
     member = getattr(request.user, 'member', None)
+    active_club = _get_active_club(request, member)
 
-    active_club = (
-        request.GET.get('club')
-        or request.session.get('active_club_id')
-        or request.session.get('current_club_id')
-        or getattr(member, 'current_club_id', None)
-    )
-
-    initial_data = {}
-    if active_club:
-        initial_data['club'] = active_club
-
-    form = EventForm(request.POST or None, user=request.user, initial=initial_data)
+    form = EventForm(request.POST or None, user=request.user, active_club=active_club)
     if request.method == 'POST' and form.is_valid():
         event = form.save(commit=False)
-        creator_member = request.user.member
-        event.created_by = request.user.member
+        creator_member = member
+        event.created_by = creator_member
+
+        selected_club = form.cleaned_data.get('club')
+        if selected_club:
+            event.club = selected_club
         event.save()
+        form.save_m2m()  # save any many-to-many relationships if present
 
         # --- CREATE INBOX NOTIFICATION FOR THE CLUB ---
-        club = getattr(event, 'club', None)
-        if not club and hasattr(creator_member, 'clubs'):
-            club = creator_member.clubs.first()  # default to first club if not specified
-        if club:
+        if selected_club:
             event_name = getattr(event, 'title', None) or getattr(event, 'name', 'New Event')
-            event_date_str = timezone.localtime(event.date).strftime("%b %d") if hasattr(event, 'date') and event.date else ""
+            event_date_str = (
+                timezone.localtime(event.date).strftime('%b %d')
+                if hasattr(event, 'date') and event.date 
+                else ''
+            )
 
             note = Notification.objects.create(
-                club=club,
+                club=selected_club,
                 sender=creator_member,
                 message=f"New event: {event_name} on {event_date_str}".strip(),
                 notification_type='event',
                 target_url=reverse('calendar'),
             )
-            note.read_by.add(creator_member)  # mark as read for the creator
+            if creator_member:
+                note.read_by.add(creator_member)  # mark as read for the creator
         
-        event.save()
         messages.success(request, "Event added successfully.")
         return redirect('calendar')
     return render(request, 'event_form.html', {'form': form, 'heading': 'Add event'})
@@ -127,7 +131,7 @@ def event_edit(request, pk):
     event = get_object_or_404(Event, pk=pk)
     if not _can_modify(request,event):
         raise PermissionDenied("You can only edit events you created.")
-    form = EventForm(request.POST or None, instance=event, user=request.user)
+    form = EventForm(request.POST or None, instance=event, user=request.user, active_club=event.club_id)
     if request.method == 'POST' and form.is_valid():
         form.save()
         messages.success(request, "Your event has been successfully updated.")
