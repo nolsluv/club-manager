@@ -14,6 +14,7 @@ from django.views.decorators.http import require_POST
 from django.core.exceptions import PermissionDenied
 from .forms import EventForm
 from .models import Event
+from members.models import Club
 
 EVENT_EDITORS = ('president', 'admin')  # roles allowed to add/edit
 
@@ -40,11 +41,36 @@ def calendar_view(request):
     # Full weeks (Sunday start), including days spilling in from adjacent months
     weeks = calendar.Calendar(firstweekday=6).monthdatescalendar(first.year, first.month)
 
-    # One query for everything visible on the grid, grouped by local date
-    #this will be updated later to add user filter options
-    events = Event.objects.filter(
+    member = getattr(request.user, 'member', None)
+    active_club_val = _get_active_club(request, member)
+
+    # Normalize active club to an INT ID
+    active_club_id = getattr(active_club_val, 'pk', active_club_val)
+    if active_club_id is not None:
+        try:
+            active_club_id = int(active_club_id)
+        except (ValueError, TypeError):
+            active_club_id = None
+
+    # Initialize the base queryset
+    events_qs = Event.objects.filter(
         date__date__range=(weeks[0][0], weeks[-1][-1])
-    ).order_by('date')
+    ).select_related('club')
+
+    # Strict Club Filter:
+    # If an active club is selected display only that clubs events
+    # If no active club is chosen, display all events
+    if active_club_id:
+        events_qs = events_qs.filter(club_id=active_club_id)
+    elif member:
+        my_clubs = member.clubs.filter(status=Club.Status.APPROVED)
+        events_qs = events_qs.filter(club__in=my_clubs)
+    else:
+        events_qs = Event.objects.none()
+
+    events = events_qs.order_by('date')
+    
+    # Group events by local date
     by_day = defaultdict(list)
     for e in events:
         by_day[timezone.localtime(e.date).date()].append(e)
@@ -76,6 +102,7 @@ def calendar_view(request):
         'year': year,
         'months': list(enumerate(calendar.month_name))[1:],
         'years': range(first.year - 2, first.year + 4),
+        'active_club_id': active_club_id,
         })
 
 def _can_modify(request, event):
@@ -131,10 +158,76 @@ def event_edit(request, pk):
     event = get_object_or_404(Event, pk=pk)
     if not _can_modify(request,event):
         raise PermissionDenied("You can only edit events you created.")
-    form = EventForm(request.POST or None, instance=event, user=request.user, active_club=event.club_id)
+    
+    # Get original values before changing
+    old_club = getattr(event, 'club', None)
+    old_title = event.title
+    old_date = event.date
+
+    form = EventForm(request.POST or None, instance=event, user=request.user, active_club = getattr(event, 'club_id', None))
     if request.method == 'POST' and form.is_valid():
-        form.save()
+        updated_event = form.save(commit=False)
+        # Ensure selected club is bound to the event
+        selected_club = form.cleaned_data.get('club')
+        if selected_club:
+            updated_event.club = selected_club
+        updated_event.save()
+        form.save_m2m()  # save any many-to-many relationships if present
+
+        editor_member = getattr(request.user, 'member', None)
+        event_name = updated_event.title
+        event_date_str = (
+            timezone.localtime(updated_event.date).strftime("%b %d at %I:%M %p")
+            if getattr(updated_event, 'date', None) else ""
+        )
+        old_date_str = (
+            timezone.localtime(old_date).strftime("%b %d at %I:%M %p")
+            if old_date else ""
+        )
+        # Determine what changed
+        changes = []
+        if old_title != updated_event.title:
+            changes.append(f"Title changed from {old_title} to '{updated_event.title}'")
+        if old_date != updated_event.date:
+            changes.append(f"Date changed to {event_date_str}")
+        if old_club != updated_event.club:
+            changes.append(f"Club changed to '{updated_event.club.name}'")
+
+        change_summary = f" ({', '.join(changes)})" if changes else ""
+
+        # Case A: The event changed clubs 
+        if old_club and selected_club and old_club != selected_club:
+            Notification.objects.create(
+                club=old_club,
+                sender=editor_member,
+                message=f"Event relocated: '{old_title}' has moved to {selected_club.name}.",
+                notification_type='cancelation',
+                target_url=reverse('calendar'),
+            )
+            note = Notification.objects.create(
+                club=selected_club,
+                sender=editor_member,
+                message=f"New event transferred in: {event_name} scheduled for {event_date_str}.",
+                notification_type='event',
+                target_url=reverse('calendar'),
+            )
+            if editor_member:
+                note.read_by.add(editor_member)
+        # Standard edit
+        elif selected_club:
+            note = Notification.objects.create(
+                club=selected_club,
+                sender=editor_member,
+                message=f"Updated event: {event_name}{change_summary}".strip(),
+                notification_type='event',
+                target_url=reverse('calendar'),
+            )
+            if editor_member:
+                note.read_by.add(editor_member)
         messages.success(request, "Your event has been successfully updated.")
+        active_club_id = _get_active_club(request, editor_member)
+        if active_club_id:
+            return redirect(f"{reverse('calendar')}?club={active_club_id}")
         return redirect('calendar')
     return render(request, 'event_form.html', {
         'form': form, 'heading': 'Edit event', 'event': event,

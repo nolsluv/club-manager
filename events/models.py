@@ -1,11 +1,16 @@
-from django.db import models
-from members.models import Member
-
 # events/models.py
 from django.db import models
 from members.models import Member
+from members.models import Club
 
 class Event(models.Model):
+    club = models.ForeignKey(
+        Club, 
+        on_delete=models.CASCADE,
+        related_name='events',
+        null=True,
+        blank=False
+    )
     CATEGORY_CHOICES = [
         ('meeting', 'Meeting'),
         ('social', 'Social'),
