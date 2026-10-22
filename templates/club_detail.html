@@ -4,7 +4,7 @@
 {% block content %}
 <div class="club-detail-page">
     <div class="club-detail-container">
-        <a href="{% url 'clubs' %}" class="back-link">← Back to Clubs</a>
+        <a href="{% url 'dashboard' %}" class="back-link">← Back to My Clubs</a>
         <h1>{{ club.name }}</h1>
 
         {% if club.status != 'approved' %}
@@ -68,11 +68,11 @@
                         <strong>{{ req.member.first_name }} {{ req.member.last_name }}</strong>
                         <div class="cm-muted">{{ req.requested_at|date:"M j, Y" }}</div>
                     </div>
-                    <form method="post" action="{% url 'review_membership' req.id %}" style="display:flex; gap:8px;">
-                        {% csrf_token %}
-                        <button type="submit" name="action" value="approve" class="cm-btn cm-btn-primary">Approve</button>
-                        <button type="submit" name="action" value="reject" class="cm-btn">Reject</button>
-                    </form>
+                        <form method="post" action="{% url 'review_membership' req.id %}" class="club-join-action" style="display:flex; gap:8px;">
+                            {% csrf_token %}
+                            <button type="submit" name="action" value="approve" class="btn">Approve</button>
+                            <button type="submit" name="action" value="reject" class="btn">Reject</button>
+                        </form>
                 </div>
                 {% endfor %}
             </div>
