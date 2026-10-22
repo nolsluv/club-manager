@@ -159,7 +159,7 @@ def leave_club(request, club_id):
             messages.success(request, f"You left '{club.name}'.")
     return redirect('club_detail', club_id=club.id)
 
-@role_required('officer', 'president', 'treasurer', 'admin')
+@role_required('member','officer', 'president', 'treasurer', 'admin')
 def dashboard(request):
     member = request.user.member
     can_request = member.role in ('president', 'admin')
@@ -174,7 +174,8 @@ def dashboard(request):
             messages.success(request, f"'{club.name}' submitted for admin approval.")
             return redirect('dashboard')
 
-    my_clubs = Club.objects.filter(leader=member).order_by('-created_at')
+    created_club_requests = Club.objects.filter(leader=member).order_by('-created_at')
+    membership_requests = MembershipRequest.objects.filter(member=member).select_related('club').order_by('-requested_at')
     members = Member.objects.all().order_by('last_name')
 
     # clubs the current user is allowed to view members for
@@ -195,7 +196,9 @@ def dashboard(request):
         ).annotate(member_count=Count('members')).order_by('name')
 
     else:
-        managed_clubs = Club.objects.none()
+        managed_clubs = member.clubs.filter(
+        status=Club.Status.APPROVED
+        ).annotate(member_count=Count('members')).order_by('name')
 
 
     if member.role == 'admin':
@@ -224,7 +227,8 @@ def dashboard(request):
     return render(request, 'dashboard.html', {
         'members': members,
         'form': form,
-        'my_clubs': my_clubs,
+        'created_club_requests': created_club_requests,
+        'membership_requests': membership_requests,
         'can_request': can_request,
         'pending_memberships': pending_memberships,
         'managed_clubs': managed_clubs,
