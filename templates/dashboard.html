@@ -6,7 +6,7 @@
     <div class="login-container" style="max-width: 800px;">
         <h1>Club Dashboard</h1>
 
-        {% if can_request %}
+    
         <div class="cm-section">
             <div class="cm-section-title" onclick="toggleSection('my-clubs-list', this)">
                 <h2>My Clubs</h2>
@@ -79,6 +79,8 @@
         </div>
         {% endif %}
 
+
+        {% if can_request %}
         <!-- club presidents can submit a request to create a club, which is saved as status="Pending" -->
         <div class="cm-section">
             <div class="cm-section-title" onclick="toggleSection('request-club-form', this)">
