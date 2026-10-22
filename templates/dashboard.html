@@ -114,7 +114,11 @@
                     {{ form.description }}
                 </div>
 
-                <form method="post" class="cm-card {% if not form.errors %}collapsed{% endif %}" id="request-club-form">
+                <div class="cm-actions">
+                    <button type="submit" class="cm-btn cm-btn-primary">
+                        Submit for approval
+                    </button>
+                </div>
             </form>
         </div>
         {% endif %}
