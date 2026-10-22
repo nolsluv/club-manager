@@ -61,7 +61,9 @@ Home
                 <div class="home-note {% if note.is_read %}read{% endif %}">
                     <div>
                         <div class="home-note-meta">
-                            {% if note.notification_type == 'event' %}
+                            {% if note.notification_type == 'reminder' or 'Reminder:' in note.message %}
+                            <span class="cm-pill cm-pill-reminder" style="font-size: 11px; padding: 2px 8px; margin-right: 6px;">Reminder</span>
+                            {% elif note.notification_type == 'event' %}
                             <span class="cm-pill cm-pill-approved" style="font-size: 11px; padding: 2px 8px; margin-right: 6px;">Event</span>
                             {% elif note.notification_type == 'cancelation' %}
                             <span class="cm-pill cm-pill-rejected" style="font-size: 11px; padding: 2px 8px; margin-right: 6px;">Cancelation</span>

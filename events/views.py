@@ -18,6 +18,34 @@ from members.models import Club
 
 EVENT_EDITORS = ('president', 'admin')  # roles allowed to add/edit
 
+def check_and_send_event_reminders():
+    now = timezone.now()
+    twenty_four_hours_later = now + timedelta(hours=24)
+
+    upcoming_events = Event.objects.filter(
+        date__gte=now,
+        date__lte=twenty_four_hours_later,
+        reminder_sent=False,
+        club__isnull=False
+    ).select_related('club', 'created_by')
+
+    sent_count = 0
+    for event in upcoming_events:
+        event_time_str = timezone.localtime(event.date).strftime("%b %d at %I:%M %p")
+
+        Notification.objects.create(
+            club=event.club,
+            sender=event.created_by,
+            message=f"Reminder: '{event.title}' is happening in less than 24 hours ({event_time_str})",
+            notification_type='reminder',
+            target_url=reverse('calendar'),
+        )
+
+        event.reminder_sent = True
+        event.save(update_fields=['reminder_sent'])
+        sent_count += 1
+    return sent_count
+
 def _get_active_club(request, member):
     return (
         request.GET.get('club')
@@ -30,6 +58,7 @@ def _get_active_club(request, member):
 
 @login_required
 def calendar_view(request):
+    check_and_send_event_reminders()
     # Pick the month from ?year=&month=, falling back to the current month
     today = timezone.localdate()
     try:
@@ -171,6 +200,9 @@ def event_edit(request, pk):
         selected_club = form.cleaned_data.get('club')
         if selected_club:
             updated_event.club = selected_club
+        # Reset reminder flag
+        if old_date != updated_event.date:
+            updated_event.reminder_sent = False
         updated_event.save()
         form.save_m2m()  # save any many-to-many relationships if present
 

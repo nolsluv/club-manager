@@ -31,6 +31,7 @@ class Event(models.Model):
         Member, on_delete=models.SET_NULL, null=True, blank=True, related_name='created_events'
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    reminder_sent = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
