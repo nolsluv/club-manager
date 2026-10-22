@@ -1411,6 +1411,7 @@ body.light-mode .intro-home .login-button:hover {
 .cm-pill-pending  { background: rgba(217, 154, 0, 0.18); color: #d99a00; }
 .cm-pill-approved { background: rgba(47, 168, 102, 0.18); color: #2fa866; }
 .cm-pill-rejected { background: rgba(229, 72, 77, 0.18); color: #e5484d; }
+.cm-pill-reminder { background: rgba(142, 78, 245, 0.18); color: #8e4ef5; }
 
 /* admin approve/reject row */
 .cm-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 18px; }
