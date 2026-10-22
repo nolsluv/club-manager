@@ -174,8 +174,8 @@ def event_create(request):
                 notification_type='event',
                 target_url=reverse('calendar'),
             )
-            if creator_member:
-                note.read_by.add(creator_member)  # mark as read for the creator
+            #if creator_member:
+            #    note.read_by.add(creator_member)  # mark as read for the creator
         
         messages.success(request, "Event added successfully.")
         return redirect('calendar')
