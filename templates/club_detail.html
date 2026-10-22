@@ -4,7 +4,7 @@
 {% block content %}
 <div class="club-detail-page">
     <div class="club-detail-container">
-        <a href="{% url 'clubs' %}" class="back-link">← Back to Clubs</a>
+        <a href="{% url 'dashboard' %}" class="back-link">← Back to My Clubs</a>
         <h1>{{ club.name }}</h1>
 
         {% if club.status != 'approved' %}
