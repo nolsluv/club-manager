@@ -166,11 +166,27 @@ def dashboard(request):
     form = ClubRequestForm()
 
     if request.method == 'POST' and can_request:
-        form = ClubRequestForm(request.POST)
+        submitted_name = request.POST.get('name', '').strip()
+
+        rejected_club = Club.objects.filter(
+            name__iexact=submitted_name,
+            status=Club.Status.REJECTED
+        ).first()
+
+        if rejected_club:
+            form = ClubRequestForm(request.POST, instance=rejected_club)
+        else:
+            form = ClubRequestForm(request.POST)
+
         if form.is_valid():
             club = form.save(commit=False)
             club.leader = member
+            club.status = Club.Status.PENDING
+            club.rejection_reason = ''
+            club.reviewed_by = None
+            club.reviewed_at = None
             club.save()
+
             messages.success(request, f"'{club.name}' submitted for admin approval.")
             return redirect('dashboard')
 
@@ -234,15 +250,6 @@ def dashboard(request):
         'managed_clubs': managed_clubs,
         'pending_club_requests': pending_club_requests,
     })
-
-# only admin accountsa re allowed to view club creation requests
-@role_required('admin')
-def club_requests(request):
-    pending = (Club.objects
-               .filter(status=Club.Status.PENDING)
-               .select_related('leader')
-               .order_by('created_at'))
-    return render(request, 'club_requests.html', {'pending': pending})
 
 #only admin accounts can approve or deny reqquests
 @role_required('admin')
