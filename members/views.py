@@ -208,6 +208,19 @@ def dashboard(request):
             status=MembershipRequest.Status.PENDING
         ).select_related('member', 'club').order_by('requested_at')
 
+    # pending club creation requests are visible to admins only
+    if member.role == 'admin':
+        pending_club_requests = (
+            Club.objects
+            .filter(status=Club.Status.PENDING)
+            .select_related('leader')
+            .order_by('created_at')
+        )
+    else:
+        pending_club_requests = Club.objects.none()
+
+
+
     return render(request, 'dashboard.html', {
         'members': members,
         'form': form,
@@ -215,6 +228,7 @@ def dashboard(request):
         'can_request': can_request,
         'pending_memberships': pending_memberships,
         'managed_clubs': managed_clubs,
+        'pending_club_requests': pending_club_requests,
     })
 
 # only admin accountsa re allowed to view club creation requests
@@ -242,7 +256,7 @@ def review_club(request, club_id):
             club.rejection_reason = request.POST.get('reason', '').strip()
             messages.success(request, f"Rejected '{club.name}'.")
         else:
-            return redirect('club_requests')
+            return redirect('dashboard')
 
         club.reviewed_by = request.user.member
         club.reviewed_at = timezone.now()
@@ -250,7 +264,7 @@ def review_club(request, club_id):
 
         if club.status == Club.Status.APPROVED and club.leader:
             club.members.add(club.leader)   # leader is the first member
-    return redirect('club_requests')
+    return redirect('dashboard')
 
 @login_required
 def request_membership(request, club_id):

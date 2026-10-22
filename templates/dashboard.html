@@ -37,8 +37,47 @@
                 <p class="cm-muted" style="margin:0;">No clubs available.</p>
                 {% endfor %}
             </div>
-            <div class="cm-card collapsed" id="my-clubs-list"></div>
         </div>
+
+
+        {% if user.member.role == 'admin' %}
+        <div class="cm-section">
+            <div class="cm-section-title" onclick="toggleSection('pending-club-requests-list', this)">
+                <h2>Pending Club Requests</h2>
+                <button type="button" class="cm-collapse-button" aria-expanded="false">▼</button>
+            </div>
+
+            <div class="cm-card collapsed" id="pending-club-requests-list">
+                {% for club in pending_club_requests %}
+                <div class="cm-row">
+                    <div>
+                        <strong>{{ club.name }}</strong>
+
+                        <div class="cm-muted">
+                            Requested by {{ club.leader.first_name }} {{ club.leader.last_name }}
+                            · {{ club.created_at|date:"M j, Y" }}
+                        </div>
+
+                        {% if club.short_description %}
+                        <div class="cm-muted" style="margin-top: 4px;">
+                            {{ club.short_description }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <form method="post" action="{% url 'review_club' club.id %}" style="display: flex; gap: 8px;">
+                        {% csrf_token %}
+                        <button type="submit" name="action" value="approve" class="cm-btn cm-btn-primary">Approve</button>
+                        <button type="submit" name="action" value="reject" class="cm-btn cm-btn-danger">Reject</button>
+                    </form>
+                </div>
+
+                {% empty %}
+                <p class="cm-muted" style="margin:0;">No pending club requests.</p>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
 
         <!-- club presidents can submit a request to create a club, which is saved as status="Pending" -->
         <div class="cm-section">
