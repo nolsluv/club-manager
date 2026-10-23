@@ -126,26 +126,6 @@ body {
    Main Landing Page
 ========================= */
 
-#main-home {
-    width: 100%;
-    min-height: 100vh;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    opacity: 0;
-    transform: translateY(20px);
-
-    transition:
-        opacity 1s ease,
-        transform 1s ease;
-}
-
-.show-home {
-    opacity: 1 !important;
-    transform: translateY(0) !important;
-}
 
 .landing-content {
     text-align: center;
@@ -1630,198 +1610,521 @@ body.light-mode .intro-home .login-button:hover {
    Home Page
 ========================= */
 
-.home-container {
-    max-width: 960px;
-    padding: 48px;
+#main-home.home-page {
+    width: 100%;
+    min-height: calc(100vh - 72px);
+
+    display: block;
+
+    padding: 0;
+
+    background: var(--bg);
 }
 
-/* header */
-.home-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    flex-wrap: wrap;
-    gap: 20px;
-    padding-bottom: 28px;
-    margin-bottom: 32px;
-    border-bottom: 1px solid var(--border);
-}
 
-.home-container .home-header h1 {
-    text-align: left;
-    font-size: 40px;
-    font-weight: 300;
-    letter-spacing: -1px;
+/* whole home area */
+.home-shell {
+    width: 100%;
+    min-height: calc(100vh - 72px);
+
     margin: 0;
+
+    background: transparent;
+
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
 }
+
+
+/* =========================
+   Hero
+========================= */
+
+/* Dark mode */
+.home-hero {
+    position: relative;
+    width: 100%;
+    min-height: 390px;
+    padding: 58px 4.5% 135px;
+
+    overflow: hidden;
+
+    background: var(--bg);
+    border: none;
+}
+
+.home-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+        url("../images/home-milwaukee-dark.png")
+        center 50% / cover no-repeat;
+
+    filter: blur(4px);
+    transform: scale(1.04);
+    opacity: 0.9;
+}
+
+
+.home-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+
+    background:
+        linear-gradient(to top,
+            var(--bg) 0%,
+            rgba(14, 27, 43, 0.88) 10%,
+            rgba(14, 27, 43, 0.35) 24%,
+            rgba(14, 27, 43, 0.10) 38%,
+            rgba(14, 27, 43, 0.10) 62%,
+            rgba(14, 27, 43, 0.35) 78%,
+            rgba(14, 27, 43, 0.88) 92%,
+            var(--bg) 100%
+        ),
+        linear-gradient(to right,
+            var(--bg) 0%,
+            rgba(14, 27, 43, 0.72) 8%,
+            rgba(14, 27, 43, 0.18) 18%,
+            rgba(14, 27, 43, 0.00) 30%,
+            rgba(14, 27, 43, 0.00) 70%,
+            rgba(14, 27, 43, 0.18) 82%,
+            rgba(14, 27, 43, 0.72) 92%,
+            var(--bg) 100%
+        );
+}
+
+
+body.light-mode .home-hero::before {
+    background:
+        url("../images/home-milwaukee-light.png")
+        center 50% / cover no-repeat;
+
+    filter: blur(4px);
+    transform: scale(1.04);
+    opacity: 0.82;
+}
+
+body.light-mode .home-hero::after {
+    background:
+        linear-gradient(to top,
+            var(--bg) 0%,
+            rgba(249, 246, 238, 0.88) 10%,
+            rgba(249, 246, 238, 0.42) 24%,
+            rgba(249, 246, 238, 0.12) 38%,
+            rgba(249, 246, 238, 0.12) 62%,
+            rgba(249, 246, 238, 0.42) 78%,
+            rgba(249, 246, 238, 0.88) 92%,
+            var(--bg) 100%
+        ),
+        linear-gradient(to right,
+            var(--bg) 0%,
+            rgba(249, 246, 238, 0.74) 8%,
+            rgba(249, 246, 238, 0.20) 18%,
+            rgba(249, 246, 238, 0.00) 30%,
+            rgba(249, 246, 238, 0.00) 70%,
+            rgba(249, 246, 238, 0.20) 82%,
+            rgba(249, 246, 238, 0.74) 92%,
+            var(--bg) 100%
+        );
+}
+
+
+
+.home-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+}
+
 
 .home-eyebrow {
-    margin-bottom: 10px;
-    font-size: 12px;
+    margin-bottom: 14px;
+
+    color: var(--accent);
+
+    font-size: 13px;
+    font-weight: 700;
     letter-spacing: 4px;
+}
+
+
+.home-hero h1 {
+    margin: 0 0 12px;
+
+    color: var(--text);
+
+    font-size: 60px;
+    font-weight: 400; 
+    line-height: 1.05;
+    letter-spacing: -0.5;
+}
+
+
+.home-subtitle {
+    margin: 0;
+
     color: var(--muted);
+
+    font-size: 18px;
+    line-height: 1.55;
 }
 
 .home-role {
-    padding: 20px 50px;
-    border: 1px solid var(--text);
-    border-radius: 24px;
-    font-size: 14px;
-    white-space: nowrap;
+    position: absolute;
+    top: 58px;
+    right: 4.5%;
+    z-index: 10;
+
+    min-width: 190px;
+    min-height: 58px;
+
+    padding: 14px 32px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 11px;
+
+    border-radius: 999px;
+
+    font-size: 18px;
+    font-weight: 600;
+
+    background: rgba(14, 27, 43, 0.50);
+    border: 1.5px solid rgba(200, 138, 84, 0.85);
+    color: #f1e7d6;
+
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
-/* cards */
-.home-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
+
+body.light-mode .home-role {
+    background: rgba(255, 253, 248, 0.55);
+    border-color: rgba(184, 115, 51, 0.78);
+    color: #b87333;
+    box-shadow: 0 4px 14px rgba(92, 64, 35, 0.08);
 }
+
+.home-role-icon {
+    color: var(--accent);
+    font-size: 19px;
+    line-height: 1;
+}
+
+body.light-mode .home-role-icon {
+    color: #b87333;
+}
+
+
+
+/* =========================
+   Main Cards
+========================= */
+
+.home-grid {
+    position: relative;
+    z-index: 5;
+    width: 94%;
+    margin: -105px auto 0;
+
+    display: grid;
+    grid-template-columns: 0.92fr 1.08fr;
+    gap: 24px;
+}
+
 
 .home-card {
-    min-height: 220px;
-    padding: 24px 26px;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
+    min-height: 390px;
+    padding: 30px 34px;
+    background: rgba(13, 35, 58, 0.56);
+    border: 1px solid rgba(241, 231, 214, 0.20);
+    border-radius: 20px;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 16px 34px rgba(0, 0, 0, 0.16);
 }
+
+
+body.light-mode .home-card {
+    background: rgba(255, 251, 244, 0.58);
+    border: 1px solid rgba(184, 115, 51, 0.14);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.55),
+        0 14px 30px rgba(82, 60, 35, 0.05);
+}
+
 
 .home-card-head {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+
     margin-bottom: 18px;
 }
 
+
 .home-card-head h2 {
-    font-size: 20px;
+    margin: 0;
+
+    font-size: 30px;
     font-weight: 600;
-}
 
-.home-count {
-    padding: 2px 10px;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    font-size: 13px;
-    color: var(--muted);
-}
-
-/* rows (clubs and inbox notes) */
-.home-club,
-.home-note {
-    padding: 14px 0;
-    border-top: 1px solid var(--border);
     color: var(--text);
 }
 
-.home-card-head + .home-club,
-.home-card-head + .home-note {
+
+.home-count {
+    min-width: 40px;
+    height: 40px;
+    font-size: 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 10px;
+    border: 1px solid rgba(241, 231, 214, 0.12);
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, 0.04);
+
+    color: var(--muted);
+
+}
+
+
+/* =========================
+   Club rows
+========================= */
+
+.home-club {
+    min-height: 82px;
+
+    padding: 18px 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-top: 1px solid rgba(241, 231, 214, 0.10);
+
+    color: var(--text);
+    text-decoration: none;
+
+    font-size: 20px;
+    font-weight: 500;
+}
+
+
+.home-card-head + .home-club {
     border-top: none;
 }
 
-/* club rows */
-.home-club {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 500;
-    text-decoration: none;
-}
 
 .home-arrow {
     color: var(--muted);
-    transition: transform 0.1s ease, color 0.3s ease;
+    font-size: 20px;
+
+    transition:
+        color 0.25s ease,
+        transform 0.25s ease;
 }
+
 
 .home-club:hover .home-arrow {
     color: var(--text);
     transform: translateX(4px);
 }
 
-/* inbox notes */
+
+/* =========================
+   Inbox
+========================= */
+
 .home-note {
+    padding: 18px 0;
+
     display: flex;
-    justify-content: space-between;
     align-items: flex-start;
-    gap: 16px;
-    line-height: 1.5;
+    justify-content: space-between;
+
+    gap: 18px;
+
+    border-top: 1px solid rgba(241, 231, 214, 0.10);
+
+    color: var(--text);
+
+    font-size: 18px;
+    line-height: 1.55;
 }
 
-.home-note.read {
-    color: var(--muted);
+
+.home-card-head + .home-note {
+    border-top: none;
 }
+
 
 .home-note-meta {
-    margin-bottom: 2px;
-    font-size: 13px;
-    color: var(--muted);
-}
-
-.home-note-meta a {
-    color: inherit;
-    text-decoration: none;
-}
-
-.home-note-meta a:hover {
-    text-decoration: underline;
-}
-
-/* plain text button; */
-.home-container .home-link {
-    width: auto;
-    margin: 0;
-    padding: 0;
-    background: none;
-    border: none;
-    border-radius: 0;
-    font-family: inherit;
-    font-size: 13px;
-    color: var(--muted);
-    white-space: nowrap;
-    cursor: pointer;
-}
-
-.home-container .home-link:hover {
-    background: none;
-    border: none;
-    color: var(--text);
-    text-decoration: underline;
-}
-
-/* empty states */
-.home-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    padding: 36px 0 12px;
-}
-
-.home-empty p {
+    margin-bottom: 6px;
     font-size: 15px;
     color: var(--muted);
 }
 
-.home-cta {
-    padding: 10px 28px;
-    font-size: 14px;
+.home-note-meta a {
+    color: #f1e7d6;
+    text-decoration: underline;
+    text-underline-offset: 2px;
 }
 
-/* footer buttons */
+body.light-mode .home-note-meta a {
+    color: #172536;
+}
+
+.home-note-meta a:hover {
+    color: var(--accent);
+}
+
+/* =========================
+   Empty state
+========================= */
+
+.home-empty {
+    min-height: 230px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 18px;
+}
+
+
+.home-empty p {
+    color: var(--muted);
+
+    font-size: 16px;
+}
+
+
+/* =========================
+   Bottom
+========================= */
+
+.home-bottom {
+    width: 94%;
+
+    margin: 18px auto 0;
+
+    padding: 18px 0 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-top: 1px solid rgba(241, 231, 214, 0.12);
+}
+
+
+.home-slogan {
+    color: var(--accent);
+
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.6;
+    letter-spacing: 3px;
+}
+
+
 .home-footer {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
+    align-items: center;
+
     gap: 12px;
-    margin-top: 32px;
-    padding-top: 28px;
-    border-top: 1px solid var(--border);
+
+    margin: 0;
+    padding: 0;
+
+    border: none;
 }
 
-@media (max-width: 768px) {
-    .home-container { padding: 28px 22px; }
-    .home-container .home-header h1 { font-size: 30px; }
-    .home-footer { justify-content: center; }
+
+.home-dashboard-button {
+    min-width: 240px;
+
+    padding: 13px 28px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+
+    background: var(--accent);
+    color: white;
+
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 600;
 }
+@keyframes homeWelcomeIn {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes homeCardIn {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.home-hero-content {
+    animation: homeWelcomeIn 0.7s ease forwards;
+}
+
+.home-card {
+    opacity: 0;
+    animation: homeCardIn 0.7s ease forwards;
+}
+
+.home-card:nth-child(1) {
+    animation-delay: 0.15s;
+}
+
+.home-card:nth-child(2) {
+    animation-delay: 0.25s;
+}
+
+
 /* =========================
    Manage Club Members
 ========================= */
