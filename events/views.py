@@ -79,12 +79,12 @@ def calendar_view(request):
         try:
             active_club_id = int(active_club_id)
         except (ValueError, TypeError):
-            active_club_id = None
+            active_club_id = None 
 
-    # Initialize the base queryset
+    # initialize base queryset, prefetch rsvps
     events_qs = Event.objects.filter(
         date__date__range=(weeks[0][0], weeks[-1][-1])
-    ).select_related('club')
+    ).select_related('club').prefetch_related('rsvps')
 
     # Strict Club Filter:
     # If an active club is selected display only that clubs events
@@ -103,6 +103,12 @@ def calendar_view(request):
     by_day = defaultdict(list)
     for e in events:
         by_day[timezone.localtime(e.date).date()].append(e)
+
+    rsvped_ids = set()
+    if member:
+        rsvped_ids = set(
+            RSVP.objects.filter(member=member, event__in=events).values_list('event_id', flat=True)
+        )
 
     grid = [
         [{
@@ -132,6 +138,7 @@ def calendar_view(request):
         'months': list(enumerate(calendar.month_name))[1:],
         'years': range(first.year - 2, first.year + 4),
         'active_club_id': active_club_id,
+        'rsvped_ids': rsvped_ids,
         })
 
 def _can_modify(request, event):
