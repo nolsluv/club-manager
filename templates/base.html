@@ -111,5 +111,52 @@
     });
     </script>
 
+    <!-- Native Browser Notification Polling -->
+    {% if user.is_authenticated %}
+    <script>
+        (function() {
+            function requestNotificationPermission() {
+                if ("Notification" in window && Notification.permission === "default") {
+                    Notification.requestPermission();
+                }
+            }
+            document.addEventListener("click", requestNotificationPermission, {once: true })
+
+            const seenNotificationIds = new Set();
+
+            async function checkForNewSystemNotifications() {
+                if (!("Notification" in window) || Notification.permission !== "granted") {
+                    return;
+                }
+
+                try {
+                    const response = await fetch("{% url 'unread_notifications_api' %}");
+                    if (!response.ok) return;
+
+                    const data = await response.json();
+
+                    data.notifications.forEach(note => {
+                        if (!seenNotificationIds.has(note.id)) {
+                            seenNotificationIds.add(note.id);
+
+                            const sysNotice = new Notification(note.title, {
+                                body: note.body,
+                                silent: true,
+                            });
+
+                            sysNotice.onclick = function() {
+                                window.focus();
+                                window.location.href = note.url;
+                            };
+                        }
+                    });
+                } catch (err) {
+                    console.error("Error fetching system notifications:", err);
+                }
+            }
+            setInterval(checkForNewSystemNotifications, 15000);
+        })();
+    </script>
+    {% endif %}
 </body>
 </html>
