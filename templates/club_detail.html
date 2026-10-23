@@ -3,40 +3,169 @@
 
 {% block content %}
 <div class="club-detail-page">
-    <div class="club-detail-container">
-        <a href="{% url 'dashboard' %}" class="back-link">← Back to My Clubs</a>
-        <h1>{{ club.name }}</h1>
+
+    <section class="club-detail-hero">
+        <div class="club-detail-hero-overlay"></div>
+
+        <div class="club-detail-hero-content">
+
+            <a href="{% url 'dashboard' %}" class="club-detail-back">
+                <i class="bi bi-arrow-left"></i>
+                Back to My Clubs
+            </a>
+
+            <div class="club-detail-main">
+
+                <div class="club-detail-logo club-color-{{ club.theme_color }}">
+                {% if club.icon == 'laptop' %}
+                    <i class="bi bi-laptop"></i>
+
+                {% elif club.icon == 'controller' %}
+                    <i class="bi bi-controller"></i>
+
+                {% elif club.icon == 'music' %}
+                    <i class="bi bi-music-note-beamed"></i>
+
+                {% elif club.icon == 'people' %}
+                    <i class="bi bi-people-fill"></i>
+
+                {% elif club.icon == 'book' %}
+                    <i class="bi bi-book"></i>
+
+                {% elif club.icon == 'camera' %}
+                    <i class="bi bi-camera"></i>
+
+                {% elif club.icon == 'palette' %}
+                    <i class="bi bi-palette"></i>
+
+                {% elif club.icon == 'trophy' %}
+                    <i class="bi bi-trophy"></i>
+
+                {% elif club.icon == 'globe' %}
+                    <i class="bi bi-globe"></i>
+
+                {% else %}
+                    <i class="bi bi-stars"></i>
+                {% endif %}
+                </div>
+
+                <div class="club-detail-intro">
+                    <h1>{{ club.name }}</h1>
+
+                    <h2>About</h2>
+
+                    <p>
+                        {{ club.description|default:club.short_description|default:"No description yet."|linebreaksbr }}
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <div class="club-detail-content">
 
         {% if club.status != 'approved' %}
-        <p style="margin: -20px 0 30px;">
-            <span class="cm-pill cm-pill-{{ club.status }}">{{ club.get_status_display }}</span>
+        <div class="club-detail-status">
+            <span class="cm-pill cm-pill-{{ club.status }}">
+                {{ club.get_status_display }}
+            </span>
+
             {% if club.status == 'rejected' and club.rejection_reason %}
-            <span class="cm-muted"> · {{ club.rejection_reason }}</span>
+                <span class="cm-muted">
+                    · {{ club.rejection_reason }}
+                </span>
             {% endif %}
-        </p>
+        </div>
         {% endif %}
 
-        <div class="club-description">
-            <h2>About</h2>
-            <p>{{ club.description|default:club.short_description|default:"No description yet."|linebreaksbr }}</p>
-        </div>
 
-        <div class="club-info">
-            <div class="club-info-item">
-                <h3>President</h3>
-                {% if club.leader %}
-                    <p>{{ club.leader.first_name }} {{ club.leader.last_name }}</p>
-                {% else %}
-                    <p>No leader assigned</p>
+        <div class="club-summary-grid">
+
+            <div class="club-summary-card">
+                <div class="club-summary-icon">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+
+                <div>
+                    <span class="club-summary-label">PRESIDENT</span>
+
+                    {% if club.leader %}
+                        <strong>
+                            {{ club.leader.first_name }}
+                            {{ club.leader.last_name }}
+                        </strong>
+                    {% else %}
+                        <strong>No leader assigned</strong>
+                    {% endif %}
+                </div>
+            </div>
+
+
+            <div class="club-summary-card">
+                <div class="club-summary-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+
+                <div>
+                    <span class="club-summary-label">MEMBERS</span>
+                    <strong>
+                        {{ club.members.count }}
+                        member{{ club.members.count|pluralize }}
+                    </strong>
+                </div>
+            </div>
+
+
+            <div class="club-summary-actions">
+
+                {% if is_leader or request.user.member.role == 'admin' %}
+                    <a
+                        href="{% url 'finance_home' club.id %}"
+                        class="club-detail-outline-btn"
+                    >
+                        <i class="bi bi-coin"></i>
+                        Finances
+                    </a>
                 {% endif %}
+
+                {% if is_member and not is_leader and club.status == 'approved' %}
+
+                    <form method="post"
+                        action="{% url 'leave_club' club.id %}"
+                        onsubmit="return confirm('Leave {{ club.name|escapejs }}?');">
+
+                        {% csrf_token %}
+
+                        <button type="submit" class="club-detail-leave-btn">
+                            <i class="bi bi-box-arrow-right"></i>
+                            Leave Club
+                        </button>
+
+                    </form>
+
+                {% elif not pending_request and club.status == 'approved' %}
+
+                    <form method="post"
+                        action="{% url 'request_membership' club.id %}">
+
+                        {% csrf_token %}
+
+                        <button type="submit" class="club-detail-primary-btn">
+                            <i class="bi bi-person-plus-fill"></i>
+                            Request to Join Club
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
             </div>
-            <div class="club-info-item">
-                <h3>Members</h3>
-                <p>{{ club.members.count }} member{{ club.members.count|pluralize }}</p>
-            </div>
+
         </div>
 
-
+        <div class="club-detail-two-col">
         {% if can_manage %}
         <div class="cm-section club-appearance-section">
 
@@ -138,84 +267,63 @@
         </div>
         {% endif %}
 
-        <!-- membership status -->
-        {% if is_member %}
-            <p class="club-status club-status-ok">You're a member of this club.</p>
-        {% elif pending_request %}
-            <p class="club-status">Your request to join is pending approval.</p>
-        {% endif %}
 
-        <!-- action buttons, all in one row -->
-        <div class="club-actions club-join-action">
-            {% if is_leader or request.user.member.role == 'admin' %}
-                <a class="cm-member-button" href="{% url 'finance_home' club.id %}">Finances</a>
-            {% endif %}
-
-            {% if is_member %}
-                {% if not is_leader and club.status == 'approved' %}
-                <form method="post" action="{% url 'leave_club' club.id %}"
-                      onsubmit="return confirm('Leave {{ club.name|escapejs }}?');">
-                    {% csrf_token %}
-                    <button type="submit" class="btn">Leave Club</button>
-                </form>
-                {% endif %}
-            {% elif not pending_request and club.status == 'approved' %}
-                <form method="post" action="{% url 'request_membership' club.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn">Request to Join Club</button>
-                </form>
-            {% endif %}
-        </div>
-
-        <!-- pending join requests (leader / admin) -->
-        {% if join_requests %}
-        <div class="cm-section">
-            <h2>Join Requests</h2>
-            <div class="cm-card">
-                {% for req in join_requests %}
-                <div class="cm-row">
-                    <div>
-                        <strong>{{ req.member.first_name }} {{ req.member.last_name }}</strong>
-                        <div class="cm-muted">{{ req.requested_at|date:"M j, Y" }}</div>
-                    </div>
-                    <form method="post" action="{% url 'review_membership' req.id %}" class="club-join-action" style="display:flex; gap:8px;">
-                        {% csrf_token %}
-                        <button type="submit" name="action" value="approve" class="btn">Approve</button>
-                        <button type="submit" name="action" value="reject" class="btn">Reject</button>
-                    </form>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
 
         <!-- announcements -->
         {% if announcements is not None %}
-        <div class="cm-section">
-            <h2>Announcements</h2>
+        <div class="club-detail-panel club-announcements-panel">
+
+            <div class="club-detail-panel-head">
+                <div class="club-detail-panel-title">
+                    <i class="bi bi-megaphone-fill"></i>
+                    <h2>Announcements</h2>
+                </div>
+
+                {% if can_notify %}
+                <button type="button" class="club-announce-btn" id="notify-toggle">
+                    <i class="bi bi-send-fill"></i>
+                    <span>Send Announcement</span>
+                </button>
+                {% endif %}
+            </div>
 
             {% if can_notify %}
-            <div class="club-join-action">
-                <button type="button" class="btn" id="notify-toggle">Send Announcement</button>
-            </div>
-            <form id="notify-form" method="post" action="{% url 'send_notification' club.id %}"
-                  class="cm-card" style="margin: 14px 0;" hidden>
+            <form id="notify-form"
+                method="post"
+                action="{% url 'send_notification' club.id %}"
+                class="club-announcement-form"
+                hidden>
                 {% csrf_token %}
-                <div class="cm-field">{{ notification_form.message }}</div>
-                <div class="club-join-action">
-                    <button type="submit" class="btn">Send to members</button>
+                <div class="cm-field">
+                    {{ notification_form.message }}
+                </div>
+                <div class="cm-actions">
+                    <button type="submit" class="cm-btn cm-btn-primary">
+                        Send to members
+                    </button>
                 </div>
             </form>
             {% endif %}
 
-            <div class="cm-card" style="margin-top: 14px;">
+            <div class="club-announcement-list">
                 {% for note in announcements %}
-                <div class="cm-row">
-                    <div>
-                        {{ note.message }}
-                        <div class="cm-muted">
-                            {{ note.created_at|date:"M j, Y" }}{% if note.sender %} · {{ note.sender }}{% endif %}
+                <div class="club-announcement-row">
+                    <div class="club-announcement-icon">
+                        <i class="bi bi-calendar-event-fill"></i>
+                    </div>
+
+                    <div class="club-announcement-content">
+                        <div class="club-announcement-message">
+                            {{ note.message }}
                         </div>
+                        <div class="club-announcement-meta">
+                            {{ note.created_at|date:"M j, Y" }}
+                            {% if note.sender %} · {{ note.sender }}{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="club-announcement-arrow">
+                        <i class="bi bi-chevron-right"></i>
                     </div>
                 </div>
                 {% empty %}
@@ -225,22 +333,127 @@
         </div>
         {% endif %}
 
+        </div>
+
+        <!-- pending join requests (leader / admin) -->
+        {% if join_requests %}
+        <div class="club-detail-panel club-detail-list-panel">
+
+            <div class="club-detail-panel-head">
+                <div class="club-detail-panel-title">
+                    <i class="bi bi-person-plus-fill"></i>
+                    <h2>Join Requests</h2>
+                </div>
+
+                <span class="club-detail-panel-count">
+                    {{ join_requests|length }}
+                    request{{ join_requests|length|pluralize }}
+                </span>
+            </div>
+
+            <div class="club-detail-list">
+                {% for req in join_requests %}
+                <div class="club-detail-list-row">
+
+                    <div class="club-detail-member-avatar">
+                        {{ req.member.first_name|first }}{{ req.member.last_name|first }}
+                    </div>
+
+                    <div class="club-detail-list-main">
+                        <strong>
+                            {{ req.member.first_name }} {{ req.member.last_name }}
+                        </strong>
+
+                        <span>
+                            Requested {{ req.requested_at|date:"M j, Y" }}
+                        </span>
+                    </div>
+
+                    <form
+                        method="post"
+                        action="{% url 'review_membership' req.id %}"
+                        class="club-detail-list-actions"
+                    >
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            name="action"
+                            value="approve"
+                            class="club-detail-approve-btn"
+                        >
+                            Approve
+                        </button>
+
+                        <button
+                            type="submit"
+                            name="action"
+                            value="reject"
+                            class="club-detail-reject-btn"
+                        >
+                            Reject
+                        </button>
+                    </form>
+
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+        {% endif %}
+
+
         <!-- member list -->
         {% if club_members is not None %}
-        <div class="cm-section">
-            <h2>Members</h2>
-            <div class="cm-card">
-                {% for m in club_members %}
-                <div class="cm-row">
-                    <span>{{ m.first_name }} {{ m.last_name }}</span>
-                    {% if m.id == club.leader_id %}<span class="cm-muted">President</span>{% endif %}
+        <div class="cm-section members-section-plain">
+
+            <div class="club-detail-panel-head">
+                <div class="club-detail-panel-title">
+                    <i class="bi bi-people-fill"></i>
+                    <h2>Members</h2>
                 </div>
+
+                <span class="club-detail-panel-count">
+                    {{ club_members|length }}
+                    member{{ club_members|length|pluralize }}
+                </span>
+            </div>
+
+            <div class="club-detail-list">
+
+                {% for m in club_members %}
+                <div class="club-detail-list-row">
+
+                    <div class="club-detail-member-avatar">
+                        {{ m.first_name|first }}{{ m.last_name|first }}
+                    </div>
+
+                    <div class="club-detail-list-main">
+                        <strong>
+                            {{ m.first_name }} {{ m.last_name }}
+                        </strong>
+                    </div>
+
+                    <div class="club-member-role">
+                        {% if m.id == club.leader_id %}
+                            <span class="club-president-pill">
+                                President
+                            </span>
+                        {% endif %}
+                    </div>
+
+                </div>
+
                 {% empty %}
-                <p class="cm-muted" style="margin:0;">No members yet.</p>
+                <p class="cm-muted" style="margin:18px 0;">
+                    No members yet.
+                </p>
                 {% endfor %}
+
             </div>
         </div>
         {% endif %}
+
     </div>
 </div>
 
