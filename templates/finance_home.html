@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ club.name }} Finances{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/finance.css' %}?v=3">
+
+<div class="club-detail-page">
+  <div class="club-detail-container finance-container">
+
+    <a class="back-link" href="{% url 'club_detail' club.id %}">← Back to {{ club.name }}</a>
+
+    <div class="fin-header">
+      <div>
+        <h1>Finances</h1>
+        <p>{{ club.name }}</p>
+      </div>
+      <div class="fin-header-actions">
+        <a class="cm-member-button" href="{% url 'finance_account_add' club.id %}">Add account</a>
+        <a class="cm-member-button" href="{% url 'finance_entry_add' club.id %}">Add entry</a>
+      </div>
+    </div>
+
+    <!-- summary -->
+    <div class="fin-stats">
+      <div class="fin-stat">
+        <div class="fin-stat-label">Gross revenue</div>
+        <div class="fin-stat-value fin-in">${{ gross|floatformat:2 }}</div>
+        <div class="fin-stat-sub">Fundraisers ${{ fundraisers|floatformat:2 }} · Dues ${{ dues|floatformat:2 }}</div>
+      </div>
+      <div class="fin-stat">
+        <div class="fin-stat-label">Spending</div>
+        <div class="fin-stat-value fin-out">${{ spending|floatformat:2 }}</div>
+        <div class="fin-stat-sub">All recorded expenses</div>
+      </div>
+      <div class="fin-stat">
+        <div class="fin-stat-label">Net</div>
+        <div class="fin-stat-value {% if net >= 0 %}fin-in{% else %}fin-out{% endif %}">
+          {% if net < 0 %}-{% endif %}${{ net|floatformat:2|cut:"-" }}
+        </div>
+        <div class="fin-stat-sub">Revenue minus spending</div>
+      </div>
+    </div>
+
+    <!-- chart -->
+    <div class="home-card fin-card">
+      <div class="home-card-head">
+        <h2>Last 6 months</h2>
+        <div class="fin-legend">
+          <span class="in">Revenue</span>
+          <span class="out">Spending</span>
+        </div>
+      </div>
+      <div class="fin-chart">
+        {% for c in chart %}
+        <div class="fin-col">
+          <div class="fin-bars">
+            <div class="fin-bar in" data-h="{{ c.income_pct }}" title="{{ c.label }} revenue: ${{ c.income }}"></div>
+            <div class="fin-bar out" data-h="{{ c.expense_pct }}" title="{{ c.label }} spending: ${{ c.expense }}"></div>
+          </div>
+          <div class="fin-month">{{ c.label }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- accounts -->
+    <div class="home-card fin-card">
+      <div class="home-card-head">
+        <h2>Accounts</h2>
+        <span class="home-count">{{ accounts|length }}</span>
+      </div>
+      {% for a in accounts %}
+        <div class="fin-account {% if not a.is_active %}closed{% endif %}">
+          <div>
+            {{ a.name }}
+            <small>{{ a.get_account_type_display }}{% if a.institution %} · {{ a.institution }}{% endif %}{% if not a.is_active %} · Closed{% endif %}</small>
+          </div>
+          <strong>${{ a.balance|floatformat:2 }}</strong>
+        </div>
+      {% empty %}
+        <div class="fin-empty">No accounts yet.</div>
+      {% endfor %}
+    </div>
+
+    <!-- history -->
+    <div class="home-card fin-card">
+      <div class="home-card-head">
+        <h2>History</h2>
+        <form method="get">
+          <select name="kind" class="club-filter" onchange="this.form.submit()">
+            <option value="">All types</option>
+            {% for value, label in kinds %}
+              <option value="{{ value }}" {% if value == selected_kind %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </form>
+      </div>
+
+      <table class="clubs-table fin-table">
+        <tr>
+          <th>Date</th><th>Type</th><th>Description</th><th>Account</th><th>Amount</th><th></th>
+        </tr>
+        {% for e in entries %}
+        <tr>
+          <td>{{ e.date|date:"M d, Y" }}</td>
+          <td class="fin-kind">{{ e.get_kind_display }}</td>
+          <td>{{ e.description }}</td>
+          <td>{{ e.account.name|default:"-" }}</td>
+          <td class="fin-amount {% if e.is_expense %}fin-out{% else %}fin-in{% endif %}">
+            {% if e.is_expense %}-{% else %}+{% endif %}${{ e.amount|floatformat:2 }}
+          </td>
+          <td>
+            <form method="post" action="{% url 'finance_entry_delete' club.id e.id %}"
+                  onsubmit="return confirm('Delete this entry?');">
+              {% csrf_token %}
+              <button type="submit" class="cm-btn cm-btn-danger fin-delete">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="no-clubs">No entries yet.</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll(".fin-bar[data-h]").forEach(function (bar) {
+    bar.style.height = bar.dataset.h + "%";
+  });
+</script>
+{% endblock %}

@@ -1807,3 +1807,37 @@ body.light-mode .intro-home .login-button:hover {
     cursor: pointer;
     user-select: none;
 }
+
+/* Button styling club homepage */
+.club-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.club-actions form {
+    margin: 0;
+}
+
+/* make the link button and the form buttons the same size */
+.club-actions .btn,
+.club-actions .cm-member-button {
+    padding: 10px 22px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+/* membership status line */
+.club-status {
+    margin-top: 28px;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.club-status-ok {
+    color: #4caf50;
+}

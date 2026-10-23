@@ -36,10 +36,20 @@
             </div>
         </div>
 
-        <!-- join / leave -->
-        <div class="club-join-action" style="margin-top: 30px;">
+        <!-- membership status -->
+        {% if is_member %}
+            <p class="club-status club-status-ok">You're a member of this club.</p>
+        {% elif pending_request %}
+            <p class="club-status">Your request to join is pending approval.</p>
+        {% endif %}
+
+        <!-- action buttons, all in one row -->
+        <div class="club-actions club-join-action">
+            {% if is_leader or request.user.member.role == 'admin' %}
+                <a class="cm-member-button" href="{% url 'finance_home' club.id %}">Finances</a>
+            {% endif %}
+
             {% if is_member %}
-                <p style="color: #4caf50;">You're a member of this club.</p>
                 {% if not is_leader and club.status == 'approved' %}
                 <form method="post" action="{% url 'leave_club' club.id %}"
                       onsubmit="return confirm('Leave {{ club.name|escapejs }}?');">
@@ -47,9 +57,7 @@
                     <button type="submit" class="btn">Leave Club</button>
                 </form>
                 {% endif %}
-            {% elif pending_request %}
-                <p style="color: #999;">Your request to join is pending approval.</p>
-            {% elif club.status == 'approved' %}
+            {% elif not pending_request and club.status == 'approved' %}
                 <form method="post" action="{% url 'request_membership' club.id %}">
                     {% csrf_token %}
                     <button type="submit" class="btn">Request to Join Club</button>
@@ -68,11 +76,11 @@
                         <strong>{{ req.member.first_name }} {{ req.member.last_name }}</strong>
                         <div class="cm-muted">{{ req.requested_at|date:"M j, Y" }}</div>
                     </div>
-                        <form method="post" action="{% url 'review_membership' req.id %}" class="club-join-action" style="display:flex; gap:8px;">
-                            {% csrf_token %}
-                            <button type="submit" name="action" value="approve" class="btn">Approve</button>
-                            <button type="submit" name="action" value="reject" class="btn">Reject</button>
-                        </form>
+                    <form method="post" action="{% url 'review_membership' req.id %}" class="club-join-action" style="display:flex; gap:8px;">
+                        {% csrf_token %}
+                        <button type="submit" name="action" value="approve" class="btn">Approve</button>
+                        <button type="submit" name="action" value="reject" class="btn">Reject</button>
+                    </form>
                 </div>
                 {% endfor %}
             </div>
