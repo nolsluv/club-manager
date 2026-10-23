@@ -59,6 +59,9 @@
                                 data-edit-url="{% url 'event_edit' e.pk %}"
                                 data-delete-url="{% url 'event_delete' e.pk %}"
                                 data-can-modify="{% if is_admin or e.created_by_id == current_member_id %}1{% else %}0{% endif %}"
+                                data-rsvp-url="{% url 'rsvp_toggle' e.pk %}"
+                                data-rsvp-count="{{ e.rsvps.all|length }}"
+                                data-rsvped="{% if e.pk in rsvped_ids %}1{% else %}0{% endif %}"
                             >
                                 {{ e.date|time:"g:i A" }} {{ e.title }}
                             </button>
@@ -85,6 +88,12 @@
         <p id="m-capacity"></p>
         <p id="m-contact"></p>
         <p class="modal-meta" id="m-creator"></p>
+
+        <form id="m-rsvp-form" method="post" action="">
+            {% csrf_token %}
+            <button type="submit" id="m-rsvp-btn" class="login-button"></button>
+        </form>
+        <p class="modal-meta" id="m-rsvp-count"></p>
 
         <div class="modal-actions" id="m-actions">
             <a id="m-edit-link" href="#">Edit</a>
@@ -114,6 +123,13 @@
         setField('m-capacity', btn.dataset.capacity, 'Capacity: ');
         setField('m-contact', btn.dataset.contact, 'Contact: ');
         setField('m-creator', btn.dataset.creator, 'Added by ');
+
+        document.getElementById('m-rsvp-form').action = btn.dataset.rsvpUrl;
+        document.getElementById('m-rsvp-btn').textContent =
+            btn.dataset.rsvped === '1' ? 'Cancel RSVP' : 'RSVP';
+        const cap = btn.dataset.capacity ? ' / ' + btn.dataset.capacity : '';
+        document.getElementById('m-rsvp-count').textContent =
+            btn.dataset.rsvpCount + cap + ' going';
 
         const actions = document.getElementById('m-actions');
         if (btn.dataset.canModify === '1') {

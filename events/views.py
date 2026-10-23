@@ -13,7 +13,7 @@ from members.decorators import role_required  # finds decorator method
 from django.views.decorators.http import require_POST
 from django.core.exceptions import PermissionDenied
 from .forms import EventForm
-from .models import Event
+from .models import Event, RSVP
 from members.models import Club
 
 EVENT_EDITORS = ('president', 'admin')  # roles allowed to add/edit
@@ -79,12 +79,12 @@ def calendar_view(request):
         try:
             active_club_id = int(active_club_id)
         except (ValueError, TypeError):
-            active_club_id = None
+            active_club_id = None 
 
-    # Initialize the base queryset
+    # initialize base queryset, prefetch rsvps
     events_qs = Event.objects.filter(
         date__date__range=(weeks[0][0], weeks[-1][-1])
-    ).select_related('club')
+    ).select_related('club').prefetch_related('rsvps')
 
     # Strict Club Filter:
     # If an active club is selected display only that clubs events
@@ -103,6 +103,12 @@ def calendar_view(request):
     by_day = defaultdict(list)
     for e in events:
         by_day[timezone.localtime(e.date).date()].append(e)
+
+    rsvped_ids = set()
+    if member:
+        rsvped_ids = set(
+            RSVP.objects.filter(member=member, event__in=events).values_list('event_id', flat=True)
+        )
 
     grid = [
         [{
@@ -132,6 +138,7 @@ def calendar_view(request):
         'months': list(enumerate(calendar.month_name))[1:],
         'years': range(first.year - 2, first.year + 4),
         'active_club_id': active_club_id,
+        'rsvped_ids': rsvped_ids,
         })
 
 def _can_modify(request, event):
@@ -296,3 +303,30 @@ def event_delete(request, pk):
 
     messages.success(request, "Your event has been successfully deleted.")
     return redirect('calendar')
+
+@login_required
+@require_POST
+def rsvp_toggle(request, pk):
+    event = get_object_or_404(Event, pk=pk)
+    member = getattr(request.user, 'member', None)
+
+    if not member:
+        raise PermissionDenied("No member profile.")
+    # only members of the hosting club can RSVP
+    if not event.club or not event.club.members.filter(id=member.id).exists():
+        raise PermissionDenied("Only club members can RSVP to this event.")
+
+    existing = RSVP.objects.filter(event=event, member=member)
+    if existing.exists():
+        existing.delete()
+        messages.success(request, f"Your RSVP to '{event.title}' was cancelled.")
+    else:
+        if event.date < timezone.now():
+            messages.error(request, "This event has already happened.")
+        elif event.capacity and event.rsvps.count() >= event.capacity:
+            messages.error(request, "Sorry, this event is full.")
+        else:
+            RSVP.objects.create(event=event, member=member)
+            messages.success(request, f"You're going to '{event.title}'.")
+
+    return redirect(request.META.get('HTTP_REFERER') or 'calendar')
