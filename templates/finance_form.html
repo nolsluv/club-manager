@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ heading }}{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/finance.css' %}?v=1">
+<div class="form-page">
+  <div class="login-container">
+    <h1>{{ heading }}</h1>
+    <p class="fin-form-sub">{{ club.name }}</p>
+
+    <form method="post">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="error">{{ form.non_field_errors }}</div>
+      {% endif %}
+
+      {% for field in form %}
+        <div class="form-group">
+          {% if field.field.widget.input_type == "checkbox" %}
+            <label class="fin-check">{{ field }} {{ field.label }}</label>
+          {% else %}
+            {{ field.label_tag }}
+            {{ field }}
+          {% endif %}
+          {% for err in field.errors %}<div class="error">{{ err }}</div>{% endfor %}
+        </div>
+      {% endfor %}
+
+      <button type="submit">Save</button>
+    </form>
+
+    <p class="login-footer"><a href="{% url 'finance_home' club.id %}">Cancel</a></p>
+  </div>
+</div>
+{% endblock %}
