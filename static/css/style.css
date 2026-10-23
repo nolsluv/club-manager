@@ -2656,17 +2656,12 @@ body.light-mode .home-card {
 
 .home-note {
     padding: 18px 0;
-
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-
     gap: 18px;
-
     border-top: 1px solid rgba(241, 231, 214, 0.10);
-
     color: var(--text);
-
     font-size: 18px;
     line-height: 1.55;
 }
@@ -2676,6 +2671,13 @@ body.light-mode .home-card {
     border-top: none;
 }
 
+#inbox .home-card-head form:first-of-type {
+    margin-left: auto;
+}
+
+.home-note form:has(.inbox-mark-icon-btn) {
+    margin-left: auto;
+}
 
 .home-note-meta {
     margin-bottom: 6px;
@@ -2695,6 +2697,134 @@ body.light-mode .home-note-meta a {
 
 .home-note-meta a:hover {
     color: var(--accent);
+}
+
+/*Inbox action buttons*/
+.inbox-action-btn {
+    min-height: 46px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    padding: 0 22px;
+
+    border-radius: 999px;
+    border: 1px solid var(--accent);
+
+    background: transparent;
+    color: var(--text);
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+.inbox-action-btn i {
+    color: var(--accent);
+    font-size: 18px;
+}
+
+.inbox-read-all-btn {
+    min-width: 188px;
+}
+
+.inbox-clear-btn {
+    min-width: 145px;
+
+    border-color: rgba(229, 72, 77, 0.55);
+    color: #e85b63;
+}
+
+.inbox-clear-btn i {
+    color: #e85b63;
+}
+
+.inbox-mark-btn {
+    min-width: 150px;
+}
+
+.inbox-delete-btn {
+    width: 50px;
+    height: 46px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border-radius: 14px;
+    border: 1px solid rgba(229, 72, 77, 0.55);
+
+    background: transparent;
+    color: #e85b63;
+
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.inbox-mark-icon-btn {
+    width: 50px;
+    height: 46px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border-radius: 14px;
+    border: 1px solid var(--accent);
+
+    background: transparent;
+    color: var(--accent);
+
+    font-size: 19px;
+    cursor: pointer;
+}
+
+.inbox-mark-icon-btn:hover {
+    background: rgba(200, 138, 84, 0.10);
+}
+/* Mark all read hover */
+.inbox-read-all-btn:hover {
+    background: rgba(200, 138, 84, 0.10);
+    transform: translateY(-1px);
+}
+
+/* Clear all hover */
+.inbox-clear-btn:hover {
+    background: rgba(229, 72, 77, 0.10);
+    transform: translateY(-1px);
+}
+
+/* Delete notification hover */
+.inbox-delete-btn:hover {
+    background: rgba(229, 72, 77, 0.10);
+    transform: translateY(-1px);
+}
+.inbox-read-all-btn,
+.inbox-clear-btn,
+.inbox-delete-btn,
+.inbox-mark-icon-btn {
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.inbox-read-all-btn:hover,
+.inbox-mark-icon-btn:hover {
+    box-shadow: 0 0 0 3px rgba(200, 138, 84, 0.08);
+}
+
+.inbox-clear-btn:hover,
+.inbox-delete-btn:hover {
+    box-shadow: 0 0 0 3px rgba(229, 72, 77, 0.08);
 }
 
 /* =========================

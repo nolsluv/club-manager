@@ -57,13 +57,19 @@ Home
                     {% if unread_count %}
                     <form method="post" action="{% url 'mark_all_read' %}">
                         {% csrf_token %}
-                        <button type="submit" class="home-link">Mark all read</button>
+                        <button type="submit" class="inbox-action-btn inbox-read-all-btn">
+                        <i class="bi bi-check2-all"></i>
+                            Mark all read
+                        </button>
                     </form>
                     {% endif %}
                     {% if notifications %}
                     <form method="post" action="{% url 'clear_all_notifications' %}">
                         {% csrf_token %}
-                        <button type="submit" class="home-link">Clear all</button>
+                        <button type="submit" class="inbox-action-btn inbox-clear-btn">
+                            <i class="bi bi-trash3-fill"></i>
+                            Clear all
+                        </button>
                     </form>
                     {% endif %}
                 </div>
@@ -89,12 +95,19 @@ Home
                     {% if not note.is_read %}
                     <form method="post" action="{% url 'mark_notification_read' note.id %}">
                         {% csrf_token %}
-                        <button type="submit" class="home-link">Mark read</button>
+                        <button type="submit"
+                                class="inbox-mark-icon-btn"
+                                title="Mark read"
+                                aria-label="Mark read">
+                            <i class="bi bi-check2"></i>
+                        </button>
                     </form>
                     {% endif %}
                     <form method="post" action="{% url 'delete_notification' note.id %}">
                         {% csrf_token %}
-                        <button type="submit" class="home-link" title="Delete">&times;</button>
+                        <button type="submit" class="inbox-delete-btn" title="Delete">
+                            <i class="bi bi-trash3-fill"></i>
+                        </button>
                     </form>
                 </div>
                 {% empty %}
