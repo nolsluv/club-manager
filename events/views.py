@@ -13,7 +13,7 @@ from members.decorators import role_required  # finds decorator method
 from django.views.decorators.http import require_POST
 from django.core.exceptions import PermissionDenied
 from .forms import EventForm
-from .models import Event
+from .models import Event, RSVP
 from members.models import Club
 
 EVENT_EDITORS = ('president', 'admin')  # roles allowed to add/edit
@@ -296,3 +296,30 @@ def event_delete(request, pk):
 
     messages.success(request, "Your event has been successfully deleted.")
     return redirect('calendar')
+
+@login_required
+@require_POST
+def rsvp_toggle(request, pk):
+    event = get_object_or_404(Event, pk=pk)
+    member = getattr(request.user, 'member', None)
+
+    if not member:
+        raise PermissionDenied("No member profile.")
+    # only members of the hosting club can RSVP
+    if not event.club or not event.club.members.filter(id=member.id).exists():
+        raise PermissionDenied("Only club members can RSVP to this event.")
+
+    existing = RSVP.objects.filter(event=event, member=member)
+    if existing.exists():
+        existing.delete()
+        messages.success(request, f"Your RSVP to '{event.title}' was cancelled.")
+    else:
+        if event.date < timezone.now():
+            messages.error(request, "This event has already happened.")
+        elif event.capacity and event.rsvps.count() >= event.capacity:
+            messages.error(request, "Sorry, this event is full.")
+        else:
+            RSVP.objects.create(event=event, member=member)
+            messages.success(request, f"You're going to '{event.title}'.")
+
+    return redirect(request.META.get('HTTP_REFERER') or 'calendar')
