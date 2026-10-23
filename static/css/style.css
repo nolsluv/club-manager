@@ -2124,6 +2124,1051 @@ body.light-mode .home-note-meta a {
     animation-delay: 0.25s;
 }
 
+/* =========================
+   club dashboard page
+========================= */
+
+.club-dashboard-page {
+    width: 100%;
+    min-height: calc(100vh - 92px);
+    background: var(--bg);
+    color: var(--text);
+}
+
+.club-dashboard-shell {
+    width: 100%;
+    min-height: calc(100vh - 92px);
+}
+
+
+/* =========================
+   dashboard hero
+========================= */
+
+.club-dashboard-hero {
+    position: relative;
+    width: 100%;
+    min-height: 300px;
+    padding: 52px 4.5% 110px;
+    overflow: hidden;
+    background: var(--bg);
+}
+
+.club-dashboard-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background:
+        url("../images/home-milwaukee-dark.png")
+        center 50% / cover no-repeat;
+    filter: blur(5px);
+    transform: scale(1.035);
+    opacity: 0.82;
+
+    z-index: 0;
+}
+
+.club-dashboard-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(14, 27, 43, 0.46) 0%,
+            rgba(14, 27, 43, 0.12) 40%,
+            rgba(14, 27, 43, 0.28) 70%,
+            var(--bg) 100%
+        );
+
+    z-index: 1;
+}
+
+.club-dashboard-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 850px;
+}
+
+.club-dashboard-eyebrow {
+    margin-bottom: 12px;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 4px;
+}
+
+.club-dashboard-hero h1 {
+    margin: 0 0 10px;
+    color: var(--text);
+    font-size: 48px;
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: -1px;
+}
+
+.club-dashboard-hero p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+
+/* =========================
+   light mode hero
+========================= */
+
+body.light-mode .club-dashboard-hero::before {
+    background:
+        url("../images/home-milwaukee-light.png")
+        center 50% / cover no-repeat;
+
+    opacity: 0.78;
+}
+
+body.light-mode .club-dashboard-hero::after {
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(249, 246, 238, 0.74) 0%,
+            rgba(249, 246, 238, 0.34) 40%,
+            rgba(249, 246, 238, 0.50) 72%,
+            var(--bg) 100%
+        );
+}
+
+
+/* =========================
+   dashboard content
+========================= */
+
+.club-dashboard-content {
+    position: relative;
+    z-index: 3;
+    width: 94%;
+    margin: -75px auto 0;
+    padding-bottom: 40px;
+}
+
+
+/* =========================
+   dashboard sections
+========================= */
+
+.club-dashboard-content .cm-section {
+    width: 100%;
+    margin: 16px 0 0;
+}
+
+.club-dashboard-content .cm-section:first-child {
+    margin-top: 0;
+}
+
+
+/* Section title */
+.club-dashboard-content .cm-section-title {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 16px 20px;
+    background: rgba(13, 35, 58, 0.56);
+
+    border: 1px solid rgba(241, 231, 214, 0.16);
+    border-radius: 14px;
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    cursor: pointer;
+}
+
+.club-dashboard-content .cm-section-title h2 {
+    margin: 0;
+
+    font-size: 20px;
+    font-weight: 600;
+
+    color: var(--text);
+}
+
+
+/* Light mode title */
+body.light-mode .club-dashboard-content .cm-section-title {
+    background: rgba(255, 251, 244, 0.62);
+
+    border: 1px solid rgba(184, 115, 51, 0.14);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.55),
+        0 8px 22px rgba(82, 60, 35, 0.04);
+}
+
+
+/* =========================
+   dashboard cards/panels
+========================= */
+
+.club-dashboard-content .cm-card {
+    margin-top: 10px;
+
+    padding: 22px 24px;
+
+    background: rgba(13, 35, 58, 0.56);
+
+    border: 1px solid rgba(241, 231, 214, 0.16);
+    border-radius: 16px;
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.04),
+        0 10px 28px rgba(0, 0, 0, 0.10);
+}
+
+body.light-mode .club-dashboard-content .cm-card {
+    background: rgba(255, 251, 244, 0.60);
+
+    border: 1px solid rgba(184, 115, 51, 0.14);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.55),
+        0 10px 28px rgba(82, 60, 35, 0.05);
+}
+
+
+/* =========================
+   rows
+========================= */
+
+.club-dashboard-content .cm-row {
+    padding: 16px 0;
+
+    border-top: 1px solid var(--border);
+}
+
+.club-dashboard-content .cm-row:first-child {
+    border-top: none;
+}
+
+.club-dashboard-content .cm-row strong,
+.club-dashboard-content .cm-row a {
+    font-size: 16px;
+}
+
+
+/*responsive*/
+
+@media (max-width: 900px) {
+    .club-dashboard-hero {
+        min-height: 250px;
+        padding: 40px 24px 90px;
+    }
+
+    .club-dashboard-hero h1 {
+        font-size: 36px;
+    }
+
+    .club-dashboard-content {
+        width: calc(100% - 32px);
+        margin-top: -55px;
+    }
+}
+
+/* =========================
+   dashboard section header layout
+========================= */
+
+.cm-dashboard-title {
+    justify-content: space-between !important;
+}
+
+.cm-title-left,
+.cm-title-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cm-title-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 20px;
+    line-height: 1;
+}
+
+.cm-section-count {
+    color: var(--accent);
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.cm-collapse-button {
+    width: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+
+    border: none !important;
+    background: transparent !important;
+    color: var(--muted) !important;
+
+    font-size: 16px;
+    line-height: 1;
+}
+
+.cm-collapse-button:hover {
+    color: var(--text) !important;
+}
+
+
+/* =========================
+   my clubs card grid
+========================= */
+
+.cm-card-tight {
+    padding: 14px !important;
+}
+
+.club-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.club-dashboard-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 290px;
+    padding: 18px 18px 20px;
+    border-radius: 18px;
+    border: 1px solid rgba(241, 231, 214, 0.18);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.04),
+            rgba(255,255,255,0.01)
+        ),
+        rgba(10, 31, 52, 0.72);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 12px 28px rgba(0,0,0,0.16);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+
+
+
+/* light mode */
+body.light-mode .club-dashboard-card {
+    border: 1px solid rgba(184, 115, 51, 0.18);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.32),
+            rgba(255,255,255,0.10)
+        ),
+        rgba(255, 249, 240, 0.78);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.72),
+        0 10px 22px rgba(82,60,35,0.08);
+}
+
+/* =========================
+   club theme colors
+========================= */
+
+.club-theme-copper {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(200, 138, 84, 0.18),
+            transparent 42%
+        ),
+        rgba(28, 34, 40, 0.82);
+}
+
+.club-theme-sage {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(140, 168, 150, 0.18),
+            transparent 42%
+        ),
+        rgba(15, 40, 43, 0.82);
+}
+
+.club-theme-sand {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(217, 198, 168, 0.16),
+            transparent 42%
+        ),
+        rgba(35, 32, 29, 0.82);
+}
+
+.club-theme-lake {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(77, 132, 173, 0.20),
+            transparent 42%
+        ),
+        rgba(14, 35, 55, 0.84);
+}
+
+.club-theme-slate {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(125, 145, 160, 0.16),
+            transparent 42%
+        ),
+        rgba(25, 38, 50, 0.84);
+}
+
+
+/* light mode */
+
+body.light-mode .club-theme-copper {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(184, 115, 51, 0.18),
+            transparent 42%
+        ),
+        rgba(255, 249, 242, 0.82);
+}
+
+body.light-mode .club-theme-sage {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(167, 184, 159, 0.22),
+            transparent 42%
+        ),
+        rgba(248, 251, 247, 0.84);
+}
+
+body.light-mode .club-theme-sand {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(217, 198, 168, 0.28),
+            transparent 42%
+        ),
+        rgba(255, 252, 246, 0.84);
+}
+
+body.light-mode .club-theme-lake {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(77, 132, 173, 0.14),
+            transparent 42%
+        ),
+        rgba(247, 250, 252, 0.84);
+}
+
+body.light-mode .club-theme-slate {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(125, 145, 160, 0.14),
+            transparent 42%
+        ),
+        rgba(248, 250, 251, 0.84);
+}
+
+.club-color-copper {
+    background: rgba(200, 138, 84, 0.18);
+    color: #d9a268;
+}
+
+.club-color-sage {
+    background: rgba(140, 168, 150, 0.18);
+    color: #9fc0aa;
+}
+
+.club-color-sand {
+    background: rgba(217, 198, 168, 0.16);
+    color: #d9c6a8;
+}
+
+.club-color-lake {
+    background: rgba(77, 132, 173, 0.18);
+    color: #79a9cb;
+}
+
+.club-color-slate {
+    background: rgba(125, 145, 160, 0.18);
+    color: #a3b0ba;
+}
+
+
+/* light mode icon colors */
+
+body.light-mode .club-color-copper {
+    background: rgba(184, 115, 51, 0.14);
+    color: #a9652f;
+}
+
+body.light-mode .club-color-sage {
+    background: rgba(167, 184, 159, 0.22);
+    color: #667d62;
+}
+
+body.light-mode .club-color-sand {
+    background: rgba(217, 198, 168, 0.28);
+    color: #94785c;
+}
+
+body.light-mode .club-color-lake {
+    background: rgba(77, 132, 173, 0.13);
+    color: #3f6f91;
+}
+
+body.light-mode .club-color-slate {
+    background: rgba(100, 120, 135, 0.12);
+    color: #5f7482;
+}
+
+/* =========================
+   Club Appearance Picker
+========================= */
+
+.club-appearance-form {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+}
+
+.appearance-picker-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.appearance-picker-label {
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+
+/* hide actual radio button */
+.icon-option input,
+.color-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+
+/* =========================
+   Icon picker
+========================= */
+
+.icon-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.icon-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+
+    cursor: pointer;
+}
+
+.icon-option-box {
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(241, 231, 214, 0.16);
+
+    color: var(--muted);
+    font-size: 24px;
+
+    transition:
+        transform 0.18s ease,
+        border-color 0.18s ease,
+        background 0.18s ease,
+        color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.icon-option:hover .icon-option-box {
+    transform: translateY(-2px);
+
+    color: var(--accent);
+
+    border-color: rgba(200, 138, 84, 0.55);
+    background: rgba(200, 138, 84, 0.10);
+}
+
+.icon-option.selected .icon-option-box,
+.icon-option:has(input:checked) .icon-option-box {
+    color: var(--accent);
+
+    border-color: var(--accent);
+    background: rgba(200, 138, 84, 0.14);
+
+    box-shadow:
+        0 0 0 2px rgba(200, 138, 84, 0.12),
+        0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+.icon-option-name {
+    color: var(--muted);
+    font-size: 11px;
+    text-align: center;
+}
+
+.icon-option:has(input:checked) .icon-option-name {
+    color: var(--text);
+}
+
+
+/* =========================
+   Color picker
+========================= */
+
+.color-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.color-option {
+    min-width: 92px;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 9px 12px;
+
+    border-radius: 999px;
+
+    border: 1px solid rgba(241, 231, 214, 0.14);
+    background: rgba(255, 255, 255, 0.04);
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.18s ease,
+        transform 0.18s ease,
+        background 0.18s ease;
+}
+
+.color-option:hover {
+    transform: translateY(-1px);
+
+    border-color: rgba(200, 138, 84, 0.45);
+}
+
+.color-option.selected,
+.color-option:has(input:checked) {
+    border-color: var(--accent);
+
+    background: rgba(200, 138, 84, 0.08);
+}
+
+.color-swatch {
+    width: 20px;
+    height: 20px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.24);
+}
+
+
+/* theme swatches */
+
+.color-swatch-copper {
+    background: #c88a54;
+}
+
+.color-swatch-sage {
+    background: #8ca896;
+}
+
+.color-swatch-sand {
+    background: #d9c6a8;
+}
+
+.color-swatch-lake {
+    background: #4d84ad;
+}
+
+.color-swatch-slate {
+    background: #7d91a0;
+}
+
+.color-option-name {
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+
+/* =========================
+   Save button
+========================= */
+
+.club-appearance-form .cm-actions {
+    margin-top: 2px;
+}
+
+.club-appearance-form .cm-btn-primary {
+    width: 100%;
+
+    padding: 13px 18px;
+
+    border-radius: 999px;
+
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+
+/* =========================
+   Light Mode
+========================= */
+
+body.light-mode .icon-option-box {
+    background: rgba(255, 255, 255, 0.48);
+    border-color: rgba(184, 115, 51, 0.14);
+}
+
+body.light-mode .icon-option:hover .icon-option-box {
+    background: rgba(184, 115, 51, 0.08);
+}
+
+body.light-mode .icon-option.selected .icon-option-box,
+body.light-mode .icon-option:has(input:checked) .icon-option-box {
+    background: rgba(184, 115, 51, 0.11);
+}
+
+body.light-mode .color-option {
+    background: rgba(255, 255, 255, 0.42);
+    border-color: rgba(184, 115, 51, 0.13);
+}
+
+body.light-mode .color-option.selected,
+body.light-mode .color-option:has(input:checked) {
+    background: rgba(184, 115, 51, 0.08);
+}
+
+body.light-mode .color-swatch {
+    border-color: rgba(86, 62, 40, 0.18);
+}
+
+/* =========================
+   club card content
+========================= */
+
+.club-dashboard-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.club-dashboard-icon {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.08);
+    font-size: 24px;
+}
+
+body.light-mode .club-dashboard-icon {
+    background: rgba(255,255,255,0.52);
+    border: 1px solid rgba(184,115,51,0.12);
+}
+
+.club-dashboard-more {
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.club-dashboard-card-body h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.club-dashboard-card-body p {
+    min-height: 66px;
+    margin: 0 0 14px;
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--muted);
+}
+
+.club-dashboard-members {
+    font-size: 14px;
+    font-weight: 500;
+    color: #f0bf73;
+}
+
+body.light-mode .club-dashboard-members {
+    color: #a96227;
+}
+
+
+/* =========================
+   club card buttons
+========================= */
+
+.club-dashboard-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.club-dashboard-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 999px;
+    text-align: center;
+    text-decoration: none !important;
+    font-size: 14px !important;
+    font-weight: 600;
+}
+
+.club-dashboard-btn-primary {
+    background: #c88a54;
+    color: white !important;
+    border: 1px solid #c88a54;
+}
+
+.club-dashboard-btn-secondary {
+    background: transparent;
+    color: var(--text) !important;
+    border: 1px solid rgba(241,231,214,0.48);
+}
+
+body.light-mode .club-dashboard-btn-secondary {
+    color: #7b4b1f !important;
+    border-color: rgba(184,115,51,0.55);
+}
+
+
+/* =========================
+   request form two columns
+========================= */
+
+#request-club-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+#request-club-form .cm-field {
+    margin-bottom: 0;
+}
+
+#request-club-form .cm-actions {
+    grid-column: 1 / -1;
+    margin-top: 4px;
+}
+
+#request-club-form .cm-btn-primary {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 999px;
+}
+
+
+/* =========================
+   Dashboard list rows
+========================= */
+
+.club-dashboard-content .cm-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 16px 0;
+}
+
+.club-dashboard-content .cm-row a {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.club-dashboard-content .cm-row a:hover {
+    color: var(--accent);
+}
+
+/*responsive*/
+@media (max-width: 1200px) {
+    .club-cards-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 800px) {
+    .club-cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #request-club-form {
+        grid-template-columns: 1fr;
+    }
+
+    #request-club-form .cm-actions {
+        grid-column: auto;
+    }
+
+    .club-dashboard-actions {
+        flex-direction: column;
+    }
+}
+
+/* =========================
+  unified Icon Style
+========================= */
+
+/* section title icon */
+.cm-title-icon {
+    width: 28px;
+    height: 28px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    color: var(--accent);
+    font-size: 20px;
+    line-height: 1;
+}
+
+.cm-title-icon i {
+    font-style: normal;
+}
+
+
+/* =========================
+   club card icons
+========================= */
+
+.club-dashboard-icon {
+    width: 54px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    font-size: 26px;
+    line-height: 1;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.club-dashboard-icon i {
+    font-style: normal;
+}
+
+/* dark mode card icon colors */
+.club-icon-cs {
+    background: rgba(232, 188, 116, 0.14);
+    color: #e5bc73;
+}
+
+.club-icon-game {
+    background: rgba(142, 228, 206, 0.14);
+    color: #92e0cd;
+}
+
+.club-icon-music {
+    background: rgba(232, 188, 116, 0.14);
+    color: #e5bc73;
+}
+
+/* light mode card icon colors */
+body.light-mode .club-icon-cs {
+    background: rgba(201, 138, 84, 0.14);
+    color: #b7743f;
+    border: 1px solid rgba(184, 115, 51, 0.12);
+}
+
+body.light-mode .club-icon-game {
+    background: rgba(109, 170, 151, 0.14);
+    color: #4b8f80;
+    border: 1px solid rgba(109, 170, 151, 0.12);
+}
+
+body.light-mode .club-icon-music {
+    background: rgba(201, 138, 84, 0.14);
+    color: #b7743f;
+    border: 1px solid rgba(184, 115, 51, 0.12);
+}
+
+
+/* =========================
+   members line icon
+========================= */
+
+.club-dashboard-members {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #e5bc73;
+}
+
+.club-dashboard-members i {
+    font-size: 14px;
+}
+
+body.light-mode .club-dashboard-members {
+    color: #a96227;
+}
+
+
 
 /* =========================
    Manage Club Members

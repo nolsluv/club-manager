@@ -36,6 +36,108 @@
             </div>
         </div>
 
+
+        {% if can_manage %}
+        <div class="cm-section club-appearance-section">
+
+            <div class="cm-section-title cm-dashboard-title">
+                <div class="cm-title-left">
+                    <span class="cm-title-icon">
+                        <i class="bi bi-palette"></i>
+                    </span>
+                    <h2>Customize Appearance</h2>
+                </div>
+            </div>
+
+            <form method="post" class="cm-card club-appearance-form">
+                {% csrf_token %}
+
+                <div class="appearance-picker-group">
+                    <label class="appearance-picker-label">Club Icon</label>
+
+                    <div class="icon-picker">
+                        {% for value, label in appearance_form.fields.icon.choices %}
+                            <label class="icon-option {% if club.icon == value %}selected{% endif %}">
+                                <input
+                                    type="radio"
+                                    name="icon"
+                                    value="{{ value }}"
+                                    {% if club.icon == value %}checked{% endif %}
+                                >
+
+                                <span class="icon-option-box">
+                                    {% if value == 'laptop' %}
+                                        <i class="bi bi-laptop"></i>
+                                    {% elif value == 'controller' %}
+                                        <i class="bi bi-controller"></i>
+                                    {% elif value == 'music' %}
+                                        <i class="bi bi-music-note-beamed"></i>
+                                    {% elif value == 'people' %}
+                                        <i class="bi bi-people-fill"></i>
+                                    {% elif value == 'book' %}
+                                        <i class="bi bi-book"></i>
+                                    {% elif value == 'camera' %}
+                                        <i class="bi bi-camera"></i>
+                                    {% elif value == 'palette' %}
+                                        <i class="bi bi-palette"></i>
+                                    {% elif value == 'trophy' %}
+                                        <i class="bi bi-trophy"></i>
+                                    {% elif value == 'globe' %}
+                                        <i class="bi bi-globe"></i>
+                                    {% else %}
+                                        <i class="bi bi-stars"></i>
+                                    {% endif %}
+                                </span>
+
+                                <span class="icon-option-name">
+                                    {{ label }}
+                                </span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+
+                <div class="appearance-picker-group">
+                    <label class="appearance-picker-label">Theme Color</label>
+
+                    <div class="color-picker">
+                        {% for value, label in appearance_form.fields.theme_color.choices %}
+                            <label
+                                class="color-option {% if club.theme_color == value %}selected{% endif %}"
+                                title="{{ label }}"
+                            >
+                                <input
+                                    type="radio"
+                                    name="theme_color"
+                                    value="{{ value }}"
+                                    {% if club.theme_color == value %}checked{% endif %}
+                                >
+
+                                <span class="color-swatch color-swatch-{{ value }}"></span>
+
+                                <span class="color-option-name">
+                                    {{ label }}
+                                </span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="cm-actions">
+                    <button
+                        type="submit"
+                        name="update_appearance"
+                        class="cm-btn cm-btn-primary"
+                    >
+                        Save Appearance
+                    </button>
+                </div>
+            </form>
+
+        </div>
+        {% endif %}
+
         <!-- membership status -->
         {% if is_member %}
             <p class="club-status club-status-ok">You're a member of this club.</p>
