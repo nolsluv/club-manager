@@ -39,7 +39,37 @@ Home
 
                 {% for club in my_clubs %}
                 <a href="{% url 'club_detail' club.id %}" class="home-club">
-                    <span>{{ club.name }}</span>
+
+                    <div class="home-club-main">
+
+                        <div class="home-club-icon club-color-{{ club.theme_color }}">
+                            {% if club.icon == 'laptop' %}
+                                <i class="bi bi-laptop"></i>
+                            {% elif club.icon == 'controller' %}
+                                <i class="bi bi-controller"></i>
+                            {% elif club.icon == 'music' %}
+                                <i class="bi bi-music-note-beamed"></i>
+                            {% elif club.icon == 'people' %}
+                                <i class="bi bi-people-fill"></i>
+                            {% elif club.icon == 'book' %}
+                                <i class="bi bi-book"></i>
+                            {% elif club.icon == 'camera' %}
+                                <i class="bi bi-camera"></i>
+                            {% elif club.icon == 'palette' %}
+                                <i class="bi bi-palette"></i>
+                            {% elif club.icon == 'trophy' %}
+                                <i class="bi bi-trophy"></i>
+                            {% elif club.icon == 'globe' %}
+                                <i class="bi bi-globe"></i>
+                            {% else %}
+                                <i class="bi bi-stars"></i>
+                            {% endif %}
+                        </div>
+
+                        <span>{{ club.name }}</span>
+
+                    </div>
+
                     <span class="home-arrow">→</span>
                 </a>
                 {% empty %}
