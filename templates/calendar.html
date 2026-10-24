@@ -2,9 +2,33 @@
 {% block title %}Calendar{% endblock %}
 
 {% block content %}
-<div class="cal-wrap">
+<div class="calendar-page">
+
+    <section class="calendar-hero">
+        <div class="calendar-hero-content">
+
+            <div class="calendar-eyebrow">
+                CALENDAR
+            </div>
+
+            <h1>
+                {% for num, name in months %}
+                    {% if num == month %}{{ name }}{% endif %}
+                {% endfor %}
+                {{ year }}
+            </h1>
+
+            <p>
+                Manage your club events, meetings, and activities all in one place.
+            </p>
+
+        </div>
+    </section>
+
+    <div class="cal-wrap">
 
     <div class="cal-head">
+
         <!-- month navigation -->
         <div class="cal-title">
             <a class="cal-nav" href="?year={{ prev_m.year }}&month={{ prev_m.month }}">&larr;</a>
@@ -15,6 +39,7 @@
                         <option value="{{ num }}" {% if num == month %}selected{% endif %}>{{ name }}</option>
                     {% endfor %}
                 </select>
+
                 <select name="year" class="cal-select" onchange="this.form.submit()">
                     {% for y in years %}
                         <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
@@ -23,12 +48,28 @@
             </form>
 
             <a class="cal-nav" href="?year={{ next_m.year }}&month={{ next_m.month }}">&rarr;</a>
-            <a class="cal-nav" href="{% url 'calendar' %}">Today</a>
+
+            <a class="cal-nav cal-today-link" href="{% url 'calendar' %}">
+                Today
+            </a>
         </div>
 
+
+        <div class="cal-legend">
+            <span><i class="cal-dot meeting"></i>Meeting</span>
+            <span><i class="cal-dot social"></i>Social</span>
+            <span><i class="cal-dot fundraiser"></i>Fundraiser</span>
+            <span><i class="cal-dot service"></i>Service</span>
+            <span><i class="cal-dot other"></i>Other</span>
+        </div>
+
+
         {% if can_edit %}
-            <a class="login-button cal-add" href="{% url 'event_create' %}">+ Add event</a>
+        <a class="cal-add" href="{% url 'event_create' %}">
+            + Add Event
+        </a>
         {% endif %}
+
     </div>
 
     <!-- scroll fun -->
@@ -47,7 +88,7 @@
                         {% for e in day.events %}
                             <button
                                 type="button"
-                                class="cal-event"
+                                class="cal-event cal-event-{{ e.category }}"
                                 data-title="{{ e.title }}"
                                 data-category="{{ e.get_category_display }}"
                                 data-when="{{ e.date|date:'l, F j' }} · {{ e.date|time:'g:i A' }}{% if e.end_date %} – {{ e.end_date|time:'g:i A' }}{% endif %}"
@@ -63,7 +104,13 @@
                                 data-rsvp-count="{{ e.rsvps.all|length }}"
                                 data-rsvped="{% if e.pk in rsvped_ids %}1{% else %}0{% endif %}"
                             >
-                                {{ e.date|time:"g:i A" }} {{ e.title }}
+                                <span class="cal-event-dot"></span>
+
+                                <span class="cal-event-text">
+                                    <span class="cal-event-title">{{ e.title }}</span>
+                                    <span class="cal-event-time">{{ e.date|time:"g:i A" }}</span>
+                                </span>
+                                
                             </button>
                         {% endfor %}
                     </div>
@@ -72,7 +119,10 @@
         </div>
     </div>
 
-</div>
+
+</div><!-- cal-wrap -->
+
+</div> <!-- calendar-page -->
 
 <!-- one shared modal, filled in by JS -->
 <div id="event-modal" class="modal">

@@ -729,32 +729,215 @@ body {
 .errorlist li {
     margin-bottom: 10px;
 }
-/* =========================
-   Calendar
-========================= */
+
+
+/* ========================================
+   Calendar Page
+======================================== */
+
+.calendar-page {
+    width: 100%;
+    min-height: calc(100vh - 80px);
+
+    background: var(--bg);
+    color: var(--text);
+}
+
+
+/* ========================================
+   Calendar Hero
+======================================== */
+
+.calendar-hero {
+    position: relative;
+    min-height: 260px;
+    padding: 48px 4.5% 90px;
+    overflow: hidden;
+    background: var(--bg);
+}
+
+.calendar-hero::before {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    background:
+        url("../images/home-milwaukee-dark.png")
+        center 54% / cover no-repeat;
+
+    filter: blur(4px);
+    transform: scale(1.025);
+
+    opacity: 0.86;
+
+    z-index: 0;
+}
+
+.calendar-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(8, 27, 43, 0.94) 0%,
+            rgba(8, 27, 43, 0.72) 42%,
+            rgba(8, 27, 43, 0.18) 75%
+        ),
+        linear-gradient(
+            to bottom,
+            transparent 62%,
+            var(--bg) 100%
+        );
+
+    z-index: 1;
+}
+
+body.light-mode .calendar-hero::before {
+    background:
+        url("../images/home-milwaukee-light.png")
+        center 54% / cover no-repeat;
+    opacity: 0.80;
+}
+
+body.light-mode .calendar-hero::after {
+    background:
+        linear-gradient(
+            90deg,
+            rgba(249, 246, 238, 0.94) 0%,
+            rgba(249, 246, 238, 0.74) 42%,
+            rgba(249, 246, 238, 0.16) 75%
+        ),
+        linear-gradient(
+            to bottom,
+            transparent 62%,
+            var(--bg) 100%
+        );
+}
+
+body.light-mode .calendar-hero h1 {
+    color: #172536;
+}
+
+body.light-mode .calendar-hero p {
+    color: #6f756f;
+}
+
+body.light-mode .cal-head {
+    background: rgba(255, 251, 244, 0.72);
+    border-color: rgba(184, 115, 51, 0.14);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.7),
+        0 10px 26px rgba(82,60,35,.04);
+}
+
+
+.calendar-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+}
+
+.calendar-eyebrow {
+    margin-bottom: 10px;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 4px;
+}
+
+.calendar-hero h1 {
+    margin: 0 0 8px;
+    color: #f1e7d6;
+    font-size: 52px;
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -1px;
+}
+
+.calendar-hero p {
+    margin: 0;
+    color: rgba(241, 231, 214, 0.78);
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+/*Calendar*/
 
 .cal-wrap {
-    padding: 40px 48px;
+    position: relative;
+    z-index: 3;
+    width: 94%;
+    margin: -48px auto 0;
+    padding: 0 0 45px;
 }
 
 .cal-head {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 28px;
+    gap: 24px;
+    margin-bottom: 10px;
+    padding: 14px 18px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: rgba(13, 35, 58, 0.58);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
 }
 
 .cal-title {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+    flex-shrink: 0;
 }
 
-.cal-title h1 {
-    font-size: 38px;
-    font-weight: 300;
-    letter-spacing: -1px;
+.cal-legend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+
+    margin-left: auto;
+
+    font-size: 12px;
+    color: var(--text);
 }
+
+.cal-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.cal-dot {
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    border-radius: 50%;
+}
+
+.cal-dot.meeting {
+    background: #8ca896;
+}
+
+.cal-dot.social {
+    background: #4d84ad;
+}
+
+.cal-dot.fundraiser {
+    background: #c88a54;
+}
+
+.cal-dot.service {
+    background: #cf7865;
+}
+
+.cal-dot.other {
+    background: #8e6bd1;
+}
+
 
 .cal-picker {
     display: flex;
@@ -825,25 +1008,29 @@ body {
 
 /* smaller version of .login-button for the "Add event" link */
 .cal-add {
-    padding: 10px 26px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    border-radius: 999px;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
     font-size: 14px;
-
-    background: var(--text);
-    color: var(--bg);
-    border: 1px solid var(--text);
+    font-weight: 600;
+    cursor: pointer;
 
     transition:
-        background 0.3s ease,
-        color 0.3s ease,
-        border-color 0.3s ease,
-        transform 0.3s ease;
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .cal-add:hover {
-    background: transparent;
-    color: var(--text);
-    border-color: var(--text);
+    color: white;
     transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(200, 138, 84, 0.18);
 }
 
 /* scrolls sideways on small screens instead of squishing the grid */
@@ -888,39 +1075,107 @@ body {
 }
 
 .cal-cell.today {
-    background: var(--surface-2);
+    background: rgba(200, 138, 84, 0.08);
 }
 
 .cal-cell.today .cal-day {
-    color: var(--text);
-    font-weight: 600;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+}
+body.light-mode .cal-cell.today {
+    background: rgba(184, 115, 51, 0.07);
 }
 
 .cal-day {
-    font-size: 13px;
+    font-size: 17px;
+    font-weight: 500;
     color: var(--muted);
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .cal-event {
-    display: block;
     width: 100%;
-    text-align: left;
-
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-
-    padding: 6px 8px;
+    min-height: 52px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    box-sizing: border-box;
+    padding: 9px 10px;
     margin-bottom: 6px;
-
-    font-size: 12px;
-    line-height: 1.4;
+    border-radius: 9px;
+    border: 1px solid var(--border);
     color: var(--text);
-
     font-family: "Manrope", sans-serif;
+    text-align: left;
     cursor: pointer;
-    overflow-wrap: anywhere;
+    overflow: hidden;
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+.cal-event:hover {
+    transform: translateY(-1px);
+    border-color: rgba(200, 138, 84, 0.45);
+
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08);
+}
+
+.cal-event-dot {
+    width: 9px;
+    height: 9px;
+    flex-shrink: 0;
+    margin-top: 4px;
+    border-radius: 50%;
+}
+
+.cal-event-text {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cal-event-title {
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cal-event-time {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.cal-event-meeting .cal-event-dot {
+    background: #8ca896;
+}
+
+.cal-event-social .cal-event-dot {
+    background: #4d84ad;
+}
+
+.cal-event-fundraiser .cal-event-dot {
+    background: #c88a54;
+}
+
+.cal-event-service .cal-event-dot {
+    background: #cf7865;
+}
+
+.cal-event-other .cal-event-dot {
+    background: #8e6bd1;
 }
 
 .cal-event:hover {
@@ -941,6 +1196,57 @@ body {
 .cal-event a:hover {
     color: var(--text);
 }
+
+/* ========================================
+   Calendar Event Categories
+======================================== */
+
+.cal-event-meeting {
+    background: rgba(140, 168, 150, 0.18);
+    border-color: rgba(140, 168, 150, 0.24);
+}
+
+.cal-event-social {
+    background: rgba(77, 132, 173, 0.20);
+    border-color: rgba(77, 132, 173, 0.28);
+}
+
+.cal-event-fundraiser {
+    background: rgba(200, 138, 84, 0.20);
+    border-color: rgba(200, 138, 84, 0.28);
+}
+
+.cal-event-service {
+    background: rgba(207, 120, 101, 0.20);
+    border-color: rgba(207, 120, 101, 0.28);
+}
+
+.cal-event-other {
+    background: rgba(142, 107, 209, 0.20);
+    border-color: rgba(142, 107, 209, 0.28);
+}
+body.light-mode .cal-event-meeting {
+    background: rgba(140, 168, 150, 0.14);
+}
+
+body.light-mode .cal-event-social {
+    background: rgba(77, 132, 173, 0.12);
+}
+
+body.light-mode .cal-event-fundraiser {
+    background: rgba(200, 138, 84, 0.13);
+}
+
+body.light-mode .cal-event-service {
+    background: rgba(207, 120, 101, 0.13);
+}
+
+body.light-mode .cal-event-other {
+    background: rgba(142, 107, 209, 0.12);
+}
+
+/* ========================================
+======================================== */
 
 .modal {
     display: none;
@@ -2759,14 +3065,6 @@ body.light-mode .club-reset-button {
 .cm-btn-danger { color: #e5484d; border-color: rgba(229, 72, 77, 0.5); }
 
 /* request list rows */
-.cm-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    padding: 16px 0;
-    border-top: 1px solid var(--border);
-}
 .cm-row:first-child { border-top: none; padding-top: 0; }
 .cm-row a { color: inherit; font-weight: 600; }
 
@@ -4258,6 +4556,7 @@ body.light-mode .club-color-slate {
     border: 1px solid var(--accent);
     color: var(--accent);
     font-weight: 600;
+    cursor: pointer;
 
     transition:
         background 0.2s ease,
