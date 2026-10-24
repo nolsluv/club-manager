@@ -110,7 +110,7 @@
                                     <span class="cal-event-title">{{ e.title }}</span>
                                     <span class="cal-event-time">{{ e.date|time:"g:i A" }}</span>
                                 </span>
-                                
+
                             </button>
                         {% endfor %}
                     </div>
@@ -128,31 +128,70 @@
 <div id="event-modal" class="modal">
     <div class="modal-backdrop" onclick="closeModal()"></div>
     <div class="modal-card">
-        <button type="button" class="modal-close" onclick="closeModal()">&times;</button>
 
-        <p class="modal-category" id="m-category"></p>
-        <h2 id="m-title"></h2>
-        <p class="modal-when" id="m-when"></p>
-        <p id="m-location"></p>
-        <p class="modal-desc" id="m-description"></p>
-        <p id="m-capacity"></p>
-        <p id="m-contact"></p>
-        <p class="modal-meta" id="m-creator"></p>
+        <button type="button" class="modal-close" onclick="closeModal()">
+            <i class="bi bi-x-lg"></i>
+        </button>
+
+        <div class="event-modal-category">
+            <span class="event-modal-dot"></span>
+            <span id="m-category"></span>
+        </div>
+
+        <h2 id="m-title" class="event-modal-title"></h2>
+
+        <div class="event-modal-info-line">
+            <i class="bi bi-calendar-check"></i>
+            <span id="m-when"></span>
+        </div>
+
+        <div class="event-modal-info-line" id="m-location-row">
+            <i class="bi bi-geo-alt"></i>
+            <span id="m-location"></span>
+        </div>
+
+        <div class="event-modal-description" id="m-description"></div>
+
+        <div class="event-modal-info-line event-modal-creator">
+            <i class="bi bi-person"></i>
+            <span id="m-creator"></span>
+        </div>
+
+        <p id="m-capacity" class="event-modal-hidden-meta"></p>
+        <p id="m-contact" class="event-modal-hidden-meta"></p>
 
         <form id="m-rsvp-form" method="post" action="">
             {% csrf_token %}
-            <button type="submit" id="m-rsvp-btn" class="login-button"></button>
+            <button type="submit" id="m-rsvp-btn" class="event-modal-rsvp-btn"></button>
         </form>
-        <p class="modal-meta" id="m-rsvp-count"></p>
+
+        <div class="event-modal-going">
+            <i class="bi bi-people-fill"></i>
+            <span id="m-rsvp-count"></span>
+            <i class="bi bi-chevron-right"></i>
+        </div>
 
         <div class="modal-actions" id="m-actions">
-            <a id="m-edit-link" href="#">Edit</a>
-            <form id="m-delete-form" method="post" action=""
-                  onsubmit="return confirm('Delete this event?');">
+
+            <a id="m-edit-link" href="#">
+                <i class="bi bi-pencil"></i>
+                Edit
+            </a>
+
+            <form id="m-delete-form"
+                method="post"
+                action=""
+                onsubmit="return confirm('Delete this event?');">
                 {% csrf_token %}
-                <button type="submit" class="danger">Delete</button>
+
+                <button type="submit" class="danger">
+                    <i class="bi bi-trash3"></i>
+                    Delete
+                </button>
             </form>
+
         </div>
+
     </div>
 </div>
 
@@ -164,11 +203,53 @@
         const btn = e.target.closest('.cal-event');
         if (!btn) return;
 
-        document.getElementById('m-category').textContent = btn.dataset.category;
+        const categoryEl = document.getElementById('m-category');
+        const categoryBox = document.querySelector('.event-modal-category');
+        const rawCategory = btn.dataset.category || 'Other';
+
+        categoryEl.textContent = rawCategory.toUpperCase();
+
+        categoryBox.classList.remove(
+            'cat-meeting',
+            'cat-social',
+            'cat-fundraiser',
+            'cat-service',
+            'cat-other'
+        );
+
+        const categoryMap = {
+            meeting: 'cat-meeting',
+            social: 'cat-social',
+            fundraiser: 'cat-fundraiser',
+            service: 'cat-service',
+            other: 'cat-other'
+        };
+
+        const categoryKey = rawCategory.trim().toLowerCase();
+
+        categoryBox.classList.add(
+            categoryMap[categoryKey] || 'cat-other'
+        );
+
+        const rsvpBtn = document.getElementById('m-rsvp-btn');
+
+        const categoryColors = {
+            meeting: '#8ca896',
+            social: '#4d84ad',
+            fundraiser: '#c88a54',
+            service: '#cf7865',
+            other: '#8e6bd1'
+        };
+
+        const categoryColor = categoryColors[categoryKey] || categoryColors.other;
+
+        rsvpBtn.style.borderColor = categoryColor;
+        rsvpBtn.style.color = categoryColor;
+
         document.getElementById('m-title').textContent = btn.dataset.title;
         document.getElementById('m-when').textContent = btn.dataset.when;
 
-        setField('m-location', btn.dataset.location, '📍 ');
+        setField('m-location', btn.dataset.location);
         setField('m-description', btn.dataset.description);
         setField('m-capacity', btn.dataset.capacity, 'Capacity: ');
         setField('m-contact', btn.dataset.contact, 'Contact: ');
