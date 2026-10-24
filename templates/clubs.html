@@ -2,9 +2,34 @@
 {% block title %}Clubs{% endblock %}
 
 {% block content %}
-<div class="login-page">
-    <div class="login-container" style="max-width: 1000px;">
-        <h1>Clubs</h1>
+<div class="clubs-page">
+
+    <section class="clubs-hero">
+        <div class="clubs-hero-content">
+
+            <div class="clubs-eyebrow">
+                CLUB DIRECTORY
+            </div>
+
+            <h1>Clubs</h1>
+
+            <p>
+                Discover and join student clubs, build your community,<br>
+                and find your place at Milwaukee.
+            </p>
+
+        </div>
+
+        <div class="clubs-hero-tagline">
+            <span>MILWAUKEE</span>
+            <span>CREAM CITY</span>
+            <span>STRONGER</span>
+            <span>TOGETHER</span>
+        </div>
+    </section>
+
+
+    <div class="clubs-content">
 
         <!-- Search Bar -->
 
@@ -89,24 +114,96 @@
                         </span>
                     </span>
                 </th>
+                <th class="club-directory-action-heading"></th>
             </tr>
         </thead>
         <tbody>
             {% for club in clubs %}
             <tr>
-                <td class="club-name">
-                    <a href="{% url 'club_detail' club.id %}">{{ club.name }}</a>
+
+                <!-- Club -->
+                <td class="club-directory-name">
+                    <div class="club-directory-club">
+
+                        <div class="club-directory-icon club-color-{{ club.theme_color }}">
+                            {% if club.icon == 'laptop' %}
+                                <i class="bi bi-laptop"></i>
+                            {% elif club.icon == 'controller' %}
+                                <i class="bi bi-controller"></i>
+                            {% elif club.icon == 'music' %}
+                                <i class="bi bi-music-note-beamed"></i>
+                            {% elif club.icon == 'people' %}
+                                <i class="bi bi-people-fill"></i>
+                            {% elif club.icon == 'book' %}
+                                <i class="bi bi-book"></i>
+                            {% elif club.icon == 'camera' %}
+                                <i class="bi bi-camera"></i>
+                            {% elif club.icon == 'palette' %}
+                                <i class="bi bi-palette"></i>
+                            {% elif club.icon == 'trophy' %}
+                                <i class="bi bi-trophy"></i>
+                            {% elif club.icon == 'globe' %}
+                                <i class="bi bi-globe"></i>
+                            {% else %}
+                                <i class="bi bi-stars"></i>
+                            {% endif %}
+                        </div>
+
+                        <a href="{% url 'club_detail' club.id %}">
+                            {{ club.name }}
+                        </a>
+
+                    </div>
                 </td>
-                <td class="club-description">{{ club.short_description }}</td>
+
+
+                <!-- Description -->
+                <td class="club-directory-description">
+                    {{ club.short_description|default:"No description available." }}
+                </td>
+
+
+                <!-- President -->
                 <td>
                     {% if club.leader %}
-                        {{ club.leader.first_name }} {{ club.leader.last_name }}
+                    <div class="club-directory-president">
+
+                        <div class="club-directory-avatar">
+                            {{ club.leader.first_name|first }}{{ club.leader.last_name|first }}
+                        </div>
+
+                        <span>
+                            {{ club.leader.first_name }}
+                            {{ club.leader.last_name }}
+                        </span>
+
+                    </div>
                     {% else %}
-                        No leader assigned
+                        <span class="cm-muted">No leader assigned</span>
                     {% endif %}
                 </td>
-                <td>{{ club.member_count }}</td>
+
+
+                <!-- Members -->
+                <td>
+                    <div class="club-directory-members">
+                        <i class="bi bi-people-fill"></i>
+                        <span>{{ club.member_count }}</span>
+                    </div>
+                </td>
+
+
+                <!-- Arrow -->
+                <td class="club-directory-open">
+                    <a href="{% url 'club_detail' club.id %}"
+                    class="club-directory-arrow"
+                    aria-label="View {{ club.name }}">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </td>
+
             </tr>
+
             {% empty %}
             <tr>
                 <td colspan="4" class="no-clubs">No clubs found{% if search %} matching "{{ search }}"{% endif %}.</td>
@@ -114,7 +211,7 @@
             {% endfor %}
         </tbody>
         </table>
-    </div>
-</div>
+    </div><!-- clubs-content -->
+</div><!-- clubs-page -->
 
 {% endblock %}

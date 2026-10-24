@@ -104,13 +104,13 @@
 
                         {% if user.member.role != 'member' %}
                             <a href="{% url 'club_members' club.id %}" class="club-dashboard-btn club-dashboard-btn-secondary">
-                                View Members
+                                Members Details
                             </a>
                         {% endif %}
                     </div>
                 </div>
                 {% empty %}
-                <p class="cm-muted" style="margin:0;">No clubs available.</p>
+                <p class="cm-muted" style="margin:0;">No clubs available</p>
                 {% endfor %}
             </div>
         </div>
