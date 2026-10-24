@@ -169,16 +169,26 @@
         {% if can_manage %}
         <div class="cm-section club-appearance-section">
 
-            <div class="cm-section-title cm-dashboard-title">
-                <div class="cm-title-left">
-                    <span class="cm-title-icon">
-                        <i class="bi bi-palette"></i>
-                    </span>
-                    <h2>Customize Appearance</h2>
-                </div>
+        <div class="cm-section-title cm-dashboard-title club-detail-toggle"
+            onclick="toggleClubDetailSection('club-appearance-content', this)">
+
+            <div class="cm-title-left">
+                <span class="cm-title-icon">
+                    <i class="bi bi-palette"></i>
+                </span>
+
+                <h2>Customize Appearance</h2>
             </div>
 
-            <form method="post" class="cm-card club-appearance-form">
+            <span class="club-detail-collapse-icon">
+                ▲
+            </span>
+
+        </div>
+
+            <form method="post"
+                class="cm-card club-appearance-form"
+                id="club-appearance-content">
                 {% csrf_token %}
 
                 <div class="appearance-picker-group">
@@ -273,19 +283,34 @@
         {% if announcements is not None %}
         <div class="club-detail-panel club-announcements-panel">
 
-            <div class="club-detail-panel-head">
+            <div class="club-detail-panel-head club-detail-toggle"
+                onclick="toggleAnnouncementSection('announcement-content', this)">
+
                 <div class="club-detail-panel-title">
                     <i class="bi bi-megaphone-fill"></i>
                     <h2>Announcements</h2>
                 </div>
 
-                {% if can_notify %}
-                <button type="button" class="club-announce-btn" id="notify-toggle">
-                    <i class="bi bi-send-fill"></i>
-                    <span>Send Announcement</span>
-                </button>
-                {% endif %}
+                <div class="announcement-head-actions">
+
+                    {% if can_notify %}
+                    <button type="button"
+                            class="club-announce-btn"
+                            id="notify-toggle"
+                            onclick="event.stopPropagation();">
+                        <i class="bi bi-send-fill"></i>
+                        <span>Send Announcement</span>
+                    </button>
+                    {% endif %}
+
+                    <span class="club-detail-collapse-icon">
+                        ▲
+                    </span>
+
+                </div>
             </div>
+
+        <div id="announcement-content">
 
             {% if can_notify %}
             <form id="notify-form"
@@ -330,7 +355,11 @@
                 <p class="cm-muted" style="margin:0;">No announcements yet.</p>
                 {% endfor %}
             </div>
+
         </div>
+
+        </div>
+
         {% endif %}
 
         </div>
@@ -466,4 +495,69 @@
     });
 </script>
 {% endif %}
+
+<script>
+function toggleClubDetailSection(contentId, header) {
+    const content = document.getElementById(contentId);
+    const icon = header.querySelector(".club-detail-collapse-icon");
+    const section = header.closest(".club-appearance-section");
+
+    if (!content) return;
+
+    const isCollapsed = content.style.display === "none";
+
+    if (isCollapsed) {
+        content.style.removeProperty("display");
+        icon.textContent = "▲";
+
+        if (section) {
+            section.classList.remove("section-collapsed");
+        }
+    } else {
+        content.style.setProperty("display", "none", "important");
+        icon.textContent = "▼";
+
+        if (section) {
+            section.classList.add("section-collapsed");
+        }
+    }
+}
+</script>
+<script>
+function toggleAnnouncementSection(contentId, header) {
+    const content = document.getElementById(contentId);
+    const icon = header.querySelector(".club-detail-collapse-icon");
+    const panel = header.closest(".club-announcements-panel");
+    const sendButton = header.querySelector(".club-announce-btn");
+
+    if (!content) return;
+
+    const isCollapsed = content.style.display === "none";
+
+    if (isCollapsed) {
+        content.style.removeProperty("display");
+        icon.textContent = "▲";
+
+        if (sendButton) {
+            sendButton.style.removeProperty("display");
+        }
+
+        if (panel) {
+            panel.classList.remove("section-collapsed");
+        }
+    } else {
+        content.style.setProperty("display", "none", "important");
+        icon.textContent = "▼";
+
+        if (sendButton) {
+            sendButton.style.setProperty("display", "none", "important");
+        }
+
+        if (panel) {
+            panel.classList.add("section-collapsed");
+        }
+    }
+}
+</script>
+
 {% endblock %}
