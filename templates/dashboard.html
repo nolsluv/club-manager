@@ -88,12 +88,10 @@
                                 No description available.
                             {% endif %}
                         </p>
-
+                        
                         <div class="club-dashboard-members">
                             <i class="bi bi-people-fill"></i>
-                            <span>
-                                {{ club.member_count }} member{{ club.member_count|pluralize }}
-                            </span>
+                            {{ club.members.count }} member{{ club.members.count|pluralize }}
                         </div>
                     </div>
 
