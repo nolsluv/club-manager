@@ -2,9 +2,25 @@
 {% block title %}{{ heading }}{% endblock %}
 
 {% block content %}
-<div class="form-page">
-    <div class="login-container" style="max-width: 480px;">
-        <h1>{{ heading }}</h1>
+<div class="event-form-page">
+
+    <div class="event-form-card">
+
+        <div class="event-form-heading">
+
+            <div class="event-form-icon">
+                <i class="bi bi-calendar3"></i>
+            </div>
+
+            <div>
+                <h1>{{ heading }}</h1>
+
+                <p>
+                    Create an event for your club and share it with members.
+                </p>
+            </div>
+
+        </div>
 
         <form method="post" autocomplete="off">
             {% csrf_token %}
@@ -15,7 +31,7 @@
                     {{ field.errors }}
                 </div>
             {% endfor %}
-            <button type="submit">Save</button>
+            <button type="submit" class="event-save-btn">Save</button>
         </form>
 
         {# button lives here, but belongs to the form below via form="delete-form" #}
@@ -25,7 +41,7 @@
             </button> 
         {% endif %}
 
-        <p class="login-footer"><a href="{% url 'calendar' %}">Cancel</a></p>
+        <div class="event-form-cancel"><a href="{% url 'calendar' %}">Cancel</a></p>
     </div>
 </div>
 
