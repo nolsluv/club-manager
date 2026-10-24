@@ -22,13 +22,46 @@ class Member(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
-class Club(models.Model):    
+class Club(models.Model):
     class Status(models.TextChoices):
         PENDING = "pending", "Pending"
         APPROVED = "approved", "Approved"
         REJECTED = "rejected", "Rejected"
 
+    ICON_CHOICES = [
+        ('laptop', 'Laptop'),
+        ('controller', 'Game Controller'),
+        ('music', 'Music'),
+        ('people', 'Community'),
+        ('book', 'Academic'),
+        ('camera', 'Photography'),
+        ('palette', 'Art'),
+        ('trophy', 'Sports'),
+        ('globe', 'Culture'),
+        ('stars', 'Other'),
+    ]
+
+    COLOR_CHOICES = [
+        ('copper', 'Copper'),
+        ('sage', 'Sage'),
+        ('sand', 'Sand'),
+        ('lake', 'Lake Blue'),
+        ('slate', 'Slate'),
+    ]
+
     name = models.CharField(max_length=100, unique=True)
+
+    icon = models.CharField(
+        max_length=30,
+        choices=ICON_CHOICES,
+        default='stars'
+    )
+
+    theme_color = models.CharField(
+        max_length=20,
+        choices=COLOR_CHOICES,
+        default='copper'
+    )
 
     short_description = models.CharField(
         max_length=200,

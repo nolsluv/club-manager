@@ -2,186 +2,381 @@
 {% block title %}Club Dashboard{% endblock %}
 
 {% block content %}
-<div class="login-page">
-    <div class="login-container" style="max-width: 800px;">
-        <h1>Club Dashboard</h1>
+<div class="club-dashboard-page">
+    <div class="club-dashboard-shell">
+
+        <section class="club-dashboard-hero">
+            <div class="club-dashboard-hero-content">
+                <div class="club-dashboard-eyebrow">DASHBOARD</div>
+
+                <h1>Club Dashboard</h1>
+
+                <p>
+                    Manage your clubs, requests, and community all in one place.
+                </p>
+            </div>
+        </section>
+
+        <div class="club-dashboard-content">
 
     
-        <div class="cm-section">
-            <div class="cm-section-title" onclick="toggleSection('my-clubs-list', this)">
+    <div class="cm-section">
+        <div class="cm-section-title cm-dashboard-title" onclick="toggleSection('my-clubs-list', this)">
+            <div class="cm-title-left">
+                <span class="cm-title-icon"><i class="bi bi-people-fill"></i></span>
                 <h2>My Clubs</h2>
-                <button type="button" class="cm-collapse-button" aria-expanded="false">▼</button>
             </div>
-            <div class="cm-card" id="my-clubs-list">
-                {% for club in managed_clubs %}
-                <div class="cm-row">
-                    <div>
-                        <strong>{{ club.name }}</strong>
 
-                        <div class="cm-muted">
-                            {% if club.short_description %}
-                                {{ club.short_description }}
-                            {% else %}
-                                No description available
-                            {% endif %}
-                        </div>
-
-                        <div class="cm-muted" style="margin-top: 4px;">
-                            {{ club.member_count }} member{{ club.member_count|pluralize }}
-                        </div>
-                    </div>
-
-                    <div style="display: flex; gap: 8px;">
-                    <a href="{% url 'club_detail' club.id %}" class="cm-member-button">Club Details</a>
-
-                    {% if user.member.role != 'member' %}
-                        <a href="{% url 'club_members' club.id %}" class="cm-member-button">View Members</a>
-                    {% endif %}
-                    </div>
-
-                </div>
-                {% empty %}
-                <p class="cm-muted" style="margin:0;">No clubs available.</p>
-                {% endfor %}
+            <div class="cm-title-right">
+                <span class="cm-section-count">
+                    {{ managed_clubs|length }} club{{ managed_clubs|length|pluralize }}
+                </span>
+                <button type="button" class="cm-collapse-button" aria-expanded="true">▼</button>
             </div>
         </div>
 
+        <div class="cm-card cm-card-tight" id="my-clubs-list">
+            <div class="club-cards-grid">
+                {% for club in managed_clubs %}
+                <div class="club-dashboard-card club-theme-{{ club.theme_color }}">
+                    
+                <div class="club-dashboard-card-top">
 
-        {% if user.member.role == 'admin' %}
-        <div class="cm-section">
-            <div class="cm-section-title" onclick="toggleSection('pending-club-requests-list', this)">
-                <h2>Pending Club Requests</h2>
-                <button type="button" class="cm-collapse-button" aria-expanded="false">▼</button>
-            </div>
+                    <div class="club-dashboard-icon club-color-{{ club.theme_color }}">
+                        {% if club.icon == 'laptop' %}
+                            <i class="bi bi-laptop"></i>
 
-            <div class="cm-card collapsed" id="pending-club-requests-list">
-                {% for club in pending_club_requests %}
-                <div class="cm-row">
-                    <div>
-                        <strong>{{ club.name }}</strong>
+                        {% elif club.icon == 'controller' %}
+                            <i class="bi bi-controller"></i>
 
-                        <div class="cm-muted">
-                            Requested by {{ club.leader.first_name }} {{ club.leader.last_name }}
-                            · {{ club.created_at|date:"M j, Y" }}
-                        </div>
+                        {% elif club.icon == 'music' %}
+                            <i class="bi bi-music-note-beamed"></i>
 
-                        {% if club.short_description %}
-                        <div class="cm-muted" style="margin-top: 4px;">
-                            {{ club.short_description }}
-                        </div>
+                        {% elif club.icon == 'people' %}
+                            <i class="bi bi-people-fill"></i>
+
+                        {% elif club.icon == 'book' %}
+                            <i class="bi bi-book"></i>
+
+                        {% elif club.icon == 'camera' %}
+                            <i class="bi bi-camera"></i>
+
+                        {% elif club.icon == 'palette' %}
+                            <i class="bi bi-palette"></i>
+
+                        {% elif club.icon == 'trophy' %}
+                            <i class="bi bi-trophy"></i>
+
+                        {% elif club.icon == 'globe' %}
+                            <i class="bi bi-globe"></i>
+
+                        {% else %}
+                            <i class="bi bi-stars"></i>
                         {% endif %}
                     </div>
 
-                    <form method="post" action="{% url 'review_club' club.id %}" style="display: flex; gap: 8px;">
-                        {% csrf_token %}
-                        <button type="submit" name="action" value="approve" class="cm-btn cm-btn-primary">Approve</button>
-                        <button type="submit" name="action" value="reject" class="cm-btn cm-btn-danger">Reject</button>
-                    </form>
+                    <button type="button" class="club-dashboard-more">⋮</button>
                 </div>
 
+                    <div class="club-dashboard-card-body">
+                        <h3>{{ club.name }}</h3>
+
+                        <p>
+                            {% if club.short_description %}
+                                {{ club.short_description }}
+                            {% else %}
+                                No description available.
+                            {% endif %}
+                        </p>
+                        
+                        <div class="club-dashboard-members">
+                            <i class="bi bi-people-fill"></i>
+                            {{ club.members.count }} member{{ club.members.count|pluralize }}
+                        </div>
+                    </div>
+
+                    <div class="club-dashboard-actions">
+                        <a href="{% url 'club_detail' club.id %}" class="club-dashboard-btn club-dashboard-btn-primary">
+                            Club Details
+                        </a>
+
+                        {% if user.member.role != 'member' %}
+                            <a href="{% url 'club_members' club.id %}" class="club-dashboard-btn club-dashboard-btn-secondary">
+                                Members Details
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
                 {% empty %}
-                <p class="cm-muted" style="margin:0;">No pending club requests.</p>
+                <p class="cm-muted" style="margin:0;">No clubs available</p>
                 {% endfor %}
             </div>
         </div>
-        {% endif %}
+    </div>
+    
 
 
-        {% if can_request %}
-        <!-- club presidents can submit a request to create a club, which is saved as status="Pending" -->
-        <div class="cm-section">
-            <div class="cm-section-title" onclick="toggleSection('request-club-form', this)">
-                <h2>Request a new club</h2>
-                <button type="button" class="cm-collapse-button" aria-expanded="{% if form.errors %}true{% else %}false{% endif %}">{% if form.errors %}▲{% else %}▼{% endif %}</button>
+    {% if pending_memberships %}
+    <div class="cm-section">
+        <div class="cm-section-title cm-dashboard-title"
+            onclick="toggleSection('pending-membership-list', this)">
+            <div class="cm-title-left">
+                <span class="cm-title-icon">
+                    <i class="bi bi-person-plus-fill"></i>
+                </span>
+                <h2>Pending Membership Requests</h2>
             </div>
-            <form method="post" class="cm-card" id="request-club-form">
+
+            <div class="cm-title-right">
+                <span class="cm-section-count">
+                    {{ pending_memberships|length }} request{{ pending_memberships|length|pluralize }}
+                </span>
+                <button type="button" class="cm-collapse-button" aria-expanded="false">▼</button>
+            </div>
+        </div>
+
+        <div class="cm-card pending-membership-list" id="pending-membership-list">
+            {% for req in pending_memberships %}
+            <div class="pending-membership-row">
+                <div class="pending-member-avatar">
+                    {{ req.member.first_name|first }}{{ req.member.last_name|first }}
+                </div>
+
+                <div class="pending-member-main">
+                    <strong>{{ req.member.first_name }} {{ req.member.last_name }}</strong>
+                    <div class="cm-muted">
+                        wants to join {{ req.club.name }}
+                    </div>
+                </div>
+
+                <div class="request-row-date">
+                    {{ req.requested_at|date:"M j, Y" }}
+                </div>
+
+                <div class="pending-member-actions">
+                    <form method="post" action="{% url 'review_membership' req.id %}">
+                        {% csrf_token %}
+                        <button type="submit"
+                                name="action"
+                                value="approve"
+                                class="cm-btn cm-btn-primary">
+                            Approve
+                        </button>
+                    </form>
+
+                    <form method="post" action="{% url 'review_membership' req.id %}">
+                        {% csrf_token %}
+                        <button type="submit"
+                                name="action"
+                                value="reject"
+                                class="cm-btn">
+                            Reject
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+
+
+
+    {% if user.member.role == 'admin' %}
+    <div class="cm-section">
+        <div class="cm-section-title cm-dashboard-title"
+            onclick="toggleSection('pending-club-requests-list', this)">
+
+            <div class="cm-title-left">
+                <span class="cm-title-icon"><i class="bi bi-clock-history"></i></span>
+                <h2>Pending Club Requests</h2>
+            </div>
+
+            <div class="cm-title-right">
+                <span class="cm-section-count">
+                    {{ pending_club_requests|length }}
+                    request{{ pending_club_requests|length|pluralize }}
+                </span>
+
+                <button type="button"
+                        class="cm-collapse-button"
+                        aria-expanded="false">
+                    ▼
+                </button>
+            </div>
+        </div>
+
+        <div class="cm-card collapsed" id="pending-club-requests-list">
+            {% for club in pending_club_requests %}
+            <div class="cm-row">
+                <div>
+                    <strong>{{ club.name }}</strong>
+
+                    <div class="cm-muted">
+                        Requested by {{ club.leader.first_name }} {{ club.leader.last_name }}
+                        · {{ club.created_at|date:"M j, Y" }}
+                    </div>
+
+                    {% if club.short_description %}
+                    <div class="cm-muted" style="margin-top: 4px;">
+                        {{ club.short_description }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <form method="post"
+                    action="{% url 'review_club' club.id %}"
+                    style="display: flex; gap: 8px;">
+                    {% csrf_token %}
+
+                    <button type="submit"
+                            name="action"
+                            value="approve"
+                            class="cm-btn cm-btn-primary">
+                        Approve
+                    </button>
+
+                    <button type="submit"
+                            name="action"
+                            value="reject"
+                            class="cm-btn cm-btn-danger">
+                        Reject
+                    </button>
+                </form>
+            </div>
+
+            {% empty %}
+            <p class="cm-muted" style="margin:0;">
+                No pending club requests.
+            </p>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+            {% if can_request %}
+            <!-- club presidents can submit a request to create a club, which is saved as status="Pending" -->
+            <div class="cm-section">
+                <div class="cm-section-title cm-dashboard-title"
+                    onclick="toggleSection('request-club-form', this)">
+
+                <div class="cm-title-left">
+                    <span class="cm-title-icon"><i class="bi bi-plus-circle-fill"></i></span>
+                    <h2>Request a New Club</h2>
+                </div>
+
+                <div class="cm-title-right">
+                    <button type="button"
+                            class="cm-collapse-button"
+                            aria-expanded="{% if form.errors %}true{% else %}false{% endif %}">
+                        {% if form.errors %}▲{% else %}▼{% endif %}
+                    </button>
+                </div>
+            </div>
+
+            <form method="post" class="cm-card request-club-card" id="request-club-form">
                 {% csrf_token %}
 
                 <div class="cm-field">
-                    <label for="{{ form.name.id_for_label }}">Club name</label>
+                    <label for="{{ form.name.id_for_label }}">
+                        Club name <span class="required-star">*</span>
+                    </label>
                     {{ form.name }}
-                    {% for error in form.name.errors %}<div class="cm-error">{{ error }}</div>{% endfor %}
                 </div>
 
                 <div class="cm-field">
-                    <label for="{{ form.short_description.id_for_label }}">Short description</label>
+                    <label for="{{ form.short_description.id_for_label }}">
+                        Short description <span class="required-star">*</span>
+                    </label>
                     {{ form.short_description }}
-                    {% for error in form.short_description.errors %}<div class="cm-error">{{ error }}</div>{% endfor %}
                 </div>
 
-                <div class="cm-field">
-                    <label for="{{ form.description.id_for_label }}">Full description (optional)</label>
+                <div class="cm-field request-full-description">
+                    <label for="{{ form.description.id_for_label }}">
+                        Full description
+                    </label>
                     {{ form.description }}
                 </div>
 
                 <div class="cm-actions">
                     <button type="submit" class="cm-btn cm-btn-primary">
                         Submit for approval
+                        <i class="bi bi-arrow-right"></i>
                     </button>
                 </div>
             </form>
+
         </div>
         {% endif %}
 
         <div class="cm-section">
-        <div class="cm-section-title" onclick="toggleSection('membership-requests-list', this)">
-            <h2>My club requests</h2>
-            <button type="button" class="cm-collapse-button" aria-expanded="false">▼</button>
-        </div>
+            <div class="cm-section-title cm-dashboard-title"
+                onclick="toggleSection('membership-requests-list', this)">
 
-        <div class="cm-card" id="membership-requests-list">
-            {% for req in membership_requests %}
-            <div class="cm-row">
-                <div>
-                    <a href="{% url 'club_detail' req.club.id %}">
-                        {{ req.club.name }}
-                    </a>
+                <div class="cm-title-left">
+                    <span class="cm-title-icon"><i class="bi bi-file-earmark-text"></i></span>
+                    <h2>My Club Requests</h2>
+                </div>
 
-                    <div class="cm-muted">
+                <div class="cm-title-right">
+                    <span class="cm-section-count">
+                        {{ membership_requests|length }}
+                        request{{ membership_requests|length|pluralize }}
+                    </span>
+
+                    <button type="button"
+                            class="cm-collapse-button"
+                            aria-expanded="false">
+                        ▼
+                    </button>
+                </div>
+            </div>
+
+            <div class="cm-card club-request-list" id="membership-requests-list">
+
+                {% for req in membership_requests %}
+                <div class="club-request-row">
+
+                    <div class="request-row-icon">
+                        <i class="bi bi-file-earmark-text"></i>
+                    </div>
+
+                    <div class="request-row-name">
+                        <a href="{% url 'club_detail' req.club.id %}">
+                            {{ req.club.name }}
+                        </a>
+                    </div>
+
+                    <div class="request-row-date">
                         Requested {{ req.requested_at|date:"M j, Y" }}
                     </div>
-                </div>
 
-                <span class="cm-pill cm-pill-{{ req.status }}">
-                    {{ req.get_status_display }}
-                </span>
-            </div>
-
-            {% empty %}
-            <p class="cm-muted" style="margin:0;">
-                You haven't requested to join any clubs yet.
-            </p>
-            {% endfor %}
-        </div>
-    </div>
-
-        {% if pending_memberships %}
-        <div class="cm-section-title" onclick="toggleSection('pending-list', this)">
-            <div class="cm-section-title">
-                <h2>Pending Membership Requests</h2>
-                <button type="button" class="cm-collapse-button" aria-expanded="false">▼</button>
-            </div>
-            <div class="cm-card" id="pending-list">
-                {% for req in pending_memberships %}
-                <div class="cm-row">
-                    <div>
-                        <strong>{{ req.member.first_name }} {{ req.member.last_name }}</strong>
-                        <div class="cm-muted">wants to join {{ req.club.name }} · {{ req.requested_at|date:"M j, Y" }}</div>
+                    <div class="request-row-status">
+                        <span class="cm-pill cm-pill-{{ req.status }}">
+                            {{ req.get_status_display }}
+                        </span>
                     </div>
-                    <form method="post" action="{% url 'review_membership' req.id %}" style="display: flex; gap: 8px;">
-                        {% csrf_token %}
-                        <button type="submit" name="action" value="approve" class="cm-btn cm-btn-primary">Approve</button>
-                        <button type="submit" name="action" value="reject" class="cm-btn">Reject</button>
-                    </form>
-                </div>
-                <div class="cm-card collapsed" id="pending-list"></div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
 
-    </div>
-</div>
+                    <div class="request-row-arrow">
+                        <i class="bi bi-chevron-right"></i>
+                    </div>
+
+                </div>
+                {% empty %}
+                <p class="cm-muted" style="margin:0;">
+                    No club requests yet.
+                </p>
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+    </div> <!-- club-dashboard-content -->
+</div> <!-- club-dashboard-shell -->
+</div> <!-- club-dashboard-page -->
 
 <script>
     function toggleSection(listId, title) {

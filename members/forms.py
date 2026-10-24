@@ -22,3 +22,8 @@ class NotificationForm(forms.ModelForm):
         model = Notification
         fields = ['message']
         widgets = {'message': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Message to all club members'})}
+
+class ClubAppearanceForm(forms.ModelForm):
+    class Meta:
+        model = Club
+        fields = ['icon', 'theme_color']

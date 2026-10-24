@@ -2,9 +2,33 @@
 {% block title %}Calendar{% endblock %}
 
 {% block content %}
-<div class="cal-wrap">
+<div class="calendar-page">
+
+    <section class="calendar-hero">
+        <div class="calendar-hero-content">
+
+            <div class="calendar-eyebrow">
+                CALENDAR
+            </div>
+
+            <h1>
+                {% for num, name in months %}
+                    {% if num == month %}{{ name }}{% endif %}
+                {% endfor %}
+                {{ year }}
+            </h1>
+
+            <p>
+                Manage your club events, meetings, and activities all in one place.
+            </p>
+
+        </div>
+    </section>
+
+    <div class="cal-wrap">
 
     <div class="cal-head">
+
         <!-- month navigation -->
         <div class="cal-title">
             <a class="cal-nav" href="?year={{ prev_m.year }}&month={{ prev_m.month }}">&larr;</a>
@@ -15,6 +39,7 @@
                         <option value="{{ num }}" {% if num == month %}selected{% endif %}>{{ name }}</option>
                     {% endfor %}
                 </select>
+
                 <select name="year" class="cal-select" onchange="this.form.submit()">
                     {% for y in years %}
                         <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
@@ -23,12 +48,28 @@
             </form>
 
             <a class="cal-nav" href="?year={{ next_m.year }}&month={{ next_m.month }}">&rarr;</a>
-            <a class="cal-nav" href="{% url 'calendar' %}">Today</a>
+
+            <a class="cal-nav cal-today-link" href="{% url 'calendar' %}">
+                Today
+            </a>
         </div>
 
+
+        <div class="cal-legend">
+            <span><i class="cal-dot meeting"></i>Meeting</span>
+            <span><i class="cal-dot social"></i>Social</span>
+            <span><i class="cal-dot fundraiser"></i>Fundraiser</span>
+            <span><i class="cal-dot service"></i>Service</span>
+            <span><i class="cal-dot other"></i>Other</span>
+        </div>
+
+
         {% if can_edit %}
-            <a class="login-button cal-add" href="{% url 'event_create' %}">+ Add event</a>
+        <a class="cal-add" href="{% url 'event_create' %}">
+            + Add Event
+        </a>
         {% endif %}
+
     </div>
 
     <!-- scroll fun -->
@@ -47,7 +88,7 @@
                         {% for e in day.events %}
                             <button
                                 type="button"
-                                class="cal-event"
+                                class="cal-event cal-event-{{ e.category }}"
                                 data-title="{{ e.title }}"
                                 data-category="{{ e.get_category_display }}"
                                 data-when="{{ e.date|date:'l, F j' }} · {{ e.date|time:'g:i A' }}{% if e.end_date %} – {{ e.end_date|time:'g:i A' }}{% endif %}"
@@ -63,7 +104,13 @@
                                 data-rsvp-count="{{ e.rsvps.all|length }}"
                                 data-rsvped="{% if e.pk in rsvped_ids %}1{% else %}0{% endif %}"
                             >
-                                {{ e.date|time:"g:i A" }} {{ e.title }}
+                                <span class="cal-event-dot"></span>
+
+                                <span class="cal-event-text">
+                                    <span class="cal-event-title">{{ e.title }}</span>
+                                    <span class="cal-event-time">{{ e.date|time:"g:i A" }}</span>
+                                </span>
+
                             </button>
                         {% endfor %}
                     </div>
@@ -72,37 +119,79 @@
         </div>
     </div>
 
-</div>
+
+</div><!-- cal-wrap -->
+
+</div> <!-- calendar-page -->
 
 <!-- one shared modal, filled in by JS -->
 <div id="event-modal" class="modal">
     <div class="modal-backdrop" onclick="closeModal()"></div>
     <div class="modal-card">
-        <button type="button" class="modal-close" onclick="closeModal()">&times;</button>
 
-        <p class="modal-category" id="m-category"></p>
-        <h2 id="m-title"></h2>
-        <p class="modal-when" id="m-when"></p>
-        <p id="m-location"></p>
-        <p class="modal-desc" id="m-description"></p>
-        <p id="m-capacity"></p>
-        <p id="m-contact"></p>
-        <p class="modal-meta" id="m-creator"></p>
+        <button type="button" class="modal-close" onclick="closeModal()">
+            <i class="bi bi-x-lg"></i>
+        </button>
+
+        <div class="event-modal-category">
+            <span class="event-modal-dot"></span>
+            <span id="m-category"></span>
+        </div>
+
+        <h2 id="m-title" class="event-modal-title"></h2>
+
+        <div class="event-modal-info-line">
+            <i class="bi bi-calendar-check"></i>
+            <span id="m-when"></span>
+        </div>
+
+        <div class="event-modal-info-line" id="m-location-row">
+            <i class="bi bi-geo-alt"></i>
+            <span id="m-location"></span>
+        </div>
+
+        <div class="event-modal-description" id="m-description"></div>
+
+        <div class="event-modal-info-line event-modal-creator">
+            <i class="bi bi-person"></i>
+            <span id="m-creator"></span>
+        </div>
+
+        <p id="m-capacity" class="event-modal-hidden-meta"></p>
+        <p id="m-contact" class="event-modal-hidden-meta"></p>
 
         <form id="m-rsvp-form" method="post" action="">
             {% csrf_token %}
-            <button type="submit" id="m-rsvp-btn" class="login-button"></button>
+            <button type="submit" id="m-rsvp-btn" class="event-modal-rsvp-btn"></button>
         </form>
-        <p class="modal-meta" id="m-rsvp-count"></p>
+
+        <div class="event-modal-going">
+            <i class="bi bi-people-fill"></i>
+            <span id="m-rsvp-count"></span>
+            <i class="bi bi-chevron-right"></i>
+        </div>
 
         <div class="modal-actions" id="m-actions">
-            <a id="m-edit-link" href="#">Edit</a>
-            <form id="m-delete-form" method="post" action=""
-                  onsubmit="return confirm('Delete this event?');">
+
+            <a id="m-edit-link" href="#">
+                <i class="bi bi-pencil"></i>
+                Edit
+            </a>
+
+            <form id="m-delete-form"
+                method="post"
+                action=""
+                onsubmit="return confirm('Delete this event?');">
                 {% csrf_token %}
-                <button type="submit" class="danger">Delete</button>
+
+                <button type="submit" class="danger">
+                    <i class="bi bi-trash3"></i>
+                    Delete
+                </button>
             </form>
+
         </div>
+
     </div>
 </div>
 
@@ -114,11 +203,53 @@
         const btn = e.target.closest('.cal-event');
         if (!btn) return;
 
-        document.getElementById('m-category').textContent = btn.dataset.category;
+        const categoryEl = document.getElementById('m-category');
+        const categoryBox = document.querySelector('.event-modal-category');
+        const rawCategory = btn.dataset.category || 'Other';
+
+        categoryEl.textContent = rawCategory.toUpperCase();
+
+        categoryBox.classList.remove(
+            'cat-meeting',
+            'cat-social',
+            'cat-fundraiser',
+            'cat-service',
+            'cat-other'
+        );
+
+        const categoryMap = {
+            meeting: 'cat-meeting',
+            social: 'cat-social',
+            fundraiser: 'cat-fundraiser',
+            service: 'cat-service',
+            other: 'cat-other'
+        };
+
+        const categoryKey = rawCategory.trim().toLowerCase();
+
+        categoryBox.classList.add(
+            categoryMap[categoryKey] || 'cat-other'
+        );
+
+        const rsvpBtn = document.getElementById('m-rsvp-btn');
+
+        const categoryColors = {
+            meeting: '#8ca896',
+            social: '#4d84ad',
+            fundraiser: '#c88a54',
+            service: '#cf7865',
+            other: '#8e6bd1'
+        };
+
+        const categoryColor = categoryColors[categoryKey] || categoryColors.other;
+
+        rsvpBtn.style.borderColor = categoryColor;
+        rsvpBtn.style.color = categoryColor;
+
         document.getElementById('m-title').textContent = btn.dataset.title;
         document.getElementById('m-when').textContent = btn.dataset.when;
 
-        setField('m-location', btn.dataset.location, '📍 ');
+        setField('m-location', btn.dataset.location);
         setField('m-description', btn.dataset.description);
         setField('m-capacity', btn.dataset.capacity, 'Capacity: ');
         setField('m-contact', btn.dataset.contact, 'Contact: ');
