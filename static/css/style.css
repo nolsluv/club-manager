@@ -6241,6 +6241,27 @@ body.light-mode .club-member-row > div:first-child::before {
     color: #4caf50;
 }
 
+body.light-mode .club-members-page::before {
+    background-image: url("../images/home-milwaukee-light.png");
+    opacity: .72;
+}
+
+body.light-mode .club-members-page::after {
+    background: linear-gradient(
+        rgba(249, 246, 238, .35),
+        rgba(249, 246, 238, .68)
+    );
+}
+
+body.light-mode .club-members-card {
+    background: rgba(255, 251, 244, .88);
+    border-color: rgba(184, 115, 51, .24);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .8),
+        0 24px 55px rgba(82, 60, 35, .14);
+}
+
+
 /*set the backgroud pic in the middle*/
 .home-hero,
 .club-directory-hero,

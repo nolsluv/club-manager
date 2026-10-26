@@ -13,7 +13,7 @@ from django.http import Http404, JsonResponse
 from django.utils import timezone
 from .forms import RegisterForm, ClubRequestForm, NotificationForm, ClubAppearanceForm
 from django.db.models import Exists, OuterRef
-import random
+
 
 
 def register(request):
@@ -221,29 +221,12 @@ def dashboard(request):
         if form.is_valid():
             club = form.save(commit=False)
 
-            # Give new clubs a random icon and theme color.
+            # Give new clubs a default icon and theme color.
             # Re-submitted rejected clubs keep their original appearance.
             if not rejected_club:
-                club.icon = random.choice([
-                    'laptop',
-                    'controller',
-                    'music',
-                    'people',
-                    'book',
-                    'camera',
-                    'palette',
-                    'trophy',
-                    'globe',
-                    'stars',
-                ])
+                club.icon = 'stars'
+                club.theme_color = 'copper'
 
-                club.theme_color = random.choice([
-                    'copper',
-                    'sage',
-                    'sand',
-                    'lake',
-                    'slate',
-                ])
 
             club.leader = member
             club.status = Club.Status.PENDING

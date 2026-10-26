@@ -135,7 +135,7 @@
         }
     }
 
-    window.addEventListener("DOMContentLoaded", function () {
+    function applySavedTheme() {
         const savedTheme = localStorage.getItem("theme");
         const button = document.getElementById("theme-toggle");
 
@@ -145,8 +145,18 @@
             if (button) {
                 button.textContent = "Switch to Dark Mode";
             }
+        } else {
+            document.body.classList.remove("light-mode");
+
+            if (button) {
+                button.textContent = "Switch to Light Mode";
+            }
         }
-    });
+    }
+
+    window.addEventListener("DOMContentLoaded", applySavedTheme);
+    window.addEventListener("pageshow", applySavedTheme);
+    
     </script>
 
     <!-- Native Browser Notification Polling -->
