@@ -6,6 +6,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 
     <title>{% block title %}Club Manager{% endblock %}</title>
@@ -17,26 +18,63 @@
 <body>
 
     {% if user.is_authenticated %}
-    <nav style="padding: 30px 52px; border-bottom: 3px solid #333; display: flex; justify-content: space-between; align-items: center;">
-        <button type="button" class="brand-button" onclick="openSideMenu()">Club Manager</button>
-        <div>
-            <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active-nav{% else %}nav-link{% endif %}">Home</a>
-            <a href="{% url 'clubs' %}" class="{% if request.resolver_match.url_name == 'clubs' %}active-nav{% else %}nav-link{% endif %}">Clubs</a>
-            <a href="{% url 'calendar' %}" class="{% if request.resolver_match.url_name == 'calendar' %}active-nav{% else %}nav-link{% endif %}">Calendar</a>
-            {# hides link for plain members; real enforcement is in role_required() #}
-            <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active-nav{% else %}nav-link{% endif %}">My Clubs</a>
-    
-            
-            {# only admins get account management access #}
-            {% if user.member.role == 'admin' %}
-                <a href="{% url 'user_management' %}" class="{% if request.resolver_match.url_name == 'user_management' %}active-nav{% else %}nav-link{% endif %}">User Management</a>
-            {% endif %}    
-            <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" style="background: none; border: none; color: #999; font-size: 20px; cursor: pointer; padding: 0; font-family: inherit;">
-                    Log Out
-                </button>
-            </form>
+    <nav class="main-navbar">
+
+        <button type="button" class="brand-button" onclick="openSideMenu()">
+            <span class="brand-mark">CM</span>
+
+            <span class="brand-text">
+                <strong>Club Manager</strong>
+                <small>MANAGE. CONNECT. GROW.</small>
+            </span>
+        </button>
+
+        <div class="nav-right">
+
+            <div class="nav-links">
+                <a href="{% url 'home' %}"
+                class="{% if request.resolver_match.url_name == 'home' %}active-nav{% else %}nav-link{% endif %}">
+                    Home
+                </a>
+
+                <a href="{% url 'clubs' %}"
+                class="{% if request.resolver_match.url_name == 'clubs' %}active-nav{% else %}nav-link{% endif %}">
+                    Clubs
+                </a>
+
+                <a href="{% url 'calendar' %}"
+                class="{% if request.resolver_match.url_name == 'calendar' %}active-nav{% else %}nav-link{% endif %}">
+                    Calendar
+                </a>
+
+                <a href="{% url 'dashboard' %}"
+                class="{% if request.resolver_match.url_name == 'dashboard' %}active-nav{% else %}nav-link{% endif %}">
+                    My Clubs
+                </a>
+
+                {% if user.member.role == 'admin' %}
+                <a href="{% url 'user_management' %}"
+                class="{% if request.resolver_match.url_name == 'user_management' %}active-nav{% else %}nav-link{% endif %}">
+                    User Management
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="nav-user">
+                <div class="nav-avatar">
+                    {{ user.username|first|upper }}
+                </div>
+
+                <span class="nav-username">{{ user.username }}</span>
+
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-logout" title="Log out">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+
         </div>
     </nav>
 
@@ -97,7 +135,7 @@
         }
     }
 
-    window.addEventListener("DOMContentLoaded", function () {
+    function applySavedTheme() {
         const savedTheme = localStorage.getItem("theme");
         const button = document.getElementById("theme-toggle");
 
@@ -107,8 +145,18 @@
             if (button) {
                 button.textContent = "Switch to Dark Mode";
             }
+        } else {
+            document.body.classList.remove("light-mode");
+
+            if (button) {
+                button.textContent = "Switch to Light Mode";
+            }
         }
-    });
+    }
+
+    window.addEventListener("DOMContentLoaded", applySavedTheme);
+    window.addEventListener("pageshow", applySavedTheme);
+    
     </script>
 
     <!-- Native Browser Notification Polling -->

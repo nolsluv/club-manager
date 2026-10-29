@@ -11,8 +11,9 @@ from django.contrib import messages
 from django.db.models import Q, Count
 from django.http import Http404, JsonResponse
 from django.utils import timezone
-from .forms import RegisterForm, ClubRequestForm, NotificationForm
+from .forms import RegisterForm, ClubRequestForm, NotificationForm, ClubAppearanceForm
 from django.db.models import Exists, OuterRef
+
 
 
 def register(request):
@@ -137,6 +138,21 @@ def club_detail(request, club_id):
     can_see_inside = is_member or can_manage
     approved = club.status == Club.Status.APPROVED
 
+
+    appearance_form = ClubAppearanceForm(instance=club)
+    if request.method == "POST" and "update_appearance" in request.POST:
+        if not can_manage:
+            messages.error(request, "You don't have permission to update this club's appearance.")
+            return redirect("club_detail", club_id=club.id)
+
+        appearance_form = ClubAppearanceForm(request.POST, instance=club)
+
+        if appearance_form.is_valid():
+            appearance_form.save()
+            messages.success(request, "Club appearance updated.")
+            return redirect("club_detail", club_id=club.id)
+
+        
     return render(
         request,
         "club_detail.html",
@@ -145,6 +161,8 @@ def club_detail(request, club_id):
             "is_member": is_member,
             "is_leader": is_leader,
             "pending_request": pending_request,
+            "appearance_form": appearance_form,
+            "can_manage": can_manage,
             "can_notify": can_notify(member, club),
             "notification_form": NotificationForm(),
             "club_members": (
@@ -202,6 +220,14 @@ def dashboard(request):
 
         if form.is_valid():
             club = form.save(commit=False)
+
+            # Give new clubs a default icon and theme color.
+            # Re-submitted rejected clubs keep their original appearance.
+            if not rejected_club:
+                club.icon = 'stars'
+                club.theme_color = 'copper'
+
+
             club.leader = member
             club.status = Club.Status.PENDING
             club.rejection_reason = ""
