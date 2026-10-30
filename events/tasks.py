@@ -29,7 +29,7 @@ def send_welcome_email_task(user_id):
             fail_silently=False,
         )
     except User.DoesNotExist:
-        pass
+        logger.warning("User with ID %s not found; skipped welcome email.", user_id)
     except Exception as exc:
         logger.error(f"Failed to send welcome email to User ID {user_id}: {exc}")
 
@@ -67,5 +67,6 @@ def send_event_created_email_task(recepient_ids, title, message, action_url=None
                 html_message=html_content,
                 fail_silently=False,
             )
+            logger.info("Event email successfully sent to %s", user.email)
         except Exception as exc:
             logger.error(f"Failed to send event email to {user.email}: {exc}")

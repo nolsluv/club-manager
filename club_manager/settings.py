@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     'members',
     'events',
     'finances',
+    # Third Party Apps
+    'anymail',
+    'django_q',
 ]
 
 MIDDLEWARE = [
@@ -132,12 +135,31 @@ STATICFILES_DIRS = [
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
+#MAILERS = {
+#    'default': {
+#        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
+#    },
+#}
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
+
+# Email Backend
+EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='anymail.backends.resend.EmailBackend')
+DEFAULT_FROM_EMAIL = env('DJANGO_DEFAULT_FROM_EMAIL', default='Club Manager <notifications@uwm.edu>')
+
+ANYMAIL = {
+    'RESEND_API_KEY': env('RESEND_API_KEY', default=''),
+}
+
+Q_CLUSTER = {
+    'name': 'club_manager_tasks',
+    'workers': 2,
+    'recycle': 100,
+    'timeout': 60,
+    'retry': 120,
+    'queue_limit': 50,
+    'bulk': 10,
+    'orm': 'default' # Uses SQLite database directly
+}

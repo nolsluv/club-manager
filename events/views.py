@@ -1,4 +1,4 @@
-from members.models import Notification
+from members.models import Notification, Member
 from django.urls import reverse
 import calendar
 from collections import defaultdict
@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django_q.tasks import async_task
 
 from members.decorators import role_required  # finds decorator method
 from django.views.decorators.http import require_POST
@@ -165,7 +166,7 @@ def event_create(request):
         event.save()
         form.save_m2m()  # save any many-to-many relationships if present
 
-        # --- CREATE INBOX NOTIFICATION FOR THE CLUB ---
+        # --- CREATE INBOX NOTIFICATION & DISPATCH EMAIL FOR THE CLUB ---
         if selected_club:
             event_name = getattr(event, 'title', None) or getattr(event, 'name', 'New Event')
             event_date_str = (
@@ -174,6 +175,8 @@ def event_create(request):
                 else ''
             )
 
+            target_path = reverse('calendar')
+
             note = Notification.objects.create(
                 club=selected_club,
                 sender=creator_member,
@@ -181,8 +184,22 @@ def event_create(request):
                 notification_type='event',
                 target_url=reverse('calendar'),
             )
-            #if creator_member:
-            #    note.read_by.add(creator_member)  # mark as read for the creator
+
+            active_member_user_ids = list(
+                Member.objects.filter(club=selected_club, is_active=True, user__isnull=False)
+                .values_list('user_id', flat=True)
+            )
+
+            if active_member_user_ids:
+                event_url = request.build_absolute_uri(target_path)
+                async_task(
+                    'events.tasks.send_event_created_email_task',
+                    active_member_user_ids,
+                    f"New Event: {event_name}",
+                    f"A new event '{event_name}' has been scheduled for {event_date_str}.",
+                    event_url,
+                    getattr(selected_club, 'name', 'Club Manager'),
+                )
         
         messages.success(request, "Event added successfully.")
         return redirect('calendar')
