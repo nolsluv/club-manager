@@ -171,11 +171,6 @@ ANYMAIL = {
 
 Q_CLUSTER = {
     'name': 'club_manager_tasks',
-    'workers': 2,
-    'recycle': 100,
-    'timeout': 60,
-    'retry': 120,
-    'queue_limit': 50,
-    'bulk': 10,
-    'orm': 'default' # Uses SQLite database directly
+    'sync': True,  # Runs all tasks inline/synchronously without a worker
+    'orm': 'default',
 }
