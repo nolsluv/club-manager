@@ -28,7 +28,21 @@ SECRET_KEY = env('DJANGO_SECRET_KEY', default='django-insecure-change-me')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DJANGO_DEBUG', default=True)
 
-ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
+ALLOWED_HOSTS = env.list(
+    'DJANGO_ALLOWED_HOSTS', 
+        default=[
+             'localhost', 
+             '127.0.0.1',
+             '.onrender.com',
+             'clawconnectuwm.me',
+             'www.clawconnectuwm.me',
+            ])
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*onrender.com',
+    'https://clawconnectuwm.me',
+    'https://www.clawconnectuwm.me',
+]
 
 
 
@@ -51,6 +65,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -130,6 +145,7 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
 # Email
@@ -147,7 +163,7 @@ LOGOUT_REDIRECT_URL = 'login'
 
 # Email Backend
 EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='anymail.backends.resend.EmailBackend')
-DEFAULT_FROM_EMAIL = env('DJANGO_DEFAULT_FROM_EMAIL', default='Club Manager <notifications@uwm.edu>')
+DEFAULT_FROM_EMAIL = env('DJANGO_DEFAULT_FROM_EMAIL', default='ClawConnect <notifications@clawconnectuwm.me>')
 
 ANYMAIL = {
     'RESEND_API_KEY': env('RESEND_API_KEY', default=''),
