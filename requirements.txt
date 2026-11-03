@@ -5,6 +5,7 @@ attrs==26.1.0
 certifi==2026.10.23
 charset-normalizer==3.5.2
 Deprecated==3.0.0
+dj-database-url==3.1.2
 Django==6.1.2
 django-anymail==15.2
 django-environ==0.14.0
@@ -15,6 +16,7 @@ h11==0.16.0
 httpcore==1.0.9
 httpx==0.28.1
 idna==3.20
+psycopg2-binary==2.9.13
 pydantic==2.14.2
 pydantic_core==2.50.2
 python-dateutil==3.0.0
