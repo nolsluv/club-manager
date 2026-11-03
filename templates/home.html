@@ -114,6 +114,8 @@ Home
                             <span class="cm-pill cm-pill-approved" style="font-size: 11px; padding: 2px 8px; margin-right: 6px;">Event</span>
                             {% elif note.notification_type == 'cancelation' %}
                             <span class="cm-pill cm-pill-rejected" style="font-size: 11px; padding: 2px 8px; margin-right: 6px;">Cancelation</span>
+                            {% elif note.notification_type == 'poll' %}
+                            <span class="cm-pill cm-pill-rejected" style="font-size: 11px; padding: 2px 8px; margin-right: 6px;">Poll</span>
                             {% else %}
                             <span class="cm-pill cm-pill-pending" style="font-size: 11px; padding: 2px 8px; margin-right: 6px;">Announcement</span>
                             {% endif %}

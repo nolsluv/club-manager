@@ -3,12 +3,15 @@
 {% block title %}{{ poll.question }}{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/polls.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'css/subpage.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'css/polls.css' %}?v=2">
 
-<div class="club-detail-page">
-  <div class="club-detail-container poll-container">
+<div class="sub-page">
+  <div class="sub-card narrow">
 
-    <a class="back-link" href="{% url 'club_detail' club.id %}">← Back to {{ club.name }}</a>
+    <a class="sub-back" href="{% url 'club_detail' club.id %}">
+      <i class="bi bi-arrow-left"></i> Back to {{ club.name }}
+    </a>
 
     <div class="poll-header">
       <div>
@@ -40,7 +43,7 @@
         </label>
         {% endfor %}
         <div class="poll-actions">
-          <button type="submit" class="cm-member-button poll-submit">
+          <button type="submit" class="club-detail-primary-btn">
             {% if my_option_id %}Change vote{% else %}Submit vote{% endif %}
           </button>
         </div>

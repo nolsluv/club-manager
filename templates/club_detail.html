@@ -2,6 +2,48 @@
 {% block title %}{{ club.name }}{% endblock %}
 
 {% block content %}
+<style>
+    .poll-link-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 0;
+        border-top: 1px solid var(--border);
+        color: var(--text) !important;
+        text-decoration: none !important;
+    }
+    
+    .poll-link-row:first-child {
+        border-top: none;
+    }
+    
+    .poll-link-row:hover strong {
+        color: var(--accent);
+    }
+    
+    .poll-link-main {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+    }
+    
+    .poll-link-main strong {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text);
+    }
+    
+    .poll-link-main span {
+        font-size: 13px;
+        color: var(--muted);
+    }
+    
+    .poll-link-arrow {
+        color: var(--accent);
+    }
+    </style>
 <div class="club-detail-page">
 
     <section class="club-detail-hero">
@@ -384,9 +426,10 @@
             </div>
 
             <div class="club-detail-list">
+               
                 {% for p in polls %}
-                <a href="{% url 'poll_detail' p.id %}" class="club-detail-list-row poll-row">
-                    <div class="club-detail-list-main">
+                <a href="{% url 'poll_detail' p.id %}" class="poll-link-row">
+                    <div class="poll-link-main">
                         <strong>{{ p.question }}</strong>
                         <span>
                             {% if p.is_open %}
@@ -396,9 +439,7 @@
                             {% endif %}
                         </span>
                     </div>
-                    <div class="club-announcement-arrow">
-                        <i class="bi bi-chevron-right"></i>
-                    </div>
+                    <i class="bi bi-chevron-right poll-link-arrow"></i>
                 </a>
                 {% empty %}
                 <p class="cm-muted" style="margin:18px 0;">No polls yet.</p>
