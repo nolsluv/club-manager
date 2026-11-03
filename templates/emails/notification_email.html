@@ -1,0 +1,18 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+    {% if club_name %}
+        <div class="badge">{{ club_name }}</div>
+    {% endif %}
+    <h2>{{ title }}</h2>
+    <p>{{ message }}</p>
+    {% if action_url %}
+        <p>
+            <a href="{{ action_url }}" class="btn">View Event Details</a>
+        </p>
+    {% endif %}
+{% endblock %}
+
+{% block footer %}
+    You recieved this update because you are an active member of {{ club_name|default:"ClawConnect" }}.
+{% endblock %}
