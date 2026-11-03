@@ -162,11 +162,11 @@ LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
 
 # Email Backend
-EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='anymail.backends.resend.EmailBackend')
+EMAIL_BACKEND = "anymail.backends.resend.EmailBackend"
 DEFAULT_FROM_EMAIL = env('DJANGO_DEFAULT_FROM_EMAIL', default='ClawConnect <notifications@clawconnectuwm.me>')
 
 ANYMAIL = {
-    'RESEND_API_KEY': env('RESEND_API_KEY', default=''),
+    "RESEND_API_KEY": env("RESEND_API_KEY"),
 }
 
 Q_CLUSTER = {

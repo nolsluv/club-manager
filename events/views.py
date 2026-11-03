@@ -186,7 +186,7 @@ def event_create(request):
             )
 
             active_member_user_ids = list(
-                Member.objects.filter(club=selected_club, is_active=True, user__isnull=False)
+                Member.objects.filter(clubs=selected_club, is_active=True, user__isnull=False)
                 .values_list('user_id', flat=True)
             )
 

@@ -37,8 +37,8 @@ def send_event_created_email_task(recepient_ids, title, message, action_url=None
     """ Sends an email to all active club members when an event is created """
     recipients = (
         User.objects.filter(id__in=recepient_ids, is_active=True)
-        .exclude(email__isNull=True)
-        .exclue(email__exact="")
+        .exclude(email__isnull=True)
+        .exclude(email__exact="")
     )
 
     if not recipients.exists():
