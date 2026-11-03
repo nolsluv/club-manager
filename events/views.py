@@ -177,7 +177,7 @@ def event_create(request):
 
             target_path = reverse('calendar')
 
-            note = Notification.objects.create(
+            Notification.objects.create(
                 club=selected_club,
                 sender=creator_member,
                 message=f"New event: {event_name} on {event_date_str}".strip(),
@@ -198,7 +198,7 @@ def event_create(request):
                     f"New Event: {event_name}",
                     f"A new event '{event_name}' has been scheduled for {event_date_str}.",
                     event_url,
-                    getattr(selected_club, 'name', 'Club Manager'),
+                    getattr(selected_club, 'name', 'ClawConnect'),
                 )
         
         messages.success(request, "Event added successfully.")
