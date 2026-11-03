@@ -45,5 +45,6 @@ urlpatterns = [
     path('notifications/clear-all/', member_views.clear_all_notifications, name='clear_all_notifications'),
     path('clubs/<int:club_id>/leave/', member_views.leave_club, name='leave_club'),
     path('api/notifications/unread/', member_views.get_unread_system_notifications, name='unread_notifications_api'),
-    path("", include("finances.urls"))
+    path("", include("finances.urls")),
+    path("", include("polls.urls"))
 ]

@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'members',
     'events',
     'finances',
+    'polls',
     # Third Party Apps
     'anymail',
     'django_q',
