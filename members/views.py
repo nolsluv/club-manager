@@ -182,6 +182,7 @@ def club_detail(request, club_id):
                 if can_manage and approved
                 else None
             ),
+            "polls": club.polls.order_by("-created_at")[:5] if can_see_inside else None,
         },
     )
 

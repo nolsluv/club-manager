@@ -1,5 +1,6 @@
 /* =========================
    Finance
+   (load after subpage.css)
 ========================= */
 
 :root {
@@ -7,25 +8,27 @@
     --expense: #d0575b;
 }
 
-.finance-container {
-    max-width: 1050px !important;
-}
+.fin-in  { color: var(--income); }
+.fin-out { color: var(--expense); }
 
+/* header */
 .fin-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 16px;
-    margin: 24px 0 28px;
+    margin-bottom: 26px;
     padding-bottom: 24px;
     border-bottom: 1px solid var(--border);
 }
 
-.club-detail-container .fin-header h1 {
+.sub-card .fin-header h1 {
     margin: 0;
-    font-size: 30px;
-    font-weight: 400;
+    font-size: 34px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    color: var(--text);
 }
 
 .fin-header p {
@@ -39,17 +42,19 @@
     gap: 10px;
 }
 
-.fin-in  { color: var(--income); }
-.fin-out { color: var(--expense); }
-
 /* summary: one panel, three columns */
 .fin-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     margin-bottom: 20px;
-    background: var(--surface-2);
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 16px;
+}
+
+body.light-mode .fin-stats {
+    background: rgba(255, 255, 255, 0.45);
+    border-color: rgba(184, 115, 51, 0.14);
 }
 
 .fin-stat {
@@ -68,7 +73,7 @@
 .fin-stat-value {
     margin: 6px 0 4px;
     font-size: 28px;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .fin-stat-sub {
@@ -76,9 +81,8 @@
     color: var(--muted);
 }
 
-/* cards reuse .home-card */
+/* cards (reuse .home-card) */
 .fin-card {
-    min-height: 0;
     margin-bottom: 20px;
 }
 
@@ -146,6 +150,7 @@
     align-items: center;
     padding: 14px 0;
     border-top: 1px solid var(--border);
+    color: var(--text);
 }
 
 .home-card-head + .fin-account {
@@ -165,7 +170,7 @@
 
 .fin-account strong {
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .fin-empty {
@@ -176,37 +181,28 @@
 
 /* history table (builds on .clubs-table) */
 .fin-table {
-    margin-top: 0;
     font-size: 15px;
 }
 
-.fin-table th {
-    font-size: 13px;
-    font-weight: 400;
-}
-
-.fin-table td {
-    color: var(--text);
-}
-
-.fin-table td.fin-kind {
+.sub-card .clubs-table td.fin-kind {
     color: var(--muted);
 }
 
-.clubs-table td.fin-amount {
-    font-weight: 500;
+.sub-card .clubs-table td.fin-amount {
+    font-weight: 600;
     white-space: nowrap;
 }
 
-.clubs-table td.fin-in  { color: var(--income); }
-.clubs-table td.fin-out { color: var(--expense); }
+.sub-card .clubs-table td.fin-in  { color: var(--income); }
+.sub-card .clubs-table td.fin-out { color: var(--expense); }
 
 .fin-delete {
-    padding: 5px 12px;
+    padding: 6px 14px;
     font-size: 13px;
+    border-radius: 999px;
 }
 
-/* forms (reuse .form-page / .login-container / .form-group) */
+/* forms (reuse .login-container / .form-group) */
 .fin-form-sub {
     margin: -20px 0 28px;
     text-align: center;
@@ -225,6 +221,7 @@
 .form-group .fin-check input[type="checkbox"] {
     width: auto;
     margin: 0;
+    accent-color: var(--accent);
 }
 
 .form-group input[type="date"] { color-scheme: dark; }
@@ -232,6 +229,7 @@ body.light-mode .form-group input[type="date"] { color-scheme: light; }
 
 @media (max-width: 768px) {
     .fin-stats { grid-template-columns: 1fr; }
+
     .fin-stat + .fin-stat {
         border-left: none;
         border-top: 1px solid var(--border);

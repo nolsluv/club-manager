@@ -29,7 +29,11 @@ class EventForm(forms.ModelForm):
 
         if user is not None and getattr(user, 'is_authenticated', False):
             member = getattr(user, 'member', None)
-            if member:
+            if member and member.role == 'admin':
+                # admins can host/edit events for any club
+                self.fields['club'].queryset = Club.objects.all()
+            elif member:
+                # everyone else only sees clubs they belong to
                 self.fields['club'].queryset = Club.objects.filter(members=member).distinct()
             else:
                 self.fields['club'].queryset = Club.objects.none()

@@ -1,0 +1,220 @@
+/* =========================
+   Polls
+   (load after subpage.css)
+========================= */
+
+/* header */
+.poll-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 26px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.sub-card .poll-header h1 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    color: var(--text);
+}
+
+.poll-meta {
+    margin-top: 6px;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.poll-badge {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--muted);
+}
+
+.poll-badge.open {
+    border-color: rgba(63, 155, 106, 0.55);
+    background: rgba(63, 155, 106, 0.10);
+    color: #3f9b6a;
+}
+
+.poll-card {
+    margin-bottom: 20px;
+}
+
+/* voting */
+.poll-choice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    cursor: pointer;
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+.poll-choice:hover {
+    border-color: var(--accent);
+    background: rgba(200, 138, 84, 0.06);
+}
+
+.poll-choice:has(input:checked) {
+    border-color: var(--accent);
+    background: rgba(200, 138, 84, 0.10);
+}
+
+.poll-choice input[type="radio"] {
+    width: auto;
+    margin: 0;
+    accent-color: var(--accent);
+}
+
+.poll-choice input:checked + .poll-choice-text {
+    font-weight: 600;
+}
+
+.poll-actions {
+    margin-top: 18px;
+}
+
+.poll-actions button {
+    border: none;
+    cursor: pointer;
+}
+
+/* results */
+.poll-result {
+    padding: 14px 0;
+    border-top: 1px solid var(--border);
+}
+
+.home-card-head + .poll-result {
+    border-top: none;
+}
+
+.poll-result-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: var(--text);
+}
+
+.poll-result-count {
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.poll-you {
+    margin-left: 8px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.poll-track {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--border);
+    overflow: hidden;
+}
+
+.poll-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 4px;
+    background: var(--muted);
+    transition: width 0.5s ease;
+}
+
+.poll-lead .poll-fill {
+    background: var(--accent);
+}
+
+/* create form (reuses .login-container / .form-group) */
+.poll-form-sub {
+    margin: -20px 0 28px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.poll-option-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+/* beat the generic ".login-container button" rule */
+.login-container .poll-remove {
+    width: 42px;
+    margin: 0;
+    padding: 0;
+    flex-shrink: 0;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.login-container .poll-remove:hover {
+    background: transparent;
+    color: #d0575b;
+    border-color: #d0575b;
+}
+
+.login-container .poll-add {
+    width: auto;
+    margin: 4px 0 0;
+    padding: 8px 16px;
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    font-size: 13px;
+}
+
+.login-container .poll-add:hover {
+    background: rgba(200, 138, 84, 0.10);
+    color: var(--accent);
+    border-color: var(--accent);
+}
+a.poll-row {
+    grid-template-columns: 1fr auto;
+    color: inherit;
+    text-decoration: none;
+}
+
+a.poll-row:hover strong {
+    text-decoration: underline;
+}
+/* polls list on the club page */
+.club-detail-list a.poll-row {
+    grid-template-columns: 1fr auto;
+    padding: 14px 0;
+    color: inherit;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+.club-detail-list a.poll-row:hover {
+    background: rgba(200, 138, 84, 0.04);
+}
+
+.club-detail-list a.poll-row:hover strong {
+    color: var(--accent);
+}
