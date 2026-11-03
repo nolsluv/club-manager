@@ -16,7 +16,7 @@ import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-env = environ.Env(Debug=(bool,False),)
+env = environ.Env(DEBUG=(bool, False))
 environ.Env.read_env(BASE_DIR/'.env')
 
 
@@ -101,12 +101,10 @@ WSGI_APPLICATION = 'club_manager.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        default=f"sqlite:///{BASE_DIR}/db.sqlite3",
         conn_max_age=0,
-        ssl_require=True
     )
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
@@ -143,7 +141,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
