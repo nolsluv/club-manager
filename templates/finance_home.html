@@ -3,12 +3,15 @@
 {% block title %}{{ club.name }} Finances{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/finance.css' %}?v=3">
+<link rel="stylesheet" href="{% static 'css/subpage.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'css/finance.css' %}?v=4">
 
-<div class="club-detail-page">
-  <div class="club-detail-container finance-container">
+<div class="sub-page">
+  <div class="sub-card">
 
-    <a class="back-link" href="{% url 'club_detail' club.id %}">← Back to {{ club.name }}</a>
+    <a class="sub-back" href="{% url 'club_detail' club.id %}">
+      <i class="bi bi-arrow-left"></i> Back to {{ club.name }}
+    </a>
 
     <div class="fin-header">
       <div>
@@ -16,8 +19,8 @@
         <p>{{ club.name }}</p>
       </div>
       <div class="fin-header-actions">
-        <a class="cm-member-button" href="{% url 'finance_account_add' club.id %}">Add account</a>
-        <a class="cm-member-button" href="{% url 'finance_entry_add' club.id %}">Add entry</a>
+        <a class="club-detail-outline-btn" href="{% url 'finance_account_add' club.id %}">Add account</a>
+        <a class="club-detail-primary-btn" href="{% url 'finance_entry_add' club.id %}">Add entry</a>
       </div>
     </div>
 
@@ -98,29 +101,33 @@
       </div>
 
       <table class="clubs-table fin-table">
-        <tr>
-          <th>Date</th><th>Type</th><th>Description</th><th>Account</th><th>Amount</th><th></th>
-        </tr>
-        {% for e in entries %}
-        <tr>
-          <td>{{ e.date|date:"M d, Y" }}</td>
-          <td class="fin-kind">{{ e.get_kind_display }}</td>
-          <td>{{ e.description }}</td>
-          <td>{{ e.account.name|default:"-" }}</td>
-          <td class="fin-amount {% if e.is_expense %}fin-out{% else %}fin-in{% endif %}">
-            {% if e.is_expense %}-{% else %}+{% endif %}${{ e.amount|floatformat:2 }}
-          </td>
-          <td>
-            <form method="post" action="{% url 'finance_entry_delete' club.id e.id %}"
-                  onsubmit="return confirm('Delete this entry?');">
-              {% csrf_token %}
-              <button type="submit" class="cm-btn cm-btn-danger fin-delete">Delete</button>
-            </form>
-          </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="6" class="no-clubs">No entries yet.</td></tr>
-        {% endfor %}
+        <thead>
+          <tr>
+            <th>Date</th><th>Type</th><th>Description</th><th>Account</th><th>Amount</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in entries %}
+          <tr>
+            <td>{{ e.date|date:"M d, Y" }}</td>
+            <td class="fin-kind">{{ e.get_kind_display }}</td>
+            <td>{{ e.description }}</td>
+            <td>{{ e.account.name|default:"-" }}</td>
+            <td class="fin-amount {% if e.is_expense %}fin-out{% else %}fin-in{% endif %}">
+              {% if e.is_expense %}-{% else %}+{% endif %}${{ e.amount|floatformat:2 }}
+            </td>
+            <td>
+              <form method="post" action="{% url 'finance_entry_delete' club.id e.id %}"
+                    onsubmit="return confirm('Delete this entry?');">
+                {% csrf_token %}
+                <button type="submit" class="cm-btn cm-btn-danger fin-delete">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" class="fin-empty">No entries yet.</td></tr>
+          {% endfor %}
+        </tbody>
       </table>
     </div>
 

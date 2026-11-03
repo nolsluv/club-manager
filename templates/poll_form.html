@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}New poll{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/polls.css' %}?v=1">
+
+<div class="form-page">
+  <div class="login-container">
+    <h1>New poll</h1>
+    <p class="poll-form-sub">{{ club.name }}</p>
+
+    <form method="post">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="error">{{ form.non_field_errors }}</div>
+      {% endif %}
+
+      <div class="form-group">
+        {{ form.question.label_tag }}
+        {{ form.question }}
+        {% for err in form.question.errors %}<div class="error">{{ err }}</div>{% endfor %}
+      </div>
+
+      <div class="form-group">
+        <label>Answer choices</label>
+        <div id="poll-options" data-max="{{ max_options }}">
+          {% for opt in options %}
+          <div class="poll-option-row">
+            <input type="text" name="options" value="{{ opt }}" maxlength="100" placeholder="Answer {{ forloop.counter }}">
+            <button type="button" class="poll-remove" aria-label="Remove answer">×</button>
+          </div>
+          {% endfor %}
+        </div>
+        <button type="button" id="poll-add" class="poll-add">+ Add answer</button>
+      </div>
+
+      <div class="form-group">
+        {{ form.expires_at.label_tag }}
+        {{ form.expires_at }}
+        {% for err in form.expires_at.errors %}<div class="error">{{ err }}</div>{% endfor %}
+      </div>
+
+      <button type="submit">Send poll</button>
+    </form>
+
+    <p class="login-footer"><a href="{% url 'club_detail' club.id %}">Cancel</a></p>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var list = document.getElementById("poll-options");
+    var addBtn = document.getElementById("poll-add");
+    var max = parseInt(list.dataset.max, 10);
+    var MIN = 2;
+
+    function rows() { return list.querySelectorAll(".poll-option-row"); }
+
+    function refresh() {
+      rows().forEach(function (row, i) {
+        row.querySelector("input").placeholder = "Answer " + (i + 1);
+      });
+      addBtn.hidden = rows().length >= max;
+    }
+
+    addBtn.addEventListener("click", function () {
+      if (rows().length >= max) return;
+      var clone = rows()[0].cloneNode(true);
+      clone.querySelector("input").value = "";
+      list.appendChild(clone);
+      refresh();
+      clone.querySelector("input").focus();
+    });
+
+    list.addEventListener("click", function (e) {
+      if (!e.target.classList.contains("poll-remove")) return;
+      if (rows().length <= MIN) {
+        e.target.closest(".poll-option-row").querySelector("input").value = "";
+        return;
+      }
+      e.target.closest(".poll-option-row").remove();
+      refresh();
+    });
+
+    refresh();
+  })();
+</script>
+{% endblock %}

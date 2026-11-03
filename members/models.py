@@ -105,7 +105,8 @@ class Notification(models.Model):
         ('announcement', 'Announcement'),
         ('event', 'Event'),
         ('cancelation', 'Cancelation'),
-        ('reminder', 'Reminder')
+        ('reminder', 'Reminder'),
+        ('poll', 'Poll'),
     ]
     club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name='notifications')
     sender = models.ForeignKey(Member, null=True, on_delete=models.SET_NULL, related_name='+')
