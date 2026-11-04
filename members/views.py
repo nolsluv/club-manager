@@ -13,6 +13,7 @@ from django.http import Http404, JsonResponse
 from django.utils import timezone
 from .forms import RegisterForm, ClubRequestForm, NotificationForm, ClubAppearanceForm
 from django.db.models import Exists, OuterRef
+from django_q.tasks import async_task
 
 
 
@@ -28,6 +29,10 @@ def register(request):
                 last_name=request.POST.get("last_name", ""),
                 email=user.email,
             )
+
+            if user.email:
+                async_task("events.tasks.send_welcome_email_task", user.id)
+                
             login(request, user)
             return redirect("home")
 

@@ -1,0 +1,11 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+    <h2>Welcome to ClawConnect, {{ user.first_name|default:user.username }}!</h2>
+    <p>Your account has been set up successfully. You can now explore your student organizations, review schedules, and track club updates.</p>
+    <p>To get started, visit your dashboard to view active announcements and upcoming events.</p>
+{% endblock %}
+
+{% block footer %}
+    You are receiving this confirmation because an account was registered with this email address on ClawConnect.
+{% endblock %}
