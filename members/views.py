@@ -42,6 +42,18 @@ def register(request):
     return render(request, "register.html", {"form": form})
 
 
+@login_required
+def settings_page(request):
+    member = request.user.member
+
+    return render(
+        request,
+        "settings.html",
+        {
+            "member": member,
+        },
+    )
+
 # have to login to access home page
 @login_required
 def home(request):

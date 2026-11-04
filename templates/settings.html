@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Settings{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/settings.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="settings-page">
+
+    <div class="settings-container">
+
+        <!-- Settings Heading -->
+        <div class="settings-heading">
+
+            <div class="settings-heading-icon">
+                <i class="bi bi-gear-fill"></i>
+            </div>
+
+            <div>
+                <h1>Settings</h1>
+                <p>Manage your account preferences and security.</p>
+            </div>
+
+        </div>
+
+
+        <!-- Profile Information -->
+        <section class="settings-card">
+
+            <h2>Profile Information</h2>
+
+            <div class="settings-profile-intro">
+
+                <div class="settings-avatar">
+                    {{ user.username|first|upper }}
+                </div>
+
+                <div class="settings-intro-line"></div>
+
+                <p>Update your account information.</p>
+
+            </div>
+
+
+            <form method="post" class="settings-form">
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="action"
+                    value="profile_update"
+                >
+
+
+                <div class="settings-form-grid">
+
+                    <div class="settings-field">
+                        <label for="first_name">
+                            First Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="first_name"
+                            name="first_name"
+                            value="{{ member.first_name }}"
+                        >
+                    </div>
+
+
+                    <div class="settings-field">
+                        <label for="last_name">
+                            Last Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="last_name"
+                            name="last_name"
+                            value="{{ member.last_name }}"
+                        >
+                    </div>
+
+
+                    <div class="settings-field">
+                        <label>
+                            Username
+                        </label>
+
+                        <input
+                            type="text"
+                            value="{{ user.username }}"
+                            disabled
+                        >
+                    </div>
+
+
+                    <div class="settings-field">
+                        <label for="email">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value="{{ user.email }}"
+                        >
+                    </div>
+
+
+                    <div class="settings-field">
+                        <label>
+                            Role
+                        </label>
+
+                        <div class="settings-role">
+
+                            {% if member.role == 'admin' %}
+                                <i class="bi bi-crown-fill"></i>
+
+                            {% elif member.role == 'president' %}
+                                <i class="bi bi-star-fill"></i>
+
+                            {% elif member.role == 'treasurer' %}
+                                <i class="bi bi-shield-fill"></i>
+
+                            {% elif member.role == 'officer' %}
+                                <i class="bi bi-people-fill"></i>
+
+                            {% else %}
+                                <i class="bi bi-person-fill"></i>
+                            {% endif %}
+
+                            {{ member.get_role_display }}
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="settings-save-btn"
+                >
+                    Save Changes
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- Password & Security -->
+        <section class="settings-card">
+
+            <h2>Password & Security</h2>
+
+            <div class="settings-profile-intro">
+
+                <div class="settings-security-icon">
+                    <i class="bi bi-lock-fill"></i>
+                </div>
+
+                <div class="settings-intro-line"></div>
+
+                <p>
+                    Choose a strong password to keep your account secure.
+                </p>
+
+            </div>
+
+
+            <form method="post" class="settings-form">
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="action"
+                    value="password_update"
+                >
+
+
+                <div class="settings-password-grid">
+
+                    <div class="settings-field">
+                        <label for="current_password">
+                            Current Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="current_password"
+                            name="current_password"
+                        >
+                    </div>
+
+
+                    <div class="settings-field">
+                        <label for="new_password">
+                            New Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="new_password"
+                            name="new_password"
+                        >
+                    </div>
+
+
+                    <div class="settings-field">
+                        <label for="confirm_password">
+                            Confirm New Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="confirm_password"
+                            name="confirm_password"
+                        >
+                    </div>
+
+                </div>
+
+
+                <p class="settings-password-hint">
+                    <i class="bi bi-info-circle"></i>
+                    Password must be at least 8 characters.
+                </p>
+
+
+                <button
+                    type="submit"
+                    class="settings-save-btn"
+                >
+                    Update Password
+                </button>
+
+            </form>
+
+        </section>
+
+    </div>
+
+</div>
+
+{% endblock %}
