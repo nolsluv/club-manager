@@ -69,6 +69,12 @@
                             name="first_name"
                             value="{{ member.first_name }}"
                         >
+                        {% if profile_form.first_name.errors %}
+                            <div class="settings-field-error">
+                                {{ profile_form.first_name.errors.0 }}
+                            </div>
+                        {% endif %}
+
                     </div>
 
 
@@ -83,6 +89,12 @@
                             name="last_name"
                             value="{{ member.last_name }}"
                         >
+                        {% if profile_form.last_name.errors %}
+                            <div class="settings-field-error">
+                                {{ profile_form.last_name.errors.0 }}
+                            </div>
+                        {% endif %}
+
                     </div>
 
 
@@ -110,6 +122,12 @@
                             name="email"
                             value="{{ user.email }}"
                         >
+                        {% if profile_form.email.errors %}
+                            <div class="settings-field-error">
+                                {{ profile_form.email.errors.0 }}
+                            </div>
+                        {% endif %}
+
                     </div>
 
 
@@ -195,9 +213,27 @@
 
                         <input
                             type="password"
-                            id="current_password"
-                            name="current_password"
+                            id="old_password"
+                            name="old_password"
+                            autocomplete="current-password"
                         >
+
+                        {% if password_form.old_password.errors %}
+                            <div class="settings-field-error">
+                                {{ password_form.old_password.errors.0 }}
+                            </div>
+                        {% endif %}
+
+                        {% if password_form.old_password.errors %}
+                            <div class="settings-field-error">
+                                {{ password_form.old_password.errors.0 }}
+                            </div>
+                        {% endif %}
+                        {% if password_form.old_password.errors %}
+                            <div class="settings-field-error">
+                                {{ password_form.old_password.errors.0 }}
+                            </div>
+                        {% endif %}
                     </div>
 
 
@@ -208,9 +244,22 @@
 
                         <input
                             type="password"
-                            id="new_password"
-                            name="new_password"
+                            id="new_password1"
+                            name="new_password1"
+                            autocomplete="new-password"
                         >
+
+                        {% if password_form.new_password1.errors %}
+                            <div class="settings-field-error">
+                                {{ password_form.new_password1.errors.0 }}
+                            </div>
+                        {% endif %}
+
+                        {% if password_form.new_password1.errors %}
+                            <div class="settings-field-error">
+                                {{ password_form.new_password1.errors.0 }}
+                            </div>
+                        {% endif %}
                     </div>
 
 
@@ -221,9 +270,23 @@
 
                         <input
                             type="password"
-                            id="confirm_password"
-                            name="confirm_password"
+                            id="new_password2"
+                            name="new_password2"
+                            autocomplete="new-password"
                         >
+
+                        {% if password_form.new_password2.errors %}
+                            <div class="settings-field-error">
+                                {{ password_form.new_password2.errors.0 }}
+                            </div>
+                        {% endif %}
+
+                        {% if password_form.new_password2.errors %}
+                            <div class="settings-field-error">
+                                {{ password_form.new_password2.errors.0 }}
+                            </div>
+                        {% endif %}
+
                     </div>
 
                 </div>

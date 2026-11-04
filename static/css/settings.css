@@ -326,3 +326,10 @@ body.light-mode .settings-field input {
         font-size: 34px;
     }
 }
+
+.settings-field-error {
+    margin-top: 2px;
+    color: #e85b60;
+    font-size: 12px;
+    font-weight: 500;
+}
