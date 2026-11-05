@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
+from django.contrib.auth import login, update_session_auth_hash
 from .forms import RegisterForm
 from .models import Member, Club, MembershipRequest, Notification
 from django.contrib.admin.views.decorators import staff_member_required
@@ -11,7 +11,8 @@ from django.contrib import messages
 from django.db.models import Q, Count
 from django.http import Http404, JsonResponse
 from django.utils import timezone
-from .forms import RegisterForm, ClubRequestForm, NotificationForm, ClubAppearanceForm
+from .forms import RegisterForm, ClubRequestForm, NotificationForm, ClubAppearanceForm, ProfileUpdateForm
+from django.contrib.auth.forms import PasswordChangeForm
 from django.db.models import Exists, OuterRef
 from django_q.tasks import async_task
 
@@ -41,6 +42,75 @@ def register(request):
 
     return render(request, "register.html", {"form": form})
 
+
+@login_required
+def settings_page(request):
+    member = request.user.member
+    user = request.user
+    profile_form = ProfileUpdateForm(
+        member=member,
+        initial={
+            "first_name": member.first_name,
+            "last_name": member.last_name,
+            "email": user.email,
+        },
+    )
+
+    password_form = PasswordChangeForm(user=user)
+    if request.method == "POST":
+        action = request.POST.get("action")
+        # Update profile information
+        if action == "profile_update":
+            profile_form = ProfileUpdateForm(
+                request.POST,
+                member=member,
+            )
+
+            if profile_form.is_valid():
+                first_name = profile_form.cleaned_data["first_name"]
+                last_name = profile_form.cleaned_data["last_name"]
+                email = profile_form.cleaned_data["email"]
+                member.first_name = first_name
+                member.last_name = last_name
+                member.email = email
+                member.save()
+                user.email = email
+                user.save()
+                messages.success(
+                    request,
+                    "Your profile has been updated."
+                )
+                return redirect("settings")
+
+        # Change password
+        elif action == "password_update":
+            password_form = PasswordChangeForm(
+                user=user,
+                data=request.POST,
+            )
+
+            if password_form.is_valid():
+                updated_user = password_form.save()
+                update_session_auth_hash(
+                    request,
+                    updated_user
+                )
+                messages.success(
+                    request,
+                    "Your password has been updated."
+                )
+                return redirect("settings")
+
+
+    return render(
+        request,
+        "settings.html",
+        {
+            "member": member,
+            "profile_form": profile_form,
+            "password_form": password_form,
+        },
+    )
 
 # have to login to access home page
 @login_required
