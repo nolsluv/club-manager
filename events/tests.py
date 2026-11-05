@@ -175,3 +175,109 @@ class RSVPLockTests(TestCase):
         resp = self.client.get(reverse("calendar") + f"?year={local.year}&month={local.month}")
         self.assertIn(past.id, resp.context["started_ids"])
         self.assertNotIn(future.id, resp.context["started_ids"])
+
+
+# ---------------------------------------------------------------- public vs club events
+# own helpers (distinct names) so this block doesn't depend on other test files' helpers
+from django.urls import reverse  # noqa: E402
+from events.forms import DT_FORMAT  # noqa: E402
+from events.models import RSVP  # noqa: E402
+
+
+def _vis_member(username, role="member"):
+    user = User.objects.create_user(username, password="pw12345!")
+    return Member.objects.create(user=user, first_name=username.title(), last_name="Test",
+                                 email=f"{username}@example.com", role=role)
+
+
+def _vis_club(name, leader):
+    club = Club.objects.create(name=name, leader=leader, status=Club.Status.APPROVED)
+    club.members.add(leader)
+    return club
+
+
+def _vis_fmt(dt):
+    return timezone.localtime(dt).strftime(DT_FORMAT)
+
+
+class EventVisibilityTests(TestCase):
+    def setUp(self):
+        self.pres = _vis_member("vpres", "president")
+        self.club = _vis_club("Robotics", self.pres)
+        self.insider = _vis_member("insider")
+        self.club.members.add(self.insider)
+        self.outsider = _vis_member("outsider")
+        when = timezone.now() + timedelta(days=1)
+        self.club_event = Event.objects.create(title="Members Meeting", club=self.club,
+                                               created_by=self.pres, date=when)
+        self.public_event = Event.objects.create(title="Open House", club=self.club,
+                                                 created_by=self.pres, date=when,
+                                                 visibility="public")
+        local = timezone.localtime(when)
+        self.cal = reverse("calendar") + f"?year={local.year}&month={local.month}"
+
+    def calendar_titles(self, url=None):
+        resp = self.client.get(url or self.cal)
+        return {e.title for week in resp.context["grid"] for day in week for e in day["events"]}
+
+    def test_default_visibility_is_club(self):
+        e = Event.objects.create(title="X", club=self.club, date=timezone.now())
+        self.assertEqual(e.visibility, "club")
+
+    def test_outsider_sees_only_public_events(self):
+        self.client.force_login(self.outsider.user)
+        titles = self.calendar_titles()
+        self.assertIn("Open House", titles)
+        self.assertNotIn("Members Meeting", titles)
+
+    def test_member_sees_both(self):
+        self.client.force_login(self.insider.user)
+        self.assertEqual(self.calendar_titles() & {"Open House", "Members Meeting"},
+                         {"Open House", "Members Meeting"})
+
+    def test_club_filter_hides_club_events_from_outsiders(self):
+        self.client.force_login(self.outsider.user)
+        titles = self.calendar_titles(self.cal + f"&club={self.club.id}")
+        self.assertEqual(titles, {"Open House"})
+
+    def test_outsider_can_rsvp_to_public_event(self):
+        self.client.force_login(self.outsider.user)
+        self.client.post(reverse("rsvp_toggle", args=[self.public_event.pk]))
+        self.assertTrue(RSVP.objects.filter(event=self.public_event, member=self.outsider).exists())
+
+    def test_outsider_cannot_rsvp_to_club_event(self):
+        self.client.force_login(self.outsider.user)
+        resp = self.client.post(reverse("rsvp_toggle", args=[self.club_event.pk]))
+        self.assertEqual(resp.status_code, 403)
+        self.assertFalse(RSVP.objects.filter(event=self.club_event).exists())
+
+    def test_rsvp_button_flags(self):
+        self.client.force_login(self.outsider.user)
+        ids = self.client.get(self.cal).context["rsvpable_ids"]
+        self.assertIn(self.public_event.id, ids)
+        self.assertNotIn(self.club_event.id, ids)
+
+    def test_public_event_roster_includes_outside_rsvps(self):
+        RSVP.objects.create(event=self.public_event, member=self.outsider)
+        roster = set(self.public_event.attendance_roster())
+        self.assertEqual(roster, {self.pres, self.insider, self.outsider})
+        # and the leader can mark the outsider present
+        self.public_event.date = timezone.now() - timedelta(hours=1)
+        self.public_event.save()
+        self.client.force_login(self.pres.user)
+        url = reverse("event_attendance", args=[self.public_event.pk])
+        self.client.post(url, {"attendees": [self.outsider.id]})
+        self.assertTrue(self.public_event.attendance.filter(member=self.outsider).exists())
+
+    def test_club_event_roster_is_club_members_only(self):
+        RSVP.objects.create(event=self.club_event, member=self.outsider)  # shouldn't happen, but guard anyway
+        self.assertEqual(set(self.club_event.attendance_roster()), {self.pres, self.insider})
+
+    def test_visibility_saved_from_form(self):
+        self.client.force_login(self.pres.user)
+        start = timezone.now() + timedelta(days=2)
+        self.client.post(reverse("event_create"), {
+            "club": self.club.id, "title": "Bake Sale", "date": _vis_fmt(start),
+            "category": "fundraiser", "visibility": "public",
+        })
+        self.assertEqual(Event.objects.get(title="Bake Sale").visibility, "public")

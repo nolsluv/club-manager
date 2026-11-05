@@ -6310,3 +6310,40 @@ label.club-member-row.attendance-row:hover {
     background: transparent;
     box-shadow: none;
 }
+
+/* Public vs club events */
+.event-modal-tags {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.event-modal-tags .event-modal-category {
+    margin-bottom: 0;
+}
+
+.event-modal-public {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.event-modal-club {
+    margin: -6px 0 16px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.cal-event-public {
+    font-size: 11px;
+    color: var(--muted);
+}

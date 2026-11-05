@@ -15,7 +15,7 @@ class EventForm(forms.ModelForm):
     )
     class Meta: #creates meta class that holds what form shoudl ask for
         model = Event
-        fields = ['club', 'title', 'description', 'date', 'end_date', 'location', 'category', 'contact_email', 'capacity'] #fields coorespond to ones created in models.py
+        fields = ['club', 'title', 'description', 'date', 'end_date', 'location', 'category', 'contact_email', 'capacity', 'visibility'] #fields coorespond to ones created in models.py
         widgets = {
             'date': forms.DateTimeInput(attrs={'type': 'datetime-local'}, format=DT_FORMAT),
             'end_date' : forms.DateTimeInput(attrs={'type': 'datetime-local'}, format=DT_FORMAT),
@@ -26,6 +26,8 @@ class EventForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for name in ('date', 'end_date'):
             self.fields[name].input_formats = [DT_FORMAT]
+        # optional so older forms/tests still work; blank means club-only
+        self.fields['visibility'].required = False
 
         if user is not None and getattr(user, 'is_authenticated', False):
             member = getattr(user, 'member', None)
@@ -38,6 +40,9 @@ class EventForm(forms.ModelForm):
         if active_club and not self.is_bound:
             self.fields['club'].initial = getattr(active_club, 'pk', active_club)
     
+    def clean_visibility(self):
+        return self.cleaned_data.get('visibility') or 'club'
+
     def clean(self):
         cleaned = super().clean()
         start, end = cleaned.get('date'), cleaned.get('end_date')
@@ -55,4 +60,4 @@ class AttendanceForm(forms.Form):
 
     def __init__(self, *args, event=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['attendees'].queryset = event.club.members.all() if event and event.club else Member.objects.none()
+        self.fields['attendees'].queryset = event.attendance_roster() if event else Member.objects.none()

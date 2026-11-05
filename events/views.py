@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.db import transaction
+from django.db.models import Q
 
 from members.decorators import role_required  # finds decorator method
 from django.views.decorators.http import require_POST
@@ -88,14 +89,18 @@ def calendar_view(request):
         date__date__range=(weeks[0][0], weeks[-1][-1])
     ).select_related('club').prefetch_related('rsvps')
 
-    # Strict Club Filter:
-    # If an active club is selected display only that clubs events
-    # If no active club is chosen, display all events
+    # Club filter:
+    # If an active club is selected, display only that club's events
+    # Otherwise display events from my clubs, plus every public event
+    my_club_ids = set(member.clubs.values_list('id', flat=True)) if member else set()
     if active_club_id:
         events_qs = events_qs.filter(club_id=active_club_id)
+        # non-members (except admins) only see that club's public events
+        if not (member and (member.role == 'admin' or active_club_id in my_club_ids)):
+            events_qs = events_qs.filter(visibility='public')
     elif member:
         my_clubs = member.clubs.filter(status=Club.Status.APPROVED)
-        events_qs = events_qs.filter(club__in=my_clubs)
+        events_qs = events_qs.filter(Q(club__in=my_clubs) | Q(visibility='public')).distinct()
     else:
         events_qs = Event.objects.none()
 
@@ -112,6 +117,9 @@ def calendar_view(request):
             RSVP.objects.filter(member=member, event__in=events).values_list('event_id', flat=True)
         )
 
+    # events this member is allowed to RSVP to (UI only; rsvp_toggle re-checks)
+    rsvpable_ids = {e.id for e in events if e.is_public or e.club_id in my_club_ids}
+
     # events that have started; RSVP button is disabled for these (UI only; rsvp_toggle re-checks)
     now = timezone.now()
     started_ids = {e.id for e in events if e.date <= now}
@@ -119,7 +127,6 @@ def calendar_view(request):
     # events this member can take attendance for (UI only; the view re-checks)
     attendance_ids = set()
     if member and member.role in ATTENDANCE_ROLES:
-        my_club_ids = set(member.clubs.values_list('id', flat=True))
         attendance_ids = {e.id for e in events if _can_manage_attendance(member, e, my_club_ids)}
 
     grid = [
@@ -153,6 +160,7 @@ def calendar_view(request):
         'rsvped_ids': rsvped_ids,
         'attendance_ids': attendance_ids,
         'started_ids': started_ids,
+        'rsvpable_ids': rsvpable_ids,
         })
 
 def _can_modify(request, event):
@@ -326,8 +334,8 @@ def rsvp_toggle(request, pk):
 
     if not member:
         raise PermissionDenied("No member profile.")
-    # only members of the hosting club can RSVP
-    if not event.club or not event.club.members.filter(id=member.id).exists():
+    # public events: anyone; club events: only members of the hosting club
+    if not event.can_rsvp(member):
         raise PermissionDenied("Only club members can RSVP to this event.")
 
     # RSVPs lock once the event starts, so they can't change while attendance is taken
@@ -388,7 +396,7 @@ def event_attendance(request, pk):
         r.member_id: r
         for r in event.attendance.select_related('recorded_by')
     }
-    roster = list(event.club.members.order_by('last_name', 'first_name'))
+    roster = list(event.attendance_roster().order_by('last_name', 'first_name'))
     for m in roster:
         m.record = records.get(m.id)  # None if not recorded present
 

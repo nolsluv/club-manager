@@ -106,11 +106,14 @@
                                 data-started="{% if e.pk in started_ids %}1{% else %}0{% endif %}"
                                 data-attendance-url="{% url 'event_attendance' e.pk %}"
                                 data-can-attendance="{% if e.pk in attendance_ids %}1{% else %}0{% endif %}"
+                                data-public="{% if e.is_public %}1{% else %}0{% endif %}"
+                                data-can-rsvp="{% if e.pk in rsvpable_ids %}1{% else %}0{% endif %}"
+                                data-club="{{ e.club.name|default:'' }}"
                             >
                                 <span class="cal-event-dot"></span>
 
                                 <span class="cal-event-text">
-                                    <span class="cal-event-title">{{ e.title }}</span>
+                                    <span class="cal-event-title">{% if e.is_public %}<i class="bi bi-globe2 cal-event-public" title="Public event"></i> {% endif %}{{ e.title }}</span>
                                     <span class="cal-event-time">{{ e.date|time:"g:i A" }}</span>
                                 </span>
 
@@ -136,12 +139,18 @@
             <i class="bi bi-x-lg"></i>
         </button>
 
-        <div class="event-modal-category">
-            <span class="event-modal-dot"></span>
-            <span id="m-category"></span>
+        <div class="event-modal-tags">
+            <div class="event-modal-category">
+                <span class="event-modal-dot"></span>
+                <span id="m-category"></span>
+            </div>
+            <span class="event-modal-public" id="m-public">
+                <i class="bi bi-globe2"></i> Public
+            </span>
         </div>
 
         <h2 id="m-title" class="event-modal-title"></h2>
+        <p class="event-modal-club" id="m-club"></p>
 
         <div class="event-modal-info-line">
             <i class="bi bi-calendar-check"></i>
@@ -262,6 +271,11 @@
         setField('m-contact', btn.dataset.contact, 'Contact: ');
         setField('m-creator', btn.dataset.creator, 'Added by ');
 
+        document.getElementById('m-public').style.display = btn.dataset.public === '1' ? '' : 'none';
+        setField('m-club', btn.dataset.club, 'Hosted by ');
+
+        // hide RSVP for club-only events the viewer isn't a member of
+        document.getElementById('m-rsvp-form').style.display = btn.dataset.canRsvp === '1' ? '' : 'none';
         document.getElementById('m-rsvp-form').action = btn.dataset.rsvpUrl;
         const started = btn.dataset.started === '1';
         rsvpBtn.disabled = started;
