@@ -132,3 +132,46 @@ class AttendanceTests(TestCase):
         self.client.logout()
         self.login("alice")
         self.assertEqual(self.client.get(cal).context["attendance_ids"], set())
+
+
+class RSVPLockTests(TestCase):
+    def setUp(self):
+        pres_user = User.objects.create_user("pres", password="x")
+        self.pres = Member.objects.create(user=pres_user, first_name="P", last_name="R",
+                                          email="pres@example.com", role="president")
+        self.club = Club.objects.create(name="Chess", leader=self.pres, status=Club.Status.APPROVED)
+        user = User.objects.create_user("alice", password="x")
+        self.alice = Member.objects.create(user=user, first_name="Alice", last_name="T",
+                                           email="alice@example.com", role="member")
+        self.club.members.add(self.pres, self.alice)
+        self.client.login(username="alice", password="x")
+
+    def make_event(self, hours_from_now):
+        return Event.objects.create(title="E", club=self.club, created_by=self.pres,
+                                    date=timezone.now() + timedelta(hours=hours_from_now))
+
+    def test_can_rsvp_and_cancel_before_start(self):
+        event = self.make_event(24)
+        url = reverse("rsvp_toggle", args=[event.pk])
+        self.client.post(url)
+        self.assertTrue(RSVP.objects.filter(event=event, member=self.alice).exists())
+        self.client.post(url)
+        self.assertFalse(RSVP.objects.filter(event=event, member=self.alice).exists())
+
+    def test_cannot_cancel_after_start(self):
+        event = self.make_event(-1)
+        RSVP.objects.create(event=event, member=self.alice)
+        self.client.post(reverse("rsvp_toggle", args=[event.pk]))
+        self.assertTrue(RSVP.objects.filter(event=event, member=self.alice).exists())
+
+    def test_cannot_rsvp_after_start(self):
+        event = self.make_event(-1)
+        self.client.post(reverse("rsvp_toggle", args=[event.pk]))
+        self.assertFalse(RSVP.objects.filter(event=event).exists())
+
+    def test_calendar_marks_started_events(self):
+        past, future = self.make_event(-1), self.make_event(1)
+        local = timezone.localtime(past.date)
+        resp = self.client.get(reverse("calendar") + f"?year={local.year}&month={local.month}")
+        self.assertIn(past.id, resp.context["started_ids"])
+        self.assertNotIn(future.id, resp.context["started_ids"])

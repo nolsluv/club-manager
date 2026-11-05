@@ -103,6 +103,7 @@
                                 data-rsvp-url="{% url 'rsvp_toggle' e.pk %}"
                                 data-rsvp-count="{{ e.rsvps.all|length }}"
                                 data-rsvped="{% if e.pk in rsvped_ids %}1{% else %}0{% endif %}"
+                                data-started="{% if e.pk in started_ids %}1{% else %}0{% endif %}"
                                 data-attendance-url="{% url 'event_attendance' e.pk %}"
                                 data-can-attendance="{% if e.pk in attendance_ids %}1{% else %}0{% endif %}"
                             >
@@ -170,7 +171,6 @@
         <div class="event-modal-going">
             <i class="bi bi-people-fill"></i>
             <span id="m-rsvp-count"></span>
-            <i class="bi bi-chevron-right"></i>
         </div>
 
         <div class="modal-actions" id="m-actions">
@@ -263,8 +263,13 @@
         setField('m-creator', btn.dataset.creator, 'Added by ');
 
         document.getElementById('m-rsvp-form').action = btn.dataset.rsvpUrl;
-        document.getElementById('m-rsvp-btn').textContent =
-            btn.dataset.rsvped === '1' ? 'Cancel RSVP' : 'RSVP';
+        const started = btn.dataset.started === '1';
+        rsvpBtn.disabled = started;
+        if (started) {
+            rsvpBtn.textContent = btn.dataset.rsvped === '1' ? 'You RSVP\'d · RSVPs closed' : 'RSVPs closed';
+        } else {
+            rsvpBtn.textContent = btn.dataset.rsvped === '1' ? 'Cancel RSVP' : 'RSVP';
+        }
         const cap = btn.dataset.capacity ? ' / ' + btn.dataset.capacity : '';
         document.getElementById('m-rsvp-count').textContent =
             btn.dataset.rsvpCount + cap + ' going';

@@ -112,6 +112,10 @@ def calendar_view(request):
             RSVP.objects.filter(member=member, event__in=events).values_list('event_id', flat=True)
         )
 
+    # events that have started; RSVP button is disabled for these (UI only; rsvp_toggle re-checks)
+    now = timezone.now()
+    started_ids = {e.id for e in events if e.date <= now}
+
     # events this member can take attendance for (UI only; the view re-checks)
     attendance_ids = set()
     if member and member.role in ATTENDANCE_ROLES:
@@ -148,6 +152,7 @@ def calendar_view(request):
         'active_club_id': active_club_id,
         'rsvped_ids': rsvped_ids,
         'attendance_ids': attendance_ids,
+        'started_ids': started_ids,
         })
 
 def _can_modify(request, event):
@@ -325,14 +330,17 @@ def rsvp_toggle(request, pk):
     if not event.club or not event.club.members.filter(id=member.id).exists():
         raise PermissionDenied("Only club members can RSVP to this event.")
 
+    # RSVPs lock once the event starts, so they can't change while attendance is taken
+    if event.date <= timezone.now():
+        messages.error(request, "RSVPs are closed because this event has already started.")
+        return redirect(request.META.get('HTTP_REFERER') or 'calendar')
+
     existing = RSVP.objects.filter(event=event, member=member)
     if existing.exists():
         existing.delete()
         messages.success(request, f"Your RSVP to '{event.title}' was cancelled.")
     else:
-        if event.date < timezone.now():
-            messages.error(request, "This event has already happened.")
-        elif event.capacity and event.rsvps.count() >= event.capacity:
+        if event.capacity and event.rsvps.count() >= event.capacity:
             messages.error(request, "Sorry, this event is full.")
         else:
             RSVP.objects.create(event=event, member=member)

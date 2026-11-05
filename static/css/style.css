@@ -1764,7 +1764,7 @@ body.light-mode .cal-event-other {
 
 .event-modal-going {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr;
     align-items: center;
     gap: 14px;
     margin-top: 18px;
@@ -1779,10 +1779,6 @@ body.light-mode .cal-event-other {
     font-size: 21px;
 }
 
-.event-modal-going > i:last-child {
-    color: var(--muted);
-    font-size: 14px;
-}
 
 
 /* actions */
@@ -6303,4 +6299,14 @@ label.club-member-row.attendance-row:hover {
     display: flex;
     justify-content: flex-end;
     margin-top: 22px;
+}
+
+/* RSVPs closed once an event starts */
+.event-modal-rsvp-btn:disabled,
+.event-modal-rsvp-btn:disabled:hover {
+    opacity: .55;
+    cursor: default;
+    transform: none;
+    background: transparent;
+    box-shadow: none;
 }
