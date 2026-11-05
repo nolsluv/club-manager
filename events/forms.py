@@ -1,7 +1,7 @@
 from django import forms
 from django.db.models import Q
 from .models import Event
-from members.models import Club
+from members.models import Club, Member
 
 DT_FORMAT = '%Y-%m-%dT%H:%M'  # format the datetime-local input uses
 
@@ -44,3 +44,15 @@ class EventForm(forms.ModelForm):
         if start and end and end < start:
             self.add_error('end_date', "End time cannot be before the start time...")
         return cleaned
+
+class AttendanceForm(forms.Form):
+    """Checklist of the hosting club's members; checked = present."""
+    attendees = forms.ModelMultipleChoiceField(
+        queryset=None,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+    def __init__(self, *args, event=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['attendees'].queryset = event.club.members.all() if event and event.club else Member.objects.none()

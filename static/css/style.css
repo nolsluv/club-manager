@@ -6275,3 +6275,32 @@ body.light-mode .club-dashboard-hero::before,
 body.light-mode .home-hero::before {
     background-position: center 50%;
 }
+
+/* ========================================
+   Event Attendance
+======================================== */
+
+.club-member-row.attendance-row {
+    grid-template-columns: minmax(220px, 1.6fr) minmax(100px, .6fr) 90px;
+}
+
+label.club-member-row.attendance-row {
+    cursor: pointer;
+}
+
+label.club-member-row.attendance-row:hover {
+    background: rgba(255, 255, 255, .03);
+}
+
+.attendance-check {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.attendance-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 22px;
+}

@@ -46,3 +46,18 @@ class RSVP(models.Model):
 
     def __str__(self):
         return f"{self.member} -> {self.event}"
+
+class Attendance(models.Model):
+    """One row = this member was present at this event."""
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='attendance')
+    member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='attendance_records')
+    recorded_by = models.ForeignKey(
+        Member, on_delete=models.SET_NULL, null=True, blank=True, related_name='+'
+    )
+    recorded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('event', 'member')
+
+    def __str__(self):
+        return f"{self.member} attended {self.event}"

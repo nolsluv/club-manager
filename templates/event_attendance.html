@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Attendance · {{ event.title }}{% endblock %}
+
+{% block content %}
+
+<div class="club-members-page">
+    <div class="club-members-card">
+
+        <a href="{% url 'calendar' %}" class="club-members-back">
+            <i class="bi bi-arrow-left"></i>
+            Back to Calendar
+        </a>
+
+        <div class="club-members-heading">
+            <div>
+                <h2>{{ event.title }}</h2>
+                <p class="cm-muted">
+                    {{ event.club.name }} · {{ event.date|date:"l, F j" }} · {{ event.date|time:"g:i A" }}
+                </p>
+                <p class="cm-muted">
+                    {{ present_count }} of {{ roster|length }} member{{ roster|length|pluralize }} recorded present
+                    · {{ rsvp_ids|length }} RSVP'd
+                </p>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="club-members-table">
+
+                <div class="club-member-row attendance-row club-member-header">
+                    <div>Name</div>
+                    <div>RSVP</div>
+                    <div>Present</div>
+                </div>
+
+                {% for m in roster %}
+                <label class="club-member-row attendance-row" for="att-{{ m.id }}">
+
+                    <div data-initial="{{ m.first_name|first|upper }}">
+                        <strong>{{ m.first_name }} {{ m.last_name }}</strong>
+                        {% if m.record %}
+                        <div class="cm-muted">
+                            Recorded{% if m.record.recorded_by %} by {{ m.record.recorded_by.first_name }}{% endif %} · {{ m.record.recorded_at|date:"M j, g:i A" }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        {% if m.id in rsvp_ids %}
+                            <span class="cm-pill cm-pill-approved">Going</span>
+                        {% else %}
+                            <span class="cm-muted">—</span>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <input type="checkbox"
+                               class="attendance-check"
+                               id="att-{{ m.id }}"
+                               name="attendees"
+                               value="{{ m.id }}"
+                               {% if m.id in attended_ids %}checked{% endif %}>
+                    </div>
+
+                </label>
+                {% empty %}
+                <div class="club-member-row attendance-row">
+                    <p class="cm-muted" style="margin:0;">This club has no members yet.</p>
+                </div>
+                {% endfor %}
+
+            </div>
+
+            {% for error in form.attendees.errors %}<div class="cm-error">{{ error }}</div>{% endfor %}
+
+            {% if roster %}
+            <div class="attendance-actions">
+                <button type="submit" class="cm-btn cm-btn-primary">Save attendance</button>
+            </div>
+            {% endif %}
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

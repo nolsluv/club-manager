@@ -8,15 +8,17 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.db import transaction
 
 from members.decorators import role_required  # finds decorator method
 from django.views.decorators.http import require_POST
 from django.core.exceptions import PermissionDenied
-from .forms import EventForm
-from .models import Event, RSVP
+from .forms import EventForm, AttendanceForm
+from .models import Event, RSVP, Attendance
 from members.models import Club
 
 EVENT_EDITORS = ('president', 'admin')  # roles allowed to add/edit
+ATTENDANCE_ROLES = ('officer', 'president', 'admin')  # roles allowed to take attendance
 
 def check_and_send_event_reminders():
     now = timezone.now()
@@ -110,6 +112,12 @@ def calendar_view(request):
             RSVP.objects.filter(member=member, event__in=events).values_list('event_id', flat=True)
         )
 
+    # events this member can take attendance for (UI only; the view re-checks)
+    attendance_ids = set()
+    if member and member.role in ATTENDANCE_ROLES:
+        my_club_ids = set(member.clubs.values_list('id', flat=True))
+        attendance_ids = {e.id for e in events if _can_manage_attendance(member, e, my_club_ids)}
+
     grid = [
         [{
             'date': d,
@@ -139,6 +147,7 @@ def calendar_view(request):
         'years': range(first.year - 2, first.year + 4),
         'active_club_id': active_club_id,
         'rsvped_ids': rsvped_ids,
+        'attendance_ids': attendance_ids,
         })
 
 def _can_modify(request, event):
@@ -330,3 +339,56 @@ def rsvp_toggle(request, pk):
             messages.success(request, f"You're going to '{event.title}'.")
 
     return redirect(request.META.get('HTTP_REFERER') or 'calendar')
+
+def _can_manage_attendance(member, event, my_club_ids=None):
+    """Admins: any event. Event creator: their event.
+    President: clubs they lead. Officer: clubs they belong to."""
+    if not member or not event.club_id or member.role not in ATTENDANCE_ROLES:
+        return False
+    if member.role == 'admin' or event.created_by_id == member.id:
+        return True
+    if member.role == 'president':
+        return event.club.leader_id == member.id
+    # officer
+    if my_club_ids is None:
+        my_club_ids = set(member.clubs.values_list('id', flat=True))
+    return event.club_id in my_club_ids
+
+
+@role_required(*ATTENDANCE_ROLES)
+def event_attendance(request, pk):
+    event = get_object_or_404(Event.objects.select_related('club'), pk=pk)
+    member = request.user.member
+    if not _can_manage_attendance(member, event):
+        raise PermissionDenied("You can't manage attendance for this event.")
+
+    form = AttendanceForm(request.POST or None, event=event)
+    if request.method == 'POST' and form.is_valid():
+        selected_ids = {m.id for m in form.cleaned_data['attendees']}
+        with transaction.atomic():
+            # remove anyone who was unchecked, add anyone newly checked
+            event.attendance.exclude(member_id__in=selected_ids).delete()
+            already = set(event.attendance.values_list('member_id', flat=True))
+            Attendance.objects.bulk_create([
+                Attendance(event=event, member_id=mid, recorded_by=member)
+                for mid in selected_ids - already
+            ])
+        messages.success(request, f"Attendance saved for '{event.title}' ({len(selected_ids)} present).")
+        return redirect('event_attendance', pk=event.pk)
+
+    records = {
+        r.member_id: r
+        for r in event.attendance.select_related('recorded_by')
+    }
+    roster = list(event.club.members.order_by('last_name', 'first_name'))
+    for m in roster:
+        m.record = records.get(m.id)  # None if not recorded present
+
+    return render(request, 'event_attendance.html', {
+        'event': event,
+        'form': form,
+        'roster': roster,
+        'present_count': len(records),
+        'attended_ids': set(records),
+        'rsvp_ids': set(event.rsvps.values_list('member_id', flat=True)),
+    })
