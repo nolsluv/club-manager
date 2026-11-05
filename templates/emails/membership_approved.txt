@@ -1,0 +1,9 @@
+Hi {{ recipient_name|default:"there" }},
+
+Great news! Your request to join {{ club.name }} on ClawConnect has been approved.
+
+You can now participate in club discussions, vote in polls, and RSVP to upcoming events by visiting your club dashboard:
+{{ club_url }}
+
+— ClawConnect Team
+University of Wisconsin-Milwaukee
