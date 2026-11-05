@@ -15,6 +15,7 @@ from .forms import RegisterForm, ClubRequestForm, NotificationForm, ClubAppearan
 from django.contrib.auth.forms import PasswordChangeForm
 from django.db.models import Exists, OuterRef
 from django_q.tasks import async_task
+from django.urls import reverse
 
 
 
@@ -458,6 +459,28 @@ def review_membership(request, request_id):
             membership_request.status = MembershipRequest.Status.APPROVED
             membership_request.club.members.add(membership_request.member)
             messages.success(request, f"Approved {membership_request.member}.")
+
+            # --- Send out approval email ---
+            applicant = membership_request.member
+            user = getattr(applicant, 'user', None)
+            recipient_email = getattr(applicant, 'email', None) or (applicant.user.email if getattr(applicant, 'user', None) else None)
+            recipient_name = (getattr(applicant, 'first_name', None)
+                              or (user.get_full_name().strip() if user and hasattr(user, 'get_full_name') else '')
+                              or (user.first_name if user else '')
+                              or (user.username if user else '')
+                              or str(applicant)
+                              )
+            club = membership_request.club
+            club_url = request.build_absolute_uri(reverse('club_detail', args=[club.id]))
+
+            if recipient_email:
+                async_task(
+                    "events.tasks.send_membership_email",
+                    recipient_email,
+                    recipient_name,
+                    club.id,
+                    club_url
+                )
         elif action == "reject":
             membership_request.status = MembershipRequest.Status.REJECTED
             messages.success(request, f"Rejected {membership_request.member}.")

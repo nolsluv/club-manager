@@ -1,9 +1,10 @@
 import logging
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives, send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from members.models import Club
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -70,3 +71,27 @@ def send_event_created_email_task(recepient_ids, title, message, action_url=None
             logger.info("Event email successfully sent to %s", user.email)
         except Exception as exc:
             logger.error(f"Failed to send event email to {user.email}: {exc}")
+
+def send_membership_email(user_email, recipient_name, club_id, club_url):
+    if not user_email:
+        return
+
+    try: 
+        club = Club.objects.get(id=club_id)
+    except Club.DoesNotExist:
+        return
+    subject = f"Welcome to {club.name}! Membership Approved"
+    from_email = settings.DEFAULT_FROM_EMAIL
+
+    context = {
+        'recipient_name': recipient_name.strip() if (recipient_name and recipient_name.strip()) else 'there',
+        'club': club,
+        'club_url': club_url,
+    }
+
+    text_body = render_to_string('emails/membership_approved.txt', context)
+    html_body = render_to_string('emails/club_acceptance_email.html', context)
+
+    msg = EmailMultiAlternatives(subject=subject, body=text_body, from_email=from_email, to=[user_email])
+    msg.attach_alternative(html_body, "text/html")
+    msg.send(fail_silently=False)
