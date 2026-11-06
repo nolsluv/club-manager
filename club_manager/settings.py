@@ -12,10 +12,11 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 
 from pathlib import Path
 import environ
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-env = environ.Env(Debug=(bool,False),)
+env = environ.Env(DEBUG=(bool, False))
 environ.Env.read_env(BASE_DIR/'.env')
 
 
@@ -28,7 +29,21 @@ SECRET_KEY = env('DJANGO_SECRET_KEY', default='django-insecure-change-me')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DJANGO_DEBUG', default=True)
 
-ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
+ALLOWED_HOSTS = env.list(
+    'DJANGO_ALLOWED_HOSTS', 
+        default=[
+             'localhost', 
+             '127.0.0.1',
+             '.onrender.com',
+             'clawconnectuwm.me',
+             'www.clawconnectuwm.me',
+            ])
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*onrender.com',
+    'https://clawconnectuwm.me',
+    'https://www.clawconnectuwm.me',
+]
 
 
 
@@ -44,10 +59,15 @@ INSTALLED_APPS = [
     'members',
     'events',
     'finances',
+    'polls',
+    # Third Party Apps
+    'anymail',
+    'django_q',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -80,12 +100,11 @@ WSGI_APPLICATION = 'club_manager.wsgi.application'
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR}/db.sqlite3",
+        conn_max_age=0,
+    )
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
@@ -122,22 +141,36 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
+#MAILERS = {
+#    'default': {
+#        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
+#    },
+#}
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
+
+# Email Backend
+EMAIL_BACKEND = "anymail.backends.resend.EmailBackend"
+DEFAULT_FROM_EMAIL = env('DJANGO_DEFAULT_FROM_EMAIL', default='ClawConnect <notifications@clawconnectuwm.me>')
+
+ANYMAIL = {
+    "RESEND_API_KEY": env("RESEND_API_KEY"),
+}
+
+Q_CLUSTER = {
+    'name': 'club_manager_tasks',
+    'sync': True,  # Runs all tasks inline/synchronously without a worker
+    'orm': 'default',
+}

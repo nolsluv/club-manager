@@ -547,32 +547,62 @@ body {
 }
 
 /*theme switch botton*/
-.theme-toggle {
+.side-menu-action {
     width: 100%;
-    padding: 14px 18px;
-
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
     background: transparent;
     color: var(--text);
-
     border: 1px solid var(--border);
-    border-radius: 8px;
-
+    border-radius: 10px;
     font-family: inherit;
     font-size: 16px;
-
+    font-weight: 500;
     cursor: pointer;
-
     transition:
-        background 0.3s ease,
-        color 0.3s ease,
-        border-color 0.3s ease;
+        background .2s ease,
+        border-color .2s ease,
+        transform .2s ease;
 }
 
-.theme-toggle:hover {
-    background: var(--text);
-    color: var(--bg);
-    border-color: var(--text);
+.side-menu-action:hover {
+    background: rgba(200, 138, 84, .08);
+    border-color: var(--accent);
+    transform: translateY(-1px);
 }
+
+.side-menu-action i {
+    color: var(--accent);
+    font-size: 18px;
+}
+
+.side-settings-link {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.side-settings-link:hover {
+    background: rgba(200, 138, 84, .08);
+    border-color: var(--accent);
+}
+
+.side-settings-link i {
+    color: var(--accent);
+    font-size: 18px;
+}
+
 
 /* =========================
    Login Page
@@ -6347,3 +6377,4 @@ label.club-member-row.attendance-row:hover {
     font-size: 11px;
     color: var(--muted);
 }
+

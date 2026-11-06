@@ -28,6 +28,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'), 
     path('register/', member_views.register, name='register'), 
     path('dashboard/', member_views.dashboard, name='dashboard'),
+    path('settings/', member_views.settings_page, name='settings'),
     path('club-requests/<int:club_id>/review/', member_views.review_club, name='review_club'),
     path('clubs/', member_views.clubs, name='clubs'),
     path('clubs/<int:club_id>/', member_views.club_detail, name='club_detail'),
@@ -45,5 +46,6 @@ urlpatterns = [
     path('notifications/clear-all/', member_views.clear_all_notifications, name='clear_all_notifications'),
     path('clubs/<int:club_id>/leave/', member_views.leave_club, name='leave_club'),
     path('api/notifications/unread/', member_views.get_unread_system_notifications, name='unread_notifications_api'),
-    path("", include("finances.urls"))
+    path("", include("finances.urls")),
+    path("", include("polls.urls"))
 ]

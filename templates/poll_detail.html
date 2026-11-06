@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ poll.question }}{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/subpage.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'css/polls.css' %}?v=2">
+
+<div class="sub-page">
+  <div class="sub-card narrow">
+
+    <a class="sub-back" href="{% url 'club_detail' club.id %}">
+      <i class="bi bi-arrow-left"></i> Back to {{ club.name }}
+    </a>
+
+    <div class="poll-header">
+      <div>
+        <h1>{{ poll.question }}</h1>
+        <p class="poll-meta">
+          {{ club.name }}
+          {% if poll.created_by %} · {{ poll.created_by }}{% endif %}
+          · {{ total }} vote{{ total|pluralize }}
+        </p>
+      </div>
+      {% if poll.is_open %}
+        <span class="poll-badge open">Open · closes {{ poll.expires_at|date:"M j, g:i A" }}</span>
+      {% else %}
+        <span class="poll-badge closed">Closed {{ poll.expires_at|date:"M j, g:i A" }}</span>
+      {% endif %}
+    </div>
+
+    {% if can_vote %}
+    <div class="home-card poll-card">
+      <div class="home-card-head">
+        <h2>{% if my_option_id %}Your vote{% else %}Cast your vote{% endif %}</h2>
+      </div>
+      <form method="post" action="{% url 'poll_vote' poll.id %}">
+        {% csrf_token %}
+        {% for o in options %}
+        <label class="poll-choice">
+          <input type="radio" name="option" value="{{ o.id }}" {% if o.id == my_option_id %}checked{% endif %} required>
+          <span class="poll-choice-text">{{ o.text }}</span>
+        </label>
+        {% endfor %}
+        <div class="poll-actions">
+          <button type="submit" class="club-detail-primary-btn">
+            {% if my_option_id %}Change vote{% else %}Submit vote{% endif %}
+          </button>
+        </div>
+      </form>
+    </div>
+    {% endif %}
+
+    {% if show_results %}
+    <div class="home-card poll-card">
+      <div class="home-card-head">
+        <h2>Results</h2>
+        <span class="home-count">{{ total }}</span>
+      </div>
+      {% for o in options %}
+      <div class="poll-result {% if o.is_leading %}poll-lead{% endif %}">
+        <div class="poll-result-top">
+          <span>
+            {{ o.text }}
+            {% if o.id == my_option_id %}<small class="poll-you">your vote</small>{% endif %}
+          </span>
+          <span class="poll-result-count">{{ o.vote_count }} · {{ o.percent }}%</span>
+        </div>
+        <div class="poll-track"><div class="poll-fill" data-w="{{ o.percent }}"></div></div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if can_manage and poll.is_open %}
+    <form method="post" action="{% url 'poll_close' poll.id %}"
+          onsubmit="return confirm('Close this poll now? Members will no longer be able to vote.');">
+      {% csrf_token %}
+      <button type="submit" class="cm-btn cm-btn-danger">Close poll now</button>
+    </form>
+    {% endif %}
+
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll(".poll-fill[data-w]").forEach(function (bar) {
+    bar.style.width = bar.dataset.w + "%";
+  });
+</script>
+{% endblock %}

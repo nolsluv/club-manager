@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
+from django.contrib.auth import login, update_session_auth_hash
 from .forms import RegisterForm
 from .models import Member, Club, MembershipRequest, Notification
 from django.contrib.admin.views.decorators import staff_member_required
@@ -11,8 +11,11 @@ from django.contrib import messages
 from django.db.models import Q, Count
 from django.http import Http404, JsonResponse
 from django.utils import timezone
-from .forms import RegisterForm, ClubRequestForm, NotificationForm, ClubAppearanceForm
+from .forms import RegisterForm, ClubRequestForm, NotificationForm, ClubAppearanceForm, ProfileUpdateForm
+from django.contrib.auth.forms import PasswordChangeForm
 from django.db.models import Exists, OuterRef
+from django_q.tasks import async_task
+from django.urls import reverse
 
 
 
@@ -28,6 +31,10 @@ def register(request):
                 last_name=request.POST.get("last_name", ""),
                 email=user.email,
             )
+
+            if user.email:
+                async_task("events.tasks.send_welcome_email_task", user.id)
+                
             login(request, user)
             return redirect("home")
 
@@ -36,6 +43,75 @@ def register(request):
 
     return render(request, "register.html", {"form": form})
 
+
+@login_required
+def settings_page(request):
+    member = request.user.member
+    user = request.user
+    profile_form = ProfileUpdateForm(
+        member=member,
+        initial={
+            "first_name": member.first_name,
+            "last_name": member.last_name,
+            "email": user.email,
+        },
+    )
+
+    password_form = PasswordChangeForm(user=user)
+    if request.method == "POST":
+        action = request.POST.get("action")
+        # Update profile information
+        if action == "profile_update":
+            profile_form = ProfileUpdateForm(
+                request.POST,
+                member=member,
+            )
+
+            if profile_form.is_valid():
+                first_name = profile_form.cleaned_data["first_name"]
+                last_name = profile_form.cleaned_data["last_name"]
+                email = profile_form.cleaned_data["email"]
+                member.first_name = first_name
+                member.last_name = last_name
+                member.email = email
+                member.save()
+                user.email = email
+                user.save()
+                messages.success(
+                    request,
+                    "Your profile has been updated."
+                )
+                return redirect("settings")
+
+        # Change password
+        elif action == "password_update":
+            password_form = PasswordChangeForm(
+                user=user,
+                data=request.POST,
+            )
+
+            if password_form.is_valid():
+                updated_user = password_form.save()
+                update_session_auth_hash(
+                    request,
+                    updated_user
+                )
+                messages.success(
+                    request,
+                    "Your password has been updated."
+                )
+                return redirect("settings")
+
+
+    return render(
+        request,
+        "settings.html",
+        {
+            "member": member,
+            "profile_form": profile_form,
+            "password_form": password_form,
+        },
+    )
 
 # have to login to access home page
 @login_required
@@ -182,6 +258,7 @@ def club_detail(request, club_id):
                 if can_manage and approved
                 else None
             ),
+            "polls": club.polls.order_by("-created_at")[:5] if can_see_inside else None,
         },
     )
 
@@ -382,6 +459,28 @@ def review_membership(request, request_id):
             membership_request.status = MembershipRequest.Status.APPROVED
             membership_request.club.members.add(membership_request.member)
             messages.success(request, f"Approved {membership_request.member}.")
+
+            # --- Send out approval email ---
+            applicant = membership_request.member
+            user = getattr(applicant, 'user', None)
+            recipient_email = getattr(applicant, 'email', None) or (applicant.user.email if getattr(applicant, 'user', None) else None)
+            recipient_name = (getattr(applicant, 'first_name', None)
+                              or (user.get_full_name().strip() if user and hasattr(user, 'get_full_name') else '')
+                              or (user.first_name if user else '')
+                              or (user.username if user else '')
+                              or str(applicant)
+                              )
+            club = membership_request.club
+            club_url = request.build_absolute_uri(reverse('club_detail', args=[club.id]))
+
+            if recipient_email:
+                async_task(
+                    "events.tasks.send_membership_email",
+                    recipient_email,
+                    recipient_name,
+                    club.id,
+                    club_url
+                )
         elif action == "reject":
             membership_request.status = MembershipRequest.Status.REJECTED
             messages.success(request, f"Rejected {membership_request.member}.")

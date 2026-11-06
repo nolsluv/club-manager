@@ -3,9 +3,11 @@
 {% block title %}{{ heading }}{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/finance.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'css/subpage.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'css/finance.css' %}?v=4">
+ 
 <div class="form-page">
-  <div class="login-container">
+  <div class="login-container" style="position: relative; z-index: 2;">
     <h1>{{ heading }}</h1>
     <p class="fin-form-sub">{{ club.name }}</p>
 
