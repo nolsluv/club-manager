@@ -19,9 +19,9 @@
                 <p>Great news! Your request to join <strong>{{ club.name }}</strong> has been accepted. Welcome to the club!</p>
                 <p>You can now participate in club discussions, vote in polls, and RSVP to upcoming events.</p>
             </div>
-            <a href="{{ club_url }}" class="btn">Visit Club Dashboard</a>
+            <a href="{% if club_url %}{% if club_url|slice:':4' == 'http' %}{{ club_url }}{% else %}https://clawconnectuwm.me{{ club_url }}{% endif %}{% else %}https://clawconnectuwm.me{% endif %}" class="btn">Visit Club Dashboard</a>
             <div class="footer">
-                ClawConnect &bull; University of Wisconsin-Milwaukee
+                <a href="https://clawconnectuwm.me" target="_blank" style="color: #6b7280; text-decoration: none;">ClawConnect &bull; University of Wisconsin-Milwaukee</a>
             </div>
         </div>
     </body>
