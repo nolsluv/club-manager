@@ -173,4 +173,6 @@ Q_CLUSTER = {
     'name': 'club_manager_tasks',
     'sync': True,  # Runs all tasks inline/synchronously without a worker
     'orm': 'default',
+    'timeout': 60,
+    'retry': 120,
 }

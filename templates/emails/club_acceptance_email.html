@@ -1,28 +1,18 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <style>
-            body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 24px; }
-            .email-card { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; border: 1px solid #e5e7eb; padding: 32px; }
-            .header { font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 16px; }
-            .content { font-size: 15px; line-height: 1.6; color: #374151; margin-bottom: 24px; }
-            .btn { display: inline-block; background-color: #000000; color: #ffffff !important; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; font-size: 14px;}
-            .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #f3f4f6; font-size: 12px; color: #9ca3af; }
-        </style>
-    </head>
-    <body> 
-        <div class="email-card">
-            <div class="header">Welcome to {{ club.name }}!</div>
-            <div class="content">
-                <p>Hi {{ recipient_name|default:"there" }},</p>
-                <p>Great news! Your request to join <strong>{{ club.name }}</strong> has been accepted. Welcome to the club!</p>
-                <p>You can now participate in club discussions, vote in polls, and RSVP to upcoming events.</p>
-            </div>
-            <a href="{% if club_url %}{% if club_url|slice:':4' == 'http' %}{{ club_url }}{% else %}https://clawconnectuwm.me{{ club_url }}{% endif %}{% else %}https://clawconnectuwm.me{% endif %}" class="btn">Visit Club Dashboard</a>
-            <div class="footer">
-                <a href="https://clawconnectuwm.me" target="_blank" style="color: #6b7280; text-decoration: none;">ClawConnect &bull; University of Wisconsin-Milwaukee</a>
-            </div>
-        </div>
-    </body>
-</html>
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+    {% if club.name %}
+        <div class="badge">{{ club.name }}</div>
+    {% endif %}
+    <h2>Welcome to {{ club.name }}!</h2>
+    <p>Hi {{ recipient_name|default:"there" }},</p>
+    <p>Great news! Your request to join <strong>{{ club.name }}</strong> has been accepted. Welcome to the club!</p>
+    <p>You can now participate in club discussions, vote in polls, and RSVP to upcoming events.</p>
+    <p>
+        <a href="{% if club_url %}{% if club_url|slice:':4' == 'http' %}{{ club_url }}{% else %}https://clawconnectuwm.me{{ club_url }}{% endif %}{% else %}https://clawconnectuwm.me{% endif %}" class="btn">Visit Club Dashboard</a>
+    </p>
+{% endblock %}
+
+{% block footer %}
+    You received this confirmation because you were approved to join {{ club.name }} on <a href="https://clawconnectuwm.me" style="color: #64748b; text-decoration: underline;">clawconnectuwm.me</a>.
+{% endblock %}
