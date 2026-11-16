@@ -1,0 +1,278 @@
+/*Club Announcements*/
+
+.club-announcement-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+/*Announcement Row*/
+
+.club-announcement-row {
+    display: flex;
+    align-items: center;
+
+    gap: 18px;
+
+    padding: 16px 18px;
+
+    border: none;
+    border-radius: 12px;
+
+    color: var(--text);
+
+    transition:
+        transform .2s ease,
+        background .2s ease;
+}
+
+.club-announcement-row:hover {
+    transform: translateY(-1px);
+}
+
+
+/* Type Background Colors
+   Fade from left to right*/
+
+/* Event */
+.club-announcement-row.announcement-type-event {
+    background: linear-gradient(
+        90deg,
+        rgba(91, 175, 122, .16) 0%,
+        rgba(91, 175, 122, .08) 45%,
+        rgba(91, 175, 122, 0) 100%
+    );
+}
+
+/* Reminder */
+.club-announcement-row.announcement-type-reminder {
+    background: linear-gradient(
+        90deg,
+        rgba(142, 107, 209, .16) 0%,
+        rgba(142, 107, 209, .08) 45%,
+        rgba(142, 107, 209, 0) 100%
+    );
+}
+
+/* Cancelation */
+.club-announcement-row.announcement-type-cancelation {
+    background: linear-gradient(
+        90deg,
+        rgba(232, 91, 96, .16) 0%,
+        rgba(232, 91, 96, .08) 45%,
+        rgba(232, 91, 96, 0) 100%
+    );
+}
+
+/* Poll */
+.club-announcement-row.announcement-type-poll {
+    background: linear-gradient(
+        90deg,
+        rgba(235, 113, 122, .16) 0%,
+        rgba(235, 113, 122, .08) 45%,
+        rgba(235, 113, 122, 0) 100%
+    );
+}
+
+/* General Announcement */
+.club-announcement-row.announcement-type-announcement {
+    background: linear-gradient(
+        90deg,
+        rgba(200, 138, 84, .16) 0%,
+        rgba(200, 138, 84, .08) 45%,
+        rgba(200, 138, 84, 0) 100%
+    );
+}
+
+
+/*Announcement Icon*/
+
+.club-announcement-icon {
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    font-size: 18px;
+}
+
+.announcement-type-event .club-announcement-icon {
+    color: #5baf7a;
+    background: rgba(91, 175, 122, .12);
+}
+
+.announcement-type-reminder .club-announcement-icon {
+    color: #8e6bd1;
+    background: rgba(142, 107, 209, .12);
+}
+
+.announcement-type-cancelation .club-announcement-icon {
+    color: #e85b60;
+    background: rgba(232, 91, 96, .12);
+}
+
+.announcement-type-poll .club-announcement-icon {
+    color: #eb717a;
+    background: rgba(235, 113, 122, .12);
+}
+
+.announcement-type-announcement .club-announcement-icon {
+    color: var(--accent);
+    background: rgba(200, 138, 84, .12);
+}
+
+
+/*Content*/
+
+.club-announcement-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.club-announcement-type {
+    margin-bottom: 7px;
+}
+
+.club-announcement-message {
+    margin-bottom: 5px;
+
+    color: var(--text);
+
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.club-announcement-meta {
+    color: var(--muted);
+
+    font-size: 13px;
+}
+
+
+/*Type Badges */
+
+.announcement-type-badge {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 4px 10px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+/* Event */
+.badge-event {
+    background: rgba(91, 175, 122, .16);
+    color: #5baf7a;
+}
+
+
+/* Reminder */
+.badge-reminder {
+    background: rgba(142, 107, 209, .16);
+    color: #8e6bd1;
+}
+
+
+/* Cancelation */
+.badge-cancelation {
+    background: rgba(232, 91, 96, .16);
+    color: #e85b60;
+}
+
+
+/* Poll */
+.badge-poll {
+    background: rgba(235, 113, 122, .16);
+    color: #eb717a;
+}
+
+
+/* Announcement */
+.badge-announcement {
+    background: rgba(200, 138, 84, .16);
+    color: var(--accent);
+}
+
+
+/*Light Mode*/
+
+body.light-mode .club-announcement-row.announcement-type-event {
+    background: linear-gradient(
+        90deg,
+        rgba(91, 175, 122, .13) 0%,
+        rgba(91, 175, 122, .06) 45%,
+        rgba(91, 175, 122, 0) 100%
+    );
+}
+
+body.light-mode .club-announcement-row.announcement-type-reminder {
+    background: linear-gradient(
+        90deg,
+        rgba(142, 107, 209, .13) 0%,
+        rgba(142, 107, 209, .06) 45%,
+        rgba(142, 107, 209, 0) 100%
+    );
+}
+
+body.light-mode .club-announcement-row.announcement-type-cancelation {
+    background: linear-gradient(
+        90deg,
+        rgba(232, 91, 96, .13) 0%,
+        rgba(232, 91, 96, .06) 45%,
+        rgba(232, 91, 96, 0) 100%
+    );
+}
+
+body.light-mode .club-announcement-row.announcement-type-poll {
+    background: linear-gradient(
+        90deg,
+        rgba(235, 113, 122, .13) 0%,
+        rgba(235, 113, 122, .06) 45%,
+        rgba(235, 113, 122, 0) 100%
+    );
+}
+
+body.light-mode .club-announcement-row.announcement-type-announcement {
+    background: linear-gradient(
+        90deg,
+        rgba(200, 138, 84, .13) 0%,
+        rgba(200, 138, 84, .06) 45%,
+        rgba(200, 138, 84, 0) 100%
+    );
+}
+
+
+/*Responsive*/
+
+@media (max-width: 700px) {
+
+    .club-announcement-row {
+        gap: 12px;
+        padding: 14px;
+    }
+
+    .club-announcement-icon {
+        width: 42px;
+        height: 42px;
+    }
+
+    .club-announcement-message {
+        font-size: 14px;
+    }
+
+    .club-announcement-meta {
+        font-size: 12px;
+    }
+}
