@@ -15,7 +15,7 @@ class Command(BaseCommand):
         to_email = options["to_email"]
         from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "ClawConnect <noreply@clawconnectuwm.me>")
 
-        mock_user = SimpleNamespace(first_name="Ben", username="bdhess13")
+        mock_user = SimpleNamespace(first_name="George", username="gwashington67")
         mock_club = SimpleNamespace(name="UWM AI & Robotics Club")
 
         tests = [
@@ -44,9 +44,21 @@ class Command(BaseCommand):
                 "html_template": "emails/club_acceptance_email.html",
                 "txt_template": "emails/membership_approved.txt",
                 "context": {
-                    "recipient_name": "Ben",
+                    "recipient_name": "George",
                     "club": mock_club,
                     "club_url": "/clubs/1/",
+                },
+            },
+            {
+                "subject": f"[Test] Password Reset Request",
+                "html_template": "emails/password_reset_email.html",
+                "txt_template": "emails/password_reset_email.txt",
+                "context": {
+                    "user": mock_user,
+                    "protocol": "http",
+                    "domain": "127.0.0.1:8000",
+                    "uid": "dGVzdA",
+                    "token": "test-token",
                 },
             },
         ]
