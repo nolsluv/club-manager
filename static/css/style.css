@@ -1794,7 +1794,7 @@ body.light-mode .cal-event-other {
 
 .event-modal-going {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr;
     align-items: center;
     gap: 14px;
     margin-top: 18px;
@@ -1809,10 +1809,6 @@ body.light-mode .cal-event-other {
     font-size: 21px;
 }
 
-.event-modal-going > i:last-child {
-    color: var(--muted);
-    font-size: 14px;
-}
 
 
 /* actions */
@@ -6305,3 +6301,80 @@ body.light-mode .club-dashboard-hero::before,
 body.light-mode .home-hero::before {
     background-position: center 50%;
 }
+
+/* ========================================
+   Event Attendance
+======================================== */
+
+.club-member-row.attendance-row {
+    grid-template-columns: minmax(220px, 1.6fr) minmax(100px, .6fr) 90px;
+}
+
+label.club-member-row.attendance-row {
+    cursor: pointer;
+}
+
+label.club-member-row.attendance-row:hover {
+    background: rgba(255, 255, 255, .03);
+}
+
+.attendance-check {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.attendance-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 22px;
+}
+
+/* RSVPs closed once an event starts */
+.event-modal-rsvp-btn:disabled,
+.event-modal-rsvp-btn:disabled:hover {
+    opacity: .55;
+    cursor: default;
+    transform: none;
+    background: transparent;
+    box-shadow: none;
+}
+
+/* Public vs club events */
+.event-modal-tags {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.event-modal-tags .event-modal-category {
+    margin-bottom: 0;
+}
+
+.event-modal-public {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.event-modal-club {
+    margin: -6px 0 16px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.cal-event-public {
+    font-size: 11px;
+    color: var(--muted);
+}
+
