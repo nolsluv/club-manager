@@ -6327,9 +6327,62 @@ label.club-member-row.attendance-row:hover {
 
 .attendance-actions {
     display: flex;
-    justify-content: flex-end;
-    margin-top: 22px;
+    justify-content: flex-start;
+    margin-top: 28px;
 }
+
+.attendance-save-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    min-width: 280px;
+    padding: 16px 30px;
+    border: 1px solid rgba(230, 161, 88, .70);
+    border-radius: 18px;
+    background: linear-gradient(
+        135deg,
+        #c9823d 0%,
+        #d99a55 55%,
+        #c97d35 100%
+    );
+
+    color: #fff;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.20),
+        0 8px 20px rgba(0,0,0,.16);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        filter .2s ease;
+}
+.attendance-save-btn:hover {
+    transform: translateY(-2px) scale(1.015);
+    background: linear-gradient(
+        135deg,
+        #d38b43 0%,
+        #e0a260 55%,
+        #d2873f 100%
+    );
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.28),
+        0 12px 28px rgba(0,0,0,.22);
+    filter: brightness(1.05);
+}
+
+.attendance-save-btn:active {
+    transform: translateY(0) scale(.99);
+    box-shadow:
+        inset 0 1px 2px rgba(0,0,0,.12),
+        0 5px 12px rgba(0,0,0,.14);
+}
+
 
 /* RSVPs closed once an event starts */
 .event-modal-rsvp-btn:disabled,
@@ -6377,4 +6430,129 @@ label.club-member-row.attendance-row:hover {
     font-size: 11px;
     color: var(--muted);
 }
+.attendance-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 28px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+}
 
+.attendance-event-main {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.attendance-event-icon {
+    width: 90px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 18px;
+    background: rgba(200, 138, 84, .13);
+    border: 1px solid rgba(200, 138, 84, .22);
+    color: #e7a968;
+    font-size: 38px;
+}
+
+.attendance-event-main h2 {
+    margin: 0 0 7px;
+    color: var(--text);
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.attendance-club-name {
+    margin-bottom: 10px;
+    color: var(--muted);
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.attendance-event-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--text);
+    font-size: 14px;
+}
+
+.attendance-event-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.attendance-event-meta i {
+    color: #d7e4ee;
+}
+
+body.light-mode .attendance-event-meta i {
+    color: var(--accent);
+}
+
+.attendance-meta-divider {
+    width: 1px;
+    height: 22px;
+    background: var(--border);
+}
+
+
+/* Stats */
+
+.attendance-stats {
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+}
+
+.attendance-stat-card {
+    min-width: 190px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 20px 24px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .035);
+    border: 1px solid var(--border);
+}
+
+.attendance-stat-card > i {
+    font-size: 28px;
+}
+
+.attendance-stat-card strong {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--text);
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.attendance-stat-card span {
+    color: var(--muted);
+
+    font-size: 15px;
+}
+
+.attendance-stat-present {
+    border-color: rgba(104, 170, 220, .42);
+}
+
+.attendance-stat-present > i {
+    color: #79b9e9;
+}
+
+.attendance-stat-rsvp {
+    border-color: rgba(200, 138, 84, .48);
+}
+
+.attendance-stat-rsvp > i {
+    color: #e2a25f;
+}

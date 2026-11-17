@@ -1,5 +1,9 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}{{ club.name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/announcements.css' %}">
+{% endblock %}
 
 {% block content %}
 <style>
@@ -51,7 +55,7 @@
 
         <div class="club-detail-hero-content">
 
-            <a href="javascript:history.back()" class="club-detail-back">
+            <a href="{% url 'dashboard' %}" class="club-detail-back">
                 <i class="bi bi-arrow-left"></i>
                 Back
             </a>
@@ -378,29 +382,91 @@
             {% endif %}
 
             <div class="club-announcement-list">
+
                 {% for note in announcements %}
-                <div class="club-announcement-row">
+
+                <div class="club-announcement-row announcement-type-{{ note.notification_type }}">
+
                     <div class="club-announcement-icon">
-                        <i class="bi bi-calendar-event-fill"></i>
+
+                        {% if note.notification_type == 'event' %}
+                            <i class="bi bi-calendar-event-fill"></i>
+
+                        {% elif note.notification_type == 'reminder' %}
+                            <i class="bi bi-clock-fill"></i>
+
+                        {% elif note.notification_type == 'cancelation' %}
+                            <i class="bi bi-x-circle-fill"></i>
+
+                        {% elif note.notification_type == 'poll' %}
+                            <i class="bi bi-bar-chart-fill"></i>
+
+                        {% else %}
+                            <i class="bi bi-megaphone-fill"></i>
+
+                        {% endif %}
+
                     </div>
 
+
                     <div class="club-announcement-content">
+
+                        <div class="club-announcement-type">
+
+                            {% if note.notification_type == 'event' %}
+                                <span class="announcement-type-badge badge-event">
+                                    Event
+                                </span>
+
+                            {% elif note.notification_type == 'reminder' %}
+                                <span class="announcement-type-badge badge-reminder">
+                                    Reminder
+                                </span>
+
+                            {% elif note.notification_type == 'cancelation' %}
+                                <span class="announcement-type-badge badge-cancelation">
+                                    Cancelation
+                                </span>
+
+                            {% elif note.notification_type == 'poll' %}
+                                <span class="announcement-type-badge badge-poll">
+                                    Poll
+                                </span>
+
+                            {% else %}
+                                <span class="announcement-type-badge badge-announcement">
+                                    Announcement
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+
                         <div class="club-announcement-message">
                             {{ note.message }}
                         </div>
+
+
                         <div class="club-announcement-meta">
                             {{ note.created_at|date:"M j, Y" }}
-                            {% if note.sender %} · {{ note.sender }}{% endif %}
+                            {% if note.sender %}
+                                · {{ note.sender }}
+                            {% endif %}
                         </div>
+
                     </div>
 
-                    <div class="club-announcement-arrow">
-                        <i class="bi bi-chevron-right"></i>
-                    </div>
                 </div>
+
                 {% empty %}
-                <p class="cm-muted" style="margin:0;">No announcements yet.</p>
+
+                <p class="cm-muted" style="margin:0;">
+                    No announcements yet.
+                </p>
+
                 {% endfor %}
+
             </div>
 
         </div>
