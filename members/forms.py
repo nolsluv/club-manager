@@ -78,9 +78,6 @@ class AsyncPasswordResetForm(PasswordResetForm):
             to_email,
             html_email_template_name=None,
     ):
-        context["domain"] = "clawconnectuwm.me"
-        context["protocol"] = "https"
-
         subject = render_to_string(subject_template_name, context).strip()
         text_body = render_to_string(email_template_name, context)
         html_body = (

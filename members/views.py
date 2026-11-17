@@ -745,12 +745,11 @@ class CustomPasswordResetView(auth_views.PasswordResetView):
     subject_template_name = "emails/password_reset_subject.txt"
     success_url = reverse_lazy("password_reset_done")
 
-class CustomPasswordResetDoneView(auth_views.PasswordResetDoneView):
-    template_name = "registration/password_reset_done.html"
+class CustomPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    template_name = "registration/password_reset_confirm.html"
     success_url = reverse_lazy("login")
 
     def form_valid(self, form):
-        # Call the parent class's form_valid method to handle the email sending
         response = super().form_valid(form)
         messages.success(self.request, "Your password has been reset. Please login with your new password.")
         return response
