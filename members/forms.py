@@ -1,7 +1,9 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 from django.contrib.auth.models import User
 from .models import Club, Notification, Member
+from django.template.loader import render_to_string
+from django_q.tasks import async_task
 
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -65,3 +67,33 @@ class ClubAppearanceForm(forms.ModelForm):
     class Meta:
         model = Club
         fields = ['icon', 'theme_color']
+
+class AsyncPasswordResetForm(PasswordResetForm):
+    def send_mail(
+            self,
+            subject_template_name,
+            email_template_name,
+            context,
+            from_email,
+            to_email,
+            html_email_template_name=None,
+    ):
+        context["domain"] = "clawconnectuwm.me"
+        context["protocol"] = "https"
+
+        subject = render_to_string(subject_template_name, context).strip()
+        text_body = render_to_string(email_template_name, context)
+        html_body = (
+            render_to_string(html_email_template_name, context)
+            if html_email_template_name
+            else None
+        )
+
+        async_task(
+            "members.tasks.send_password_reset_email",
+            subject,
+            text_body,
+            html_body,
+            from_email,
+            to_email,
+        )

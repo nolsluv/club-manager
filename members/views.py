@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, update_session_auth_hash
-from .forms import RegisterForm
+from django.contrib.auth import login, update_session_auth_hash, views as auth_views
+from .forms import RegisterForm, AsyncPasswordResetForm
 from .models import Member, Club, MembershipRequest, Notification
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
@@ -15,7 +15,7 @@ from .forms import RegisterForm, ClubRequestForm, NotificationForm, ClubAppearan
 from django.contrib.auth.forms import PasswordChangeForm
 from django.db.models import Exists, OuterRef
 from django_q.tasks import async_task
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
 
 
@@ -735,3 +735,22 @@ def send_notification(request, club_id):
         messages.error(request, "You can't send notifications for this club.")
 
     return redirect("club_detail", club_id=club.id)
+
+# Function to reset passwords
+class CustomPasswordResetView(auth_views.PasswordResetView):
+    form_class = AsyncPasswordResetForm
+    template_name = "registration/password_reset_form.html"
+    email_template_name = "emails/password_reset_email.txt"
+    html_email_template_name = "emails/password_reset_email.html"
+    subject_template_name = "emails/password_reset_subject.txt"
+    success_url = reverse_lazy("password_reset_done")
+
+class CustomPasswordResetDoneView(auth_views.PasswordResetDoneView):
+    template_name = "registration/password_reset_done.html"
+    success_url = reverse_lazy("login")
+
+    def form_valid(self, form):
+        # Call the parent class's form_valid method to handle the email sending
+        response = super().form_valid(form)
+        messages.success(self.request, "Your password has been reset. Please login with your new password.")
+        return response

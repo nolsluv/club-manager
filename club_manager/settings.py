@@ -160,6 +160,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
+PASSWORD_RESET_TIMEOUT = 900
 
 # Email Backend
 EMAIL_BACKEND = "anymail.backends.resend.EmailBackend"
