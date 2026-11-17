@@ -19,7 +19,6 @@ from django.urls import include, path
 from django.contrib.auth import views as auth_views
 from members import views as member_views
 from django.views.generic import TemplateView
-from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -51,5 +50,5 @@ urlpatterns = [
     path("", include("polls.urls")),
     path("password-reset/", member_views.CustomPasswordResetView.as_view(), name="password_reset"),
     path("password-reset/done/", auth_views.PasswordResetDoneView.as_view(), name="password_reset_done"),
-    path("reset/<uidb64>/<token>/", views.CustomPasswordResetConfirmView.as_view(), name="password_reset_confirm"),
+    path("reset/<uidb64>/<token>/", member_views.CustomPasswordResetDoneView.as_view(), name="password_reset_confirm"),
 ]
