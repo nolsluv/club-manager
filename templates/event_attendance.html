@@ -11,17 +11,70 @@
             Back to Calendar
         </a>
 
-        <div class="club-members-heading">
-            <div>
-                <h2>{{ event.title }}</h2>
-                <p class="cm-muted">
-                    {{ event.club.name }} · {{ event.date|date:"l, F j" }} · {{ event.date|time:"g:i A" }}
-                </p>
-                <p class="cm-muted">
-                    {{ present_count }} of {{ roster|length }} member{{ roster|length|pluralize }} recorded present
-                    · {{ rsvp_ids|length }} RSVP'd
-                </p>
+        <div class="attendance-hero">
+
+            <div class="attendance-event-main">
+
+                <div class="attendance-event-icon">
+                    <i class="bi bi-calendar3"></i>
+                </div>
+
+                <div>
+                    <h2>{{ event.title }}</h2>
+
+                    <div class="attendance-club-name">
+                        {{ event.club.name }}
+                    </div>
+
+                    <div class="attendance-event-meta">
+
+                        <span>
+                            <i class="bi bi-calendar3"></i>
+                            {{ event.date|date:"l, F j" }}
+                        </span>
+
+                        <span class="attendance-meta-divider"></span>
+
+                        <span>
+                            <i class="bi bi-clock"></i>
+                            {{ event.date|time:"g:i A" }}
+                        </span>
+
+                    </div>
+                </div>
+
             </div>
+
+
+            <div class="attendance-stats">
+
+                <div class="attendance-stat-card attendance-stat-present">
+
+                    <i class="bi bi-people-fill"></i>
+
+                    <div>
+                        <strong>
+                            {{ present_count }} / {{ roster|length }}
+                        </strong>
+                        <span>Present</span>
+                    </div>
+
+                </div>
+
+
+                <div class="attendance-stat-card attendance-stat-rsvp">
+
+                    <i class="bi bi-calendar-check-fill"></i>
+
+                    <div>
+                        <strong>{{ rsvp_ids|length }}</strong>
+                        <span>RSVP'd</span>
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
 
         <form method="post">
@@ -77,7 +130,11 @@
 
             {% if roster %}
             <div class="attendance-actions">
-                <button type="submit" class="cm-btn cm-btn-primary">Save attendance</button>
+                <button type="submit" class="attendance-save-btn">
+                    <i class="bi bi-check-lg"></i>
+                    <span>Save attendance</span>
+                </button>
+
             </div>
             {% endif %}
         </form>
