@@ -126,6 +126,23 @@ body {
    Main Landing Page
 ========================= */
 
+#main-home.intro-home {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+        opacity 1s ease,
+        transform 1s ease;
+}
+
+.show-home {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
 
 .landing-content {
     text-align: center;
@@ -223,17 +240,38 @@ body {
     font-size: 20px;
 }
 
-.brand-mark {
+
+.brand-logo {
     width: 54px;
     height: 54px;
-    border: 1.5px solid var(--accent);
-    border-radius: 11px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.brand-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Default dark mode */
+.logo-dark {
+    display: block;
+}
+
+.logo-light {
+    display: none;
+}
+
+/* Light mode */
+body.light-mode .logo-dark {
+    display: none;
+}
+
+body.light-mode .logo-light {
+    display: block;
 }
 
 .brand-text {
