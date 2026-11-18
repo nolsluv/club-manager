@@ -3,7 +3,8 @@ Hi {{ recipient_name|default:"there" }},
 Great news! Your request to join {{ club.name }} on ClawConnect has been approved.
 
 You can now participate in club discussions, vote in polls, and RSVP to upcoming events by visiting your club dashboard:
-{{ club_url }}
+{% if club_url %}{% if club_url|slice:":4" == "http" %}{{ club_url }}{% else %}https://clawconnectuwm.me{{ club_url }}{% endif %}{% else %}https://clawconnectuwm.me{% endif %}
 
 — ClawConnect Team
 University of Wisconsin-Milwaukee
+https://clawconnectuwm.me

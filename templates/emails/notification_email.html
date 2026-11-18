@@ -8,11 +8,11 @@
     <p>{{ message }}</p>
     {% if action_url %}
         <p>
-            <a href="{{ action_url }}" class="btn">View Event Details</a>
+            <a href="{% if action_url|slice:':4' == 'http' %}{{ action_url }}{% else %}https://clawconnectuwm.me{{ action_url }}{% endif %}" class="btn">View Event Details</a>
         </p>
     {% endif %}
 {% endblock %}
 
 {% block footer %}
-    You recieved this update because you are an active member of {{ club_name|default:"ClawConnect" }}.
+    You received this update because you are an active member of {{ club_name|default:"ClawConnect" }} on <a href="https://clawconnectuwm.me" style="color: #64748b; text-decoration: underline;">clawconnectuwm.me</a>.
 {% endblock %}

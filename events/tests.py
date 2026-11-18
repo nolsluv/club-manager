@@ -222,8 +222,7 @@ class ReminderTests(EventTestBase):
         )
 
     def test_far_event_ignored(self):
-        Event.objects.create(title="Later", club=self.club, created_by=self.member,
-                             date=timezone.now() + timedelta(days=3))
+        self.make_event(date=timezone.now() + timedelta(days=3))
         self.assertEqual(check_and_send_event_reminders(), 0)
 
 from django.urls import reverse
@@ -283,7 +282,8 @@ class AttendanceTests(TestCase):
         self.login("pres")
         resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, "1 of 3 members recorded present")
+        self.assertContains(resp, "1 / 3")
+        self.assertContains(resp, "Present")
         self.assertContains(resp, "Recorded by Pres")
         self.assertEqual(resp.context["attended_ids"], {self.alice.id})
         self.assertIn(self.bob.id, resp.context["rsvp_ids"])
@@ -411,12 +411,23 @@ class EventVisibilityTests(TestCase):
         self.outsider = _vis_member("outsider")
         when = timezone.now() + timedelta(days=1)
         self.club_event = Event.objects.create(title="Members Meeting", club=self.club,
-                                               created_by=self.pres, date=when)
+                                               created_by=self.pres, date=when,
+                                               reminder_sent=True)
         self.public_event = Event.objects.create(title="Open House", club=self.club,
                                                  created_by=self.pres, date=when,
-                                                 visibility="public")
+                                                 visibility="public", reminder_sent=True)
         local = timezone.localtime(when)
         self.cal = reverse("calendar") + f"?year={local.year}&month={local.month}"
+
+    def make_event(self, **overrides):
+        defaults = {
+            "title": "Event",
+            "club": self.club,
+            "created_by": self.pres,
+            "date": timezone.now() + timedelta(days=7),
+        }
+        defaults.update(overrides)
+        return Event.objects.create(**defaults)
 
     def calendar_titles(self, url=None):
         resp = self.client.get(url or self.cal)
@@ -926,7 +937,10 @@ class RSVPTests(EventTestBase):
         self.login(self.plain)
         resp = self.client.post(rsvp_url(past))
         self.assertEqual(RSVP.objects.count(), 0)
-        self.assertIn("This event has already happened.", messages_of(resp))
+        self.assertIn(
+            "RSVPs are closed because this event has already started.",
+            messages_of(resp),
+        )
 
     def test_full_event_rejected(self):
         self.event.capacity = 1

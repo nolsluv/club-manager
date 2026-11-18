@@ -436,14 +436,30 @@ body {
     color: var(--muted);
 }
 
-.login-footer a {
+.login-footer a,
+.forgot-password a {
     color: var(--text);
     text-decoration: none;
     margin-left: 4px;
 }
 
-.login-footer a:hover {
+.login-footer a:hover,
+.forgot-password a:hover {
     text-decoration: underline;
+}
+
+.login-description {
+    margin-bottom: 20px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.forgot-password {
+    margin-top: 8px;
+    text-align: right;
+    font-size: 14px;
+    color: var(--muted);
 }
 
 /* =========================
@@ -646,14 +662,16 @@ body {
     margin-bottom: 20px;
 }
 
-.form-group label {
+.form-group label,
+.login-container form p label {
     display: block;
     margin-bottom: 8px;
     font-size: 14px;
     color: var(--muted);
 }
 
-.form-group input {
+.form-group input,
+.login-container form p input:not([type="hidden"]) {
     display: block;
     width: 100%;
     padding: 12px;
@@ -665,7 +683,12 @@ body {
     font-family: "Manrope", sans-serif;
 }
 
-.form-group input:focus {
+.login-container form p {
+    margin-bottom: 20px;
+}
+
+.form-group input:focus,
+.login-container form p input:not([type="hidden"]):focus {
     outline: none;
     border-color: var(--text);
 }

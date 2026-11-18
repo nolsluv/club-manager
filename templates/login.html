@@ -26,6 +26,9 @@ Log In
             <div class="form-group">
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
+                <p class="forgot-password">
+                    <a href="{% url 'password_reset' %}">Forgot Password?</a>
+                </p>
             </div>
 
             <button type="submit">Log In</button>

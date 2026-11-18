@@ -47,5 +47,8 @@ urlpatterns = [
     path('clubs/<int:club_id>/leave/', member_views.leave_club, name='leave_club'),
     path('api/notifications/unread/', member_views.get_unread_system_notifications, name='unread_notifications_api'),
     path("", include("finances.urls")),
-    path("", include("polls.urls"))
+    path("", include("polls.urls")),
+    path("password-reset/", member_views.CustomPasswordResetView.as_view(), name="password_reset"),
+    path("password-reset/done/", auth_views.PasswordResetDoneView.as_view(), name="password_reset_done"),
+    path("reset/<uidb64>/<token>/", member_views.CustomPasswordResetConfirmView.as_view(), name="password_reset_confirm"),
 ]

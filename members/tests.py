@@ -1,7 +1,11 @@
 
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
 from django.db import IntegrityError, transaction
 from django.test import TestCase
+from django.urls import reverse
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
  
 from members.forms import (
     ClubAppearanceForm,
@@ -307,3 +311,28 @@ class ClubAppearanceFormTests(TestCase):
         form.save()
         club.refresh_from_db()
         self.assertEqual((club.icon, club.theme_color), ("trophy", "sage"))
+
+
+class PasswordResetConfirmViewTests(TestCase):
+    def test_valid_token_renders_new_password_form(self):
+        user = User.objects.create_user(
+            username="reset-user",
+            email="reset@example.com",
+            password="old-password",
+        )
+        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+
+        response = self.client.get(
+            reverse(
+                "password_reset_confirm",
+                kwargs={"uidb64": uidb64, "token": token},
+            ),
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response, "registration/password_reset_confirm.html"
+        )
+        self.assertContains(response, "Create New Password")
