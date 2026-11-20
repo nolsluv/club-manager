@@ -2,7 +2,7 @@
 .venv/
 venv/
 env/
-
+DATABASE_URL=postgresql://neondb_owner:npg_5pkqmbGhs0Qj@ep-withered-snow-bde3543n-pooler.c-8.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 # python bytecode/cache
 __pycache__/
 *.pyc
