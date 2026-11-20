@@ -35,6 +35,12 @@ def check_and_send_event_reminders():
 
     sent_count = 0
     for event in upcoming_events:
+        # Claim the event first. If two calendar loads run this at the same time,
+        # only the one whose update flips the flag sends the reminder.
+        claimed = Event.objects.filter(pk=event.pk, reminder_sent=False).update(reminder_sent=True)
+        if not claimed:
+            continue
+
         event_time_str = timezone.localtime(event.date).strftime("%b %d at %I:%M %p")
 
         Notification.objects.create(
@@ -44,9 +50,6 @@ def check_and_send_event_reminders():
             notification_type='reminder',
             target_url=reverse('calendar'),
         )
-
-        event.reminder_sent = True
-        event.save(update_fields=['reminder_sent'])
         sent_count += 1
     return sent_count
 

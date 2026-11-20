@@ -183,7 +183,28 @@
             }
             document.addEventListener("click", requestNotificationPermission, {once: true })
 
-            const seenNotificationIds = new Set();
+            // Remember which notifications were already shown, across page loads and tabs.
+            // (An in-memory Set reset on every page load, so unread notes popped up again.)
+            const SHOWN_KEY = "shownSystemNotifs";
+
+            function loadShownIds() {
+                try {
+                    return new Set(JSON.parse(localStorage.getItem(SHOWN_KEY) || "[]"));
+                } catch (err) {
+                    return new Set();
+                }
+            }
+
+            function saveShownIds(ids) {
+                try {
+                    // keep the list small; only recent IDs matter
+                    localStorage.setItem(SHOWN_KEY, JSON.stringify([...ids].slice(-200)));
+                } catch (err) {
+                    // storage blocked (e.g. private mode); fall back to this page only
+                }
+            }
+
+            const sessionShownIds = new Set();
 
             async function checkForNewSystemNotifications() {
                 if (!("Notification" in window) || Notification.permission !== "granted") {
@@ -196,13 +217,18 @@
 
                     const data = await response.json();
 
+                    const shownIds = loadShownIds();
+
                     data.notifications.forEach(note => {
-                        if (!seenNotificationIds.has(note.id)) {
-                            seenNotificationIds.add(note.id);
+                        if (!shownIds.has(note.id) && !sessionShownIds.has(note.id)) {
+                            shownIds.add(note.id);
+                            sessionShownIds.add(note.id);
+                            saveShownIds(shownIds);
 
                             const sysNotice = new Notification(note.title, {
                                 body: note.body,
                                 silent: true,
+                                tag: "club-note-" + note.id,  // other tabs replace, not duplicate
                             });
 
                             sysNotice.onclick = function() {

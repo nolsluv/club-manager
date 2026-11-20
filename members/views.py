@@ -458,6 +458,13 @@ def review_membership(request, request_id):
         if action == "approve":
             membership_request.status = MembershipRequest.Status.APPROVED
             membership_request.club.members.add(membership_request.member)
+
+            # new members shouldn't inherit the club's old notifications
+            # (notifications belong to the club, so all past ones would show as unread)
+            old_notes = membership_request.club.notifications.all()
+            membership_request.member.read_notifications.add(*old_notes)
+            membership_request.member.hidden_notifications.add(*old_notes)
+
             messages.success(request, f"Approved {membership_request.member}.")
 
             # --- Send out approval email ---

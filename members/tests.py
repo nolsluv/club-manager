@@ -336,3 +336,45 @@ class PasswordResetConfirmViewTests(TestCase):
             response, "registration/password_reset_confirm.html"
         )
         self.assertContains(response, "Create New Password")
+
+# ------------------------------------------------------- notifications on joining
+class JoinNotificationTests(TestCase):
+    def setUp(self):
+        self.pres = make_member("joinpres", "president")
+        self.club = Club.objects.create(name="Robotics", leader=self.pres, status=Club.Status.APPROVED)
+        self.club.members.add(self.pres)
+        self.old_note = Notification.objects.create(club=self.club, sender=self.pres, message="Old news")
+        self.newbie = make_member("newbie")
+        self.req = MembershipRequest.objects.create(member=self.newbie, club=self.club)
+
+    def approve(self):
+        self.client.force_login(self.pres.user)
+        self.client.post(reverse("review_membership", args=[self.req.id]), {"action": "approve"})
+        self.client.logout()
+        self.client.force_login(self.newbie.user)
+
+    def test_new_member_does_not_get_old_notifications(self):
+        self.approve()
+        self.assertTrue(self.club.members.filter(id=self.newbie.id).exists())
+        home = self.client.get(reverse("home"))
+        self.assertEqual(home.context["unread_count"], 0)
+        self.assertNotIn(self.old_note, list(home.context["notifications"]))
+        api = self.client.get(reverse("unread_notifications_api")).json()
+        self.assertEqual(api["notifications"], [])
+
+    def test_new_member_gets_notifications_sent_after_joining(self):
+        self.approve()
+        new_note = Notification.objects.create(club=self.club, sender=self.pres, message="Welcome week")
+        api = self.client.get(reverse("unread_notifications_api")).json()
+        self.assertEqual([n["id"] for n in api["notifications"]], [new_note.id])
+        self.assertEqual(self.client.get(reverse("home")).context["unread_count"], 1)
+
+    def test_existing_members_keep_their_unread_notifications(self):
+        self.approve()
+        self.client.force_login(self.pres.user)
+        self.assertEqual(self.client.get(reverse("home")).context["unread_count"], 1)
+
+    def test_rejected_member_is_unaffected(self):
+        self.client.force_login(self.pres.user)
+        self.client.post(reverse("review_membership", args=[self.req.id]), {"action": "reject"})
+        self.assertFalse(self.newbie.read_notifications.exists())

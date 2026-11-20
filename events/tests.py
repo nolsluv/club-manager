@@ -225,6 +225,26 @@ class ReminderTests(EventTestBase):
         self.make_event(date=timezone.now() + timedelta(days=3))
         self.assertEqual(check_and_send_event_reminders(), 0)
 
+    def test_overlapping_checks_send_one_reminder(self):
+        """Simulates two calendar loads at once: a second check runs while the
+        first is still creating its reminder. Only one reminder should exist."""
+        from unittest import mock
+        self.make_event(date=timezone.now() + timedelta(hours=3))
+        real_create = Notification.objects.create
+        overlapped = []
+
+        def create_while_another_check_runs(**kwargs):
+            if not overlapped:
+                overlapped.append(None)  # only overlap once
+                overlapped[0] = check_and_send_event_reminders()
+            return real_create(**kwargs)
+
+        with mock.patch.object(Notification.objects, "create", side_effect=create_while_another_check_runs):
+            check_and_send_event_reminders()
+
+        self.assertEqual(overlapped, [0])  # the overlapping check found nothing to send
+        self.assertEqual(Notification.objects.filter(notification_type="reminder").count(), 1)
+
 from django.urls import reverse
 from events.models import Attendance, RSVP
 
