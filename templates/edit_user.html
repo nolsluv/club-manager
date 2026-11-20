@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Edit {{ target.username }}{% endblock %}
+
+{% block content %}
+<div class="event-form-page">
+    <div class="event-form-card">
+
+        <div class="event-form-heading">
+            <div class="event-form-icon">
+                <i class="bi bi-person-gear"></i>
+            </div>
+            <div>
+                <h1>Edit {{ target.username }}</h1>
+                <p>Update login details, role, and account status.</p>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div style="grid-column: 1 / -1;">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {{ field.errors }}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="event-save-btn">Save changes</button>
+        </form>
+
+        <div class="event-form-cancel">
+            <a href="{% url 'user_management' %}">Cancel</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
