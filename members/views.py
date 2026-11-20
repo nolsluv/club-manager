@@ -139,7 +139,9 @@ def delete_user(request, user_id):
         target = get_object_or_404(User, id=user_id)
         if target == request.user:
             messages.error(request, "You can't delete your own account.")
-        else:
+        elif getattr(target, "member", None) and target.member.role == "admin": #added so admins cant delete other admin accouts
+            messages.error(request, "You can't delete another admin's account.")
+        else:        
             target.delete()  # cascades to delete the linked Member row too
             messages.success(request, f"Deleted user {target.username}.")
     return redirect("user_management")
@@ -761,6 +763,11 @@ def edit_user(request, user_id):
     # Accounts with no Member profile get one on save
     member = getattr(target, "member", None) or Member(user=target)
 
+    # Admins can't edit other admins (they can still edit themselves)
+    if member.role == "admin" and target != request.user:
+        messages.error(request, "You can't edit another admin's account.")
+        return redirect("user_management")
+    
     if request.method == "POST":
         form = AdminUserEditForm(
             request.POST,

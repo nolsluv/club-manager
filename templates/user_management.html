@@ -90,12 +90,14 @@
                 </td>
                 <td>
                     <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        {% if u.member.role != 'admin' or u == request.user %}
                         <a href="{% url 'edit_user' u.id %}" class="user-create-btn">
                             <i class="bi bi-pencil-square"></i>
                             Edit
                         </a>
+                        {% endif %}
 
-                        {% if u != request.user %}
+                        {% if u != request.user and u.member.role != 'admin' %}
                         <form method="post" action="{% url 'delete_user' u.id %}" onsubmit="return confirm('Delete {{ u.username }}?');">
                             {% csrf_token %}
                             <button type="submit" class="user-remove-btn">
