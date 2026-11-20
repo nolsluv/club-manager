@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Edit {{ target.username }}{% endblock %}
+
+{% block content %}
+<div class="user-management-page">
+    <div class="user-management-card">
+
+        <div class="user-management-heading">
+            <div class="user-management-icon">
+                <i class="bi bi-pencil-square"></i>
+            </div>
+
+            <div class="user-management-heading-main">
+                <h1>Edit {{ target.username }}</h1>
+
+                <a href="{% url 'user_management' %}" class="user-create-btn">
+                    <i class="bi bi-arrow-left"></i>
+                    Back
+                </a>
+            </div>
+        </div>
+
+        <form method="post" class="user-edit-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                    <p class="error-message">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+
+            <div class="user-edit-grid">
+                {% for field in form %}
+                    {% if field.name != "is_active" %}
+                    <div class="user-edit-field">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <p class="error-message">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="user-edit-field user-edit-check">
+                <label>{{ form.is_active }} {{ form.is_active.label }}</label>
+                {% for error in form.is_active.errors %}
+                    <p class="error-message">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div class="user-actions">
+                <button type="submit" class="user-create-btn">
+                    <i class="bi bi-check-lg"></i>
+                    Save changes
+                </button>
+                <a href="{% url 'user_management' %}" class="user-edit-btn">Cancel</a>
+            </div>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

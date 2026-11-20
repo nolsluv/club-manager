@@ -24,7 +24,7 @@
 
         {% if messages %}
             {% for message in messages %}
-                <p class="error-message">{{ message }}</p>
+                <p class="{% if message.tags == 'success' %}success-message{% else %}error-message{% endif %}">{{ message }}</p>
             {% endfor %}
         {% endif %}
 
@@ -52,37 +52,26 @@
                 </td>
 
                 <td>{{ u.email }}</td>
+                {% if not u.is_active %}
+                    <span class="user-role-pill user-role-inactive">Inactive</span>
+                {% endif %}
                 <td>
-                    {% if u.member.role == 'admin' %}
-                        <span class="user-role-pill user-role-admin">
-                            <i class="bi bi-crown-fill"></i>
-                            Admin
-                        </span>
+                    <div class="user-actions">
+                        <a href="{% url 'edit_user' u.id %}" class="user-edit-btn">
+                            <i class="bi bi-pencil-square"></i>
+                            Edit
+                        </a>
 
-                    {% elif u.member.role == 'officer' %}
-                        <span class="user-role-pill user-role-officer">
-                            <i class="bi bi-people-fill"></i>
-                            Officer
-                        </span>
-
-                    {% elif u.member.role == 'president' %}
-                        <span class="user-role-pill user-role-president">
-                            <i class="bi bi-star-fill"></i>
-                            President
-                        </span>
-
-                    {% elif u.member.role == 'treasurer' %}
-                        <span class="user-role-pill user-role-treasurer">
-                            <i class="bi bi-shield-fill"></i>
-                            Treasurer
-                        </span>
-
-                    {% else %}
-                        <span class="user-role-pill user-role-member">
-                            <i class="bi bi-people-fill"></i>
-                            {{ u.member.get_role_display|default:"General Member" }}
-                        </span>
-                    {% endif %}
+                        {% if u != request.user %}
+                        <form method="post" action="{% url 'delete_user' u.id %}" onsubmit="return confirm('Delete {{ u.username }}?');">
+                            {% csrf_token %}
+                            <button type="submit" class="user-remove-btn">
+                                <i class="bi bi-trash3"></i>
+                                Remove
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
                 </td>
                 <td>
                     {% if u != request.user %}

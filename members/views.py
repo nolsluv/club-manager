@@ -16,7 +16,8 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.db.models import Exists, OuterRef
 from django_q.tasks import async_task
 from django.urls import reverse, reverse_lazy
-
+from django.db import transaction
+from .forms import RegisterForm, AsyncPasswordResetForm, ClubRequestForm, NotificationForm, ClubAppearanceForm, ProfileUpdateForm, AdminUserEditForm
 
 
 def register(request):
@@ -458,13 +459,6 @@ def review_membership(request, request_id):
         if action == "approve":
             membership_request.status = MembershipRequest.Status.APPROVED
             membership_request.club.members.add(membership_request.member)
-
-            # new members shouldn't inherit the club's old notifications
-            # (notifications belong to the club, so all past ones would show as unread)
-            old_notes = membership_request.club.notifications.all()
-            membership_request.member.read_notifications.add(*old_notes)
-            membership_request.member.hidden_notifications.add(*old_notes)
-
             messages.success(request, f"Approved {membership_request.member}.")
 
             # --- Send out approval email ---
@@ -760,3 +754,49 @@ class CustomPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
         response = super().form_valid(form)
         messages.success(self.request, "Your password has been reset. Please login with your new password.")
         return response
+    
+@role_required("admin")
+def edit_user(request, user_id):
+    target = get_object_or_404(User.objects.select_related("member"), id=user_id)
+    # Accounts with no Member profile get one on save
+    member = getattr(target, "member", None) or Member(user=target)
+
+    if request.method == "POST":
+        form = AdminUserEditForm(
+            request.POST,
+            target_user=target, target_member=member, acting_user=request.user,
+        )
+        if form.is_valid():
+            d = form.cleaned_data
+            with transaction.atomic():
+                target.username = d["username"]
+                target.email = d["email"]
+                target.first_name = d["first_name"]
+                target.last_name = d["last_name"]
+                target.is_active = d["is_active"]
+                target.save()
+
+                member.user = target
+                member.first_name = d["first_name"]
+                member.last_name = d["last_name"]
+                member.email = d["email"]
+                member.role = d["role"]
+                member.is_active = d["is_active"]
+                member.save()
+
+            messages.success(request, f"Updated {target.username}.")
+            return redirect("user_management")
+    else:
+        form = AdminUserEditForm(
+            initial={
+                "username": target.username,
+                "first_name": member.first_name or target.first_name,
+                "last_name": member.last_name or target.last_name,
+                "email": member.email or target.email,
+                "role": member.role,
+                "is_active": target.is_active,
+            },
+            target_user=target, target_member=member, acting_user=request.user,
+        )
+
+    return render(request, "edit_user.html", {"form": form, "target": target})
