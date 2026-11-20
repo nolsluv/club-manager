@@ -2,62 +2,40 @@
 {% block title %}Edit {{ target.username }}{% endblock %}
 
 {% block content %}
-<div class="user-management-page">
-    <div class="user-management-card">
+<div class="event-form-page">
+    <div class="event-form-card">
 
-        <div class="user-management-heading">
-            <div class="user-management-icon">
-                <i class="bi bi-pencil-square"></i>
+        <div class="event-form-heading">
+            <div class="event-form-icon">
+                <i class="bi bi-person-gear"></i>
             </div>
-
-            <div class="user-management-heading-main">
+            <div>
                 <h1>Edit {{ target.username }}</h1>
-
-                <a href="{% url 'user_management' %}" class="user-create-btn">
-                    <i class="bi bi-arrow-left"></i>
-                    Back
-                </a>
+                <p>Update login details, role, and account status.</p>
             </div>
         </div>
 
-        <form method="post" class="user-edit-form">
+        <form method="post">
             {% csrf_token %}
 
             {% if form.non_field_errors %}
-                {% for error in form.non_field_errors %}
-                    <p class="error-message">{{ error }}</p>
-                {% endfor %}
+                <div style="grid-column: 1 / -1;">{{ form.non_field_errors }}</div>
             {% endif %}
 
-            <div class="user-edit-grid">
-                {% for field in form %}
-                    {% if field.name != "is_active" %}
-                    <div class="user-edit-field">
-                        {{ field.label_tag }}
-                        {{ field }}
-                        {% for error in field.errors %}
-                            <p class="error-message">{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
+            {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {{ field.errors }}
+                </div>
+            {% endfor %}
 
-            <div class="user-edit-field user-edit-check">
-                <label>{{ form.is_active }} {{ form.is_active.label }}</label>
-                {% for error in form.is_active.errors %}
-                    <p class="error-message">{{ error }}</p>
-                {% endfor %}
-            </div>
-
-            <div class="user-actions">
-                <button type="submit" class="user-create-btn">
-                    <i class="bi bi-check-lg"></i>
-                    Save changes
-                </button>
-                <a href="{% url 'user_management' %}" class="user-edit-btn">Cancel</a>
-            </div>
+            <button type="submit" class="event-save-btn">Save changes</button>
         </form>
+
+        <div class="event-form-cancel">
+            <a href="{% url 'user_management' %}">Cancel</a>
+        </div>
 
     </div>
 </div>
