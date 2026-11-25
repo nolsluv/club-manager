@@ -336,7 +336,7 @@ def dashboard(request):
 
     elif member.role == "president":
         managed_clubs = (
-            Club.objects.filter(leader=member, status=Club.Status.APPROVED)
+            member.clubs.filter(status=Club.Status.APPROVED)
             .annotate(member_count=Count("members"))
             .order_by("name")
         )
